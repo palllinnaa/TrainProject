@@ -16,7 +16,6 @@ export async function getStaticProps(){
 }
 
 const postsDirectory = path.join(process.cwd(), 'posts');
-
 export default function Home({allPostsData}) {
   return (
     <Layout home>
