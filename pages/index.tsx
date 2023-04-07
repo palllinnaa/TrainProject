@@ -5,21 +5,30 @@ import {getSortedPostsData} from '../lib/posts';
 import path from 'path';
 import Link from 'next/link';
 import Date from '../components/data';
+import { GetStaticProps } from 'next';
+import { IPostsData } from '../src/interfaces';
 
-export async function getStaticProps(){
-  const allPostsData = getSortedPostsData();
+interface IHomeProps {
+  allPostsData: IPostsData[];
+  // allPostsData: Array<IPostsData>;
+}
+
+export const getStaticProps: GetStaticProps = async () => {
+  const allPostsData:IPostsData[] = getSortedPostsData();
   return {
     props: {
       allPostsData,
     },
   };
-}
+};
 
-const postsDirectory = path.join(process.cwd(), 'posts');
+const postsDirectory: string = path.join(process.cwd(), 'posts');
 
-export default function Home({allPostsData}) {
+export default function Home(props: IHomeProps) {
+  const { allPostsData } = props;
+
   return (
-    <Layout home>
+    <Layout home={true}>
       <Head>
         <title>{siteTitle}</title>
       </Head>
@@ -34,17 +43,17 @@ export default function Home({allPostsData}) {
       <section className={`${utilStyles.headingMd} ${utilStyles.padding1px}`}>
         <h2 className={utilStyles.headingLg}>Blog</h2>
         <ul className={utilStyles.list}>
-          {allPostsData.map(({ id, date, title }) => (
-            <li className={utilStyles.listItem} key={id}>
-              <Link href={`/posts/${id}`}>{title}</Link>
+          {allPostsData.map((item: IPostsData) => (
+            <li className={utilStyles.listItem} key={item.id}>
+              <Link href={`/posts/${item.id}`}>{item.title}</Link>
               <br />
               <small className={utilStyles.lightText}>
-                <Date dateString={date} />
+                <Date dateString={item.date} />
               </small>
             </li>
           ))}
         </ul>
-      </section>
+      </section>      
     </Layout>
   );
 }
