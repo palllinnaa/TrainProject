@@ -44,15 +44,12 @@ export default function Home(props: IHomeProps) {
         <h2 className={utilStyles.headingLg}>Blog</h2>
         <ul className={utilStyles.list}>
           {allPostsData.map((item: IPostsData) => (
-            <li className={utilStyles.listItem} key={item.id}>
-              <Link href={`/posts/${item.id}`}>{item.title}</Link>
-              <br />
-              <small className={utilStyles.lightText}>
-                <Date dateString={item.date} />
+            <li className={utilStyles.listItem} key={item.id}>Gray
               </small>
             </li>
           ))}
         </ul>
+        <Link href="/startTailwind?">Tailwind</Link>
       </section>      
     </Layout>
   );
