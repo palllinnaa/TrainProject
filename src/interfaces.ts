@@ -9,4 +9,14 @@ export interface IParams {
     params: { id: string };
 }
 
+export interface ICardData {
+    image: string; 
+    bads: number;
+    baths: number;
+    title: string;
+    price: string;
+    reviewCount: number;
+    rating: number;
+}
+
 
