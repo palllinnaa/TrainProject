@@ -1,86 +1,57 @@
+import Link from 'next/link';
 import React from 'react';
-import { SearchFilters } from '../components/SearchFilters';
-import { SiteHeader } from '../components/SiteHeader';
-import { ICardData } from '../src/interfaces';
-import PropertyCard from './PropertyCard';
+import Filter from './Filter';
+import ProductBox from './products';
+import Search from './Search';
+import SiteHeader from './SiteHeader-new';
 
-
-const data: ICardData[] = [
-    {
-        image: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1470&q=80",
-        bads: 3,
-        baths: 2,
-        title: 'Modern home at city center',
-        price: '$1,400',
-        reviewCount: 34,
-        rating: 5,
-    },
-    {
-        image: "https://images.unsplash.com/photo-1613490493576-7fde63acd811?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1471&q=80",
-        bads: 4,
-        baths: 2,
-        title: 'Isolated house outside of...        ',
-        price: '$1,250',
-        reviewCount: 56,
-        rating: 4,
-    },
-    {
-        image: "https://images.unsplash.com/photo-1531971589569-0d9370cbe1e5?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1481&q=80",
-        bads: 5,
-        baths: 4,
-        title: 'Large dream home with...        ',
-        price: '$1,300',
-        reviewCount: 30,
-        rating: 4,
-    },
-    {
-        image: "https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1470&q=80",
-        bads: 3,
-        baths: 1,
-        title: 'Modern home at city center',
-        price: '$1,100',
-        reviewCount: 22,
-        rating: 3,
-    },
-    {
-        image: "https://images.unsplash.com/photo-1604014238170-4def1e4e6fcf?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1470&q=80",
-        bads: 2,
-        baths: 1,
-        title: 'Modern home at city center',
-        price: '$1,000',
-        reviewCount: 17,
-        rating: 3,
-    },
-]
 
 export default function App(props) {
     return (
-        <div>
-            <div id="app" className='min-h-screen antialiased bg-gray-200 xl:flex xl:flex-col xl:h-screen'>
-                <div className='xl:flex-shrink-0'>
-                    <SiteHeader />
-                </div>
-                <div className='xl:flex-1 xl:flex xl:overflow-y-hidden'>
-                    <SearchFilters />
-
-                    <main className='py-6 xl:flex-1 xl:overflow-x-hidden'>
-                    <div className='px-4'>
-                            <h3 className='text-xl text-gray-900'>Los Angeles</h3>
-                            <p className='text-gray-600'>Live like a stars in these luxurious Southern California estates.</p>
-                        </div>
-                        <div className='mt-5 sm:overflow-x-auto'>
-                            <PropertyCard data={data} />
-                        </div>
-                        <div className='px-4 mt-6'>
-                            <h3 className='text-xl text-gray-900'>Los Angeles</h3>
-                            <p className='text-gray-600'>Live like a stars in these luxurious Southern California estates.</p>
-                        </div>
-                        <div className='mt-5 sm:overflow-x-auto'>
-                            <PropertyCard data={data} />
-                        </div>
-                    </main>
+        <div >
+            <div className='px-3 font-serif '>
+                <SiteHeader />
+                <div className='flex mt-3'>
+                    <div className='flex-1'>
+                        <Search />
+                    </div>
+                    <div className='flex ml-3'>
+                        <Filter />
+                    </div>
                 </div>
             </div>
+            <div className='mt-1 sm:my-4' >
+                <img className='object-cover object-center w-full sm:h-60 lg:h-96' src="images/banner.png" alt="food banner" />
+            </div>
+            <div className='flex px-3 my-3 font-serif'>
+                <Link className='px-8 py-1.5 focus:bg-red-500 focus:border-red-500 hover:bg-red-500 hover:border-red-500 mx-1 mb-4 text-gray-900 border border-gray-200 rounded-full sm:mx-2 hover:no-underline' href=''>All</Link>
+                <Link className='px-4 py-1.5 focus:bg-red-500 focus:border-red-500 hover:bg-red-500 hover:border-red-500 mx-1 mb-4 text-gray-900 border border-gray-200 rounded-full sm:mx-2 hover:no-underline' href=''>Meals</Link>
+                <Link className='px-4 py-1.5 focus:bg-red-500 focus:border-red-500 hover:bg-red-500 hover:border-red-500 mx-1 mb-4 text-gray-900 border border-gray-200 rounded-full sm:mx-2 hover:no-underline' href=''>Drinks</Link>
+            </div>
+            <div className='justify-center font-serif sm:px-4 lg:px-6'>
+                <ProductBox data={props.data} />
+            </div>
         </div>
+        // <div>
+        //     <div id="app" className='min-h-screen antialiased bg-gray-200 xl:flex xl:flex-col xl:h-screen'>
+        //         <div className='xl:flex-shrink-0'>
+        //             <SiteHeader />
+        //         </div>
+        //         <div className='xl:flex-1 xl:flex xl:overflow-y-hidden'>
+        //             <SearchFilters />
+
+        //             <main className='py-6 xl:flex-1 xl:overflow-y-auto '>
+        //             <div className='px-4'>
+        //                     <h3 className='text-xl text-gray-900'>Los Angeles</h3>
+        //                     <p className='text-gray-600'>Live like a stars in these luxurious Southern California estates.</p>
+        //                 </div>
+        //                 <div className='mt-5'>
+        //                     {/* <PropertyCard data={props.data}/> */}
+        //                     <ProductBox data={props.data}/>
+        //                 </div>
+        //             </main>
+        //         </div>
+        //     </div>
+        // </div>
     );
 }
