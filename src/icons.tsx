@@ -13,7 +13,7 @@ export const LogoIcon = ({ height = 32 }) => (
 )
 
 export const LogoIconLightTheme = ({ height = 40 }) => (
-    <svg 
+    <svg
         height={height}
         viewBox="0 0 219 40"
         fill="none"
