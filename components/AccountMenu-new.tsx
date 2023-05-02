@@ -38,7 +38,7 @@ export default function AccountMenu() {
             >
                 <img className={` ${isActive ? 'border-gray-300' : ''}  object-cover w-8 h-8 border-gray-300 rounded-full hover:border-2`} src="../images/user.png" alt="default profile picture" />
             </button>
-            <div className={`menu z-10 ${isActive ? 'block' : 'hidden'} sm:block sm:flex sm:border-0 sm:shadow-none absolute sm:right-0 border sm:bg-inherit sm:mt-0 mt-1 bg-white rounded-lg shadow-md sm:px-0 px-3 py-2`}>
+            <div className={`menu z-10 ${isActive ? 'block' : 'hidden'} sm:flex sm:border-0 sm:shadow-none absolute sm:right-0 border sm:bg-inherit sm:mt-0 mt-1 bg-white rounded-lg shadow-md sm:px-0 px-3 py-2`}>
                 <Link className="block text-gray-900 border-gray-100 rounded-full sm:px-4 hover:no-underline sm:ml-2 sm:text-sm sm:py-1 sm:focus:border-gray-200 sm:border sm:hover:border-gray-200 " href=''>Sign in</Link>
                 <Link className="block mt-2 text-gray-900 sm:mt-0 sm:px-4 sm:border sm:focus:bg-blue-100 sm:hover:bg-blue-100 sm:border-blue-200 sm:py-1 sm:rounded-full hover:no-underline sm:ml-2 sm:text-sm sm:text-blue-600 sm:bg-blue-200" href=''>Register</Link>
             </div>

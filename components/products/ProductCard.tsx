@@ -50,7 +50,7 @@ export default function ProductCard(props) {
                     <div className="mt-2">
                         <StarBox rating={product.rating} />
                     </div>
-                    <PropertyBox propertys={product.property}/>
+                    <PropertyBox properties={product.property}/>
                     {/* <div className="mt-2">
                         {
                             product.property.map((item) => (

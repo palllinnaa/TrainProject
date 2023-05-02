@@ -1,7 +1,7 @@
 export default function TextCut(props) {
 
     let { text } = props;
-    const limit = 100;
+    const limit = 90;
     var dots = "...";
     if (text.length > limit) {
         text = text.substring(0, limit) + dots;
