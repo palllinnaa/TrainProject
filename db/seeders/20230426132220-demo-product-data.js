@@ -116,7 +116,6 @@ module.exports = {
   ];
     return queryInterface.bulkInsert('products', fields, {});
   },
-
   async down(queryInterface) {
     return queryInterface.bulkDelete('products', null, {});
   }

@@ -1,8 +1,6 @@
 'use strict';
 const { faker } = require('@faker-js/faker');
 
-
-
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface) {
@@ -18,8 +16,6 @@ module.exports = {
     }
     return queryInterface.bulkInsert('users', users, {});
   },
- 
-
   async down (queryInterface) {
     return queryInterface.bulkDelete('users', null, {});
   }

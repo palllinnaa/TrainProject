@@ -3,8 +3,7 @@ import React from 'react';
 import Filter from './Filter';
 import ProductBox from './products';
 import Search from './Search';
-import SiteHeader from './SiteHeader-new';
-
+import SiteHeader from './SiteHeader';
 
 export default function App(props) {
     return (
@@ -38,26 +37,5 @@ export default function App(props) {
                 <ProductBox data={props.data} />
             </div>
         </div>
-        // <div>
-        //     <div id="app" className='min-h-screen antialiased bg-gray-200 xl:flex xl:flex-col xl:h-screen'>
-        //         <div className='xl:flex-shrink-0'>
-        //             <SiteHeader />
-        //         </div>
-        //         <div className='xl:flex-1 xl:flex xl:overflow-y-hidden'>
-        //             <SearchFilters />
-
-        //             <main className='py-6 xl:flex-1 xl:overflow-y-auto '>
-        //             <div className='px-4'>
-        //                     <h3 className='text-xl text-gray-900'>Los Angeles</h3>
-        //                     <p className='text-gray-600'>Live like a stars in these luxurious Southern California estates.</p>
-        //                 </div>
-        //                 <div className='mt-5'>
-        //                     {/* <PropertyCard data={props.data}/> */}
-        //                     <ProductBox data={props.data}/>
-        //                 </div>
-        //             </main>
-        //         </div>
-        //     </div>
-        // </div>
     );
 }

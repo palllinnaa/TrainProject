@@ -2,38 +2,30 @@ import React, { useEffect, useState } from 'react';
 import { useRouter } from "next/router";
 import Link from "next/link";
 import Reviews from "../server/models/review";
+import { createRouter } from 'next-connect';
 
+const router = createRouter()
+    .get(async (req, res) => {
+        const result = await Reviews.findAll();
+        const reviews = JSON.parse(JSON.stringify(result));
+        return { props: { reviews } };
+    })
 
-export async function getServerSideProps() {
-    const res = await Reviews.findAll();
-    const reviews = JSON.parse(JSON.stringify(res));
-
-    console.log(' Reviews', reviews);
-    return {
-        props: {
-            reviews,
-        }
-    }
+export async function getServerSideProps({ req, res }) {
+    return router.run(req, res);
 }
 
-
-function AllReviews(props) {
-
+export default function AllReviews(props) {
     const { query } = useRouter();
     const [reviews, setReviews] = useState(props.reviews || []);
-
     // useEffect(() => {
-    //     console.log('fetch the reviews');
     //     fetch(`/api/reviews`)
     //         .then(res => res.json())
     //         .then(json => {
     //             setReviews(json);
-    //             console.log('client reviews = ', json)
     //         })
     // }, []);
 
-
-    // const { reviews } = props;
     return (
         <div>
             <Link href='/'>Home</Link>
@@ -53,5 +45,3 @@ function AllReviews(props) {
         </div>
     );
 }
-
-export default AllReviews;

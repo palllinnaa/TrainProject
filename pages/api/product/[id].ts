@@ -1,40 +1,27 @@
-//import { products } from './../products';
 import type { NextApiRequest, NextApiResponse } from 'next'
-import type { Product } from '../../../src/interfaces';
 import Products from '../../../server/models/product';
+import { createRouter } from 'next-connect';
 
-// export default function userHandler(
-//   req: NextApiRequest,
-//   res: NextApiResponse<Product>
-// ) {
-//     const { query } = req
-//     const id = parseInt(query.id as string, 10)
-//     const product = products.find(p => p.id == id);
-//     console.log('API, product =', product);
-//     res.status(200).json(product)
-// }
-
-export default async function userHandler(
-  req: NextApiRequest,
-  res: NextApiResponse<Product>
-) {
-    const { query } = req
-    const id = parseInt(query.id as string, 10)
-
-    const result = await Products.findByPk(id);
-
-    let product = result.toJSON();
-    product = {
-         ...product,
-      property: product.property.split(";"),
-      ingredients: product.ingredients.split(";")
-    }
-    console.log('API, product =', product);
-    res.status(200).json(product)
-
-    //     return {
-    //   props: {
-    //     data: product
-    //   }
-    // }
-}
+const router = createRouter<NextApiRequest, NextApiResponse>();
+router
+    .get(async (req, res) => {
+        const { query } = req;
+        const id = parseInt(query.id as string, 10);
+        const result = await Products.findByPk(id);
+        let product = result.toJSON();
+        product = {
+            ...product,
+            property: product.property.split(";"),
+            ingredients: product.ingredients.split(";")
+        }
+        res.status(200).json(product)
+    })
+export default router.handler({
+    onError: (err, req, res) => {
+        console.error(err);
+        res.status(500).end("Something broke!");
+    },
+    onNoMatch: (req, res) => {
+        res.status(404).end("Page is not found");
+    },
+});
