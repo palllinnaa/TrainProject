@@ -1,14 +1,11 @@
 'use strict';
 const { faker } = require('@faker-js/faker');
 
-
-
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface) {
     const products = [];
     for (let index = 0; index < 1000; index++) {
-
       products.push({
         productName: faker.commerce.productName(),
         image: faker.image.food(),
@@ -55,8 +52,6 @@ module.exports = {
     }
     return queryInterface.bulkInsert('products', products, {});
   },
-
-
   async down(queryInterface) {
     return queryInterface.bulkDelete('products', null, {});
   }

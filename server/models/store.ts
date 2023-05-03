@@ -36,15 +36,9 @@ const Stores = db.define('stores', {
   }
 });
 
-// Reviews.belongsTo(Stores, {foreignKey: 'storeId'});
-// // Stores.hasMany(Reviews, {foreignKey: 'id'});
-// Stores.hasMany(Reviews, {foreignKey: 'storeId'});
-// Products.belongsTo(Stores, {foreignKey: 'storeId'});
-// Stores.hasMany(Products, {foreignKey: 'storeId'});
-
-
 Stores.hasMany(Reviews);
 Reviews.belongsTo(Stores), {foreignKey: 'storeId'};
+
 Stores.hasMany(Products);
 Products.belongsTo(Stores, {foreignKey: 'storeId'});
 

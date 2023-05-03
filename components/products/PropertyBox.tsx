@@ -1,5 +1,6 @@
 export default function PropertyBox(props) {
     const { properties } = props;
+    
     return (
         <div className="mt-2">
             {
