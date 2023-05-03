@@ -9,42 +9,37 @@ import { createRouter } from "next-connect";
 
 
 //------------------------------- OLD -------------------------------
-export async function getServerSideProps() {
-    const res = await Users.findAll({
-        attributes: ['id', 'name', 'email', 'role']
-    });
+// export async function getServerSideProps() {
+//     const res = await Users.findAll({
+//         attributes: ['id', 'name', 'email', 'role']
+//     });
 
-    // const res = await Users.findAll({ include: { all: true } })
+//     // const res = await Users.findAll({ include: { all: true } })
 
 
-    const users = JSON.parse(JSON.stringify(res));
+//     const users = JSON.parse(JSON.stringify(res));
 
-    console.log(' Users', users);
-    return {
-        props: {
-            users: users,
-        }
-    }
-}
-
-// const router = createRouter()
-//     .get(async (req, res, next) => {
-        
-        
-//         console.log('call--------------------');
-
-//         const result = await Users.findAll({
-//             attributes: ['id', 'name', 'email', 'role']
-//         });
-//         console.log('result--------------------', result);
-
-//         const users = JSON.parse(JSON.stringify(result));
-//         return { props: { users } };
-//     })
-
-// export async function getServerSideProps({ req, res }) {
-//     return router.run(req, res);
+//     console.log(' Users', users);
+//     return {
+//         props: {
+//             users: users,
+//         }
+//     }
 // }
+
+const router = createRouter()
+    .get(async (req, res) => {
+        const result = await Users.findAll({
+            attributes: ['id', 'name', 'email', 'role']
+        });
+
+        const users = JSON.parse(JSON.stringify(result));
+        return { props: { users } };
+    })
+
+export async function getServerSideProps({ req, res }) {
+    return router.run(req, res);
+}
 
 
 function AllUsers(props) {

@@ -2,20 +2,51 @@ import Link from 'next/link';
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react';
 import Users from '../../server/models/user';
-import nc from "next-connect";
+import nc, { createRouter } from "next-connect";
 
 
-export async function getServerSideProps({ query }) {
-    const id = query.id;
-    const res = await Users.findByPk(id)
-    let user = JSON.parse(JSON.stringify(res));
+// export async function getServerSideProps({ query }) {
+//     const id = query.id;
+//     const res = await Users.findByPk(id)
+//     let user = JSON.parse(JSON.stringify(res));
 
-    console.log('SSR, user = ', user)
-    return {
-        props: {
-            user,
-        }
-    }
+//     console.log('SSR, user = ', user)
+//     return {
+//         props: {
+//             user,
+//         }
+//     }
+// }
+
+// const router = createRouter()
+//     .get(async (req, res) => {
+//         // const { params } = req;
+//        console.log('request------------------------------------------', req.params)
+
+//         // const id = query.id;
+//         // const result = await Users.findByPk(id)
+
+//         // const user = JSON.parse(JSON.stringify(result));
+//         return { props: { /*user*/ } };
+//     })
+
+// export async function getServerSideProps({ req, res, query }) {
+//     return router.run(req, res);
+// }
+
+const router = createRouter()
+        .get("user/:id",async (req: any) => {
+            const id = req.params.id;
+            const result = await Users.findByPk(id)
+
+            const user = JSON.parse(JSON.stringify(result));
+
+            return { props: { user } };
+        })
+
+
+export async function getServerSideProps({ req, res }) {
+    return router.run(req, res);
 }
 
 // export async function getServerSideProps({req, res, params}) {

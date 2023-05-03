@@ -5,26 +5,48 @@ import Stores from "../server/models/store";
 import Users from '../server/models/user';
 import Reviews from '../server/models/review';
 import { Sequelize } from 'sequelize';
+import { createRouter } from 'next-connect';
 
-export async function getServerSideProps() {
-    const res = await Stores.findAll({
-        attributes: ['id', 'storeName', 'userId',
-            [Sequelize.fn("COUNT", Sequelize.col("reviews.storeId")), "reviewCount"],
-            [Sequelize.fn("avg", Sequelize.col("reviews.rating")), "rating"]],
-        include: [
-            { model: Users, attributes: ['name'] },
-            { model: Reviews, attributes: [] },
-        ],
-        group: ['id']
-    });
-    const stores = JSON.parse(JSON.stringify(res));
+// export async function getServerSideProps() {
+//     const res = await Stores.findAll({
+//         attributes: ['id', 'storeName', 'userId',
+//             [Sequelize.fn("COUNT", Sequelize.col("reviews.storeId")), "reviewCount"],
+//             [Sequelize.fn("avg", Sequelize.col("reviews.rating")), "rating"]],
+//         include: [
+//             { model: Users, attributes: ['name'] },
+//             { model: Reviews, attributes: [] },
+//         ],
+//         group: ['id']
+//     });
+//     const stores = JSON.parse(JSON.stringify(res));
 
-    console.log(' Stores', stores);
-    return {
-        props: {
-            stores,
-        }
-    }
+//     console.log(' Stores', stores);
+//     return {
+//         props: {
+//             stores,
+//         }
+//     }
+// }
+
+
+const router = createRouter()
+    .get(async (req, res) => {
+        const result = await Stores.findAll({
+            attributes: ['id', 'storeName', 'userId',
+                [Sequelize.fn("COUNT", Sequelize.col("reviews.storeId")), "reviewCount"],
+                [Sequelize.fn("avg", Sequelize.col("reviews.rating")), "rating"]],
+            include: [
+                { model: Users, attributes: ['name'] },
+                { model: Reviews, attributes: [] },
+            ],
+            group: ['id']
+        });
+        const stores = JSON.parse(JSON.stringify(result));
+        return { props: { stores } };
+    })
+
+export async function getServerSideProps({ req, res }) {
+    return router.run(req, res);
 }
 
 
