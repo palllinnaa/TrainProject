@@ -7,28 +7,6 @@ import Reviews from '../server/models/review';
 import { Sequelize } from 'sequelize';
 import { createRouter } from 'next-connect';
 
-// export async function getServerSideProps() {
-//     const res = await Stores.findAll({
-//         attributes: ['id', 'storeName', 'userId',
-//             [Sequelize.fn("COUNT", Sequelize.col("reviews.storeId")), "reviewCount"],
-//             [Sequelize.fn("avg", Sequelize.col("reviews.rating")), "rating"]],
-//         include: [
-//             { model: Users, attributes: ['name'] },
-//             { model: Reviews, attributes: [] },
-//         ],
-//         group: ['id']
-//     });
-//     const stores = JSON.parse(JSON.stringify(res));
-
-//     console.log(' Stores', stores);
-//     return {
-//         props: {
-//             stores,
-//         }
-//     }
-// }
-
-
 const router = createRouter()
     .get(async (req, res) => {
         const result = await Stores.findAll({
@@ -49,19 +27,14 @@ export async function getServerSideProps({ req, res }) {
     return router.run(req, res);
 }
 
-
-function AllStores(props) {
-
+export default function AllStores(props) {
     const { query } = useRouter();
     const [stores, setStores] = useState(props.stores || []);
-
     // useEffect(() => {
-    //     console.log('fetch the stores');
     //     fetch(`/api/stores`)
     //         .then(res => res.json())
     //         .then(json => {
     //             setStores(json);
-    //             console.log('client stores = ', json)
     //         })
     // }, []);
 
@@ -84,5 +57,3 @@ function AllStores(props) {
         </div>
     );
 }
-
-export default AllStores;
