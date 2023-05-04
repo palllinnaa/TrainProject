@@ -33,7 +33,8 @@ export default function UserPage(props) {
         <div >
             <Link href='/users'>Back to users</Link>
             <h1>User {user.id}</h1>
-            <p>Name: {user.name}</p>
+            <p>Name: {user.firstName}</p>
+            <p>Surname: {user.lastName}</p>
             <p>Email: {user.email}</p>
             <p>Role: {user.role}</p>
         </div >

@@ -13,7 +13,7 @@ const router = createRouter()
             attributes: ['id', 'reviewText', 'rating'],
             where: { id },
             include: [
-                { model: Users, attributes: ['id', 'name', 'email', 'role'] },
+                { model: Users, attributes: ['id', 'firstName', 'lastName', 'email', 'role'] },
                 { model: Stores, attributes: ['id', 'storeName', 'userId'] }],
         })
         let reviewsUser = JSON.parse(JSON.stringify(result));
@@ -43,7 +43,8 @@ export default function StorePage(props) {
                     <div>
                         <h1 >Id: {item.id}</h1>
                         <p>User id: {item.user.id}</p>
-                        <p>Name: {item.user.name}</p>
+                        <p>Name: {item.user.firstName}</p>
+                        <p>Surname: {item.user.lastName}</p>
                         <p>Email: {item.user.email}</p>
                         <p>Role: {item.user.role}</p>
                         <p>Review Text: {item.reviewText}</p>

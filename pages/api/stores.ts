@@ -13,7 +13,7 @@ router
                 [Sequelize.fn("COUNT", Sequelize.col("reviews.storeId")), "reviewCount"],
                 [Sequelize.fn("avg", Sequelize.col("reviews.rating")), "rating"]],
             include: [
-                { model: Users, attributes: ['name'] },
+                { model: Users, attributes: ['firstName', 'lastName'] },
                 { model: Reviews, attributes: [] },
             ],
             group: ['id']

@@ -16,7 +16,7 @@ const router = createRouter()
                 [Sequelize.fn("COUNT", Sequelize.col("reviews.storeId")), "reviewCount"],
                 [Sequelize.fn("avg", Sequelize.col("reviews.rating")), "rating"]],
             include: [
-                { model: Users, attributes: ['name'] },
+                { model: Users, attributes: ['firstName', 'lastName'] },
                 { model: Reviews, attributes: [] },
             ],
             group: ['id']
@@ -49,7 +49,7 @@ export default function StorePage(props) {
                         <h1>Store {item.id}</h1>
                         <p>Store Name: {item.storeName}</p>
                         <p>Seller id: {item.userId}</p>
-                        <p>Seller name: {item.user.name}</p>
+                        <p>Seller name: {item.user.firstName} {item.user.lastName}</p>
                         <p>Review count: {item.reviewCount}</p>
                         <p>Rating: {Number(item.rating).toFixed(1)}</p>
                     </div>

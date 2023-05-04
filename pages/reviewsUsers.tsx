@@ -11,7 +11,7 @@ const router = createRouter()
         const result = await Reviews.findAll({
             attributes: ['id', 'rating', 'reviewText'],
             include: [
-                { model: Users, attributes: ['id', 'name', 'email', 'role'] },
+                { model: Users, attributes: ['id', 'firstName', 'lastName', 'email', 'role'] },
                 { model: Stores, attributes: ['id', 'storeName', 'userId'] }
             ],
         })
@@ -42,7 +42,8 @@ export default function reviewsUser(props) {
                     <div>
                         <Link href="/reviewsUser/[id]" as={`/reviewsUser/${reviewsUser.id}`}>Review id: {reviewsUser.id}</Link>
                         <p>User id: {reviewsUser.user.id}</p>
-                        <p>Name: {reviewsUser.user.name}</p>
+                        <p>Name: {reviewsUser.user.firstName}</p>
+                        <p>Surname: {reviewsUser.user.lastName}</p>
                         <p>Email: {reviewsUser.user.email}</p>
                         <p>Role: {reviewsUser.user.role}</p>
                         <p>Review Text: {reviewsUser.reviewText}</p>

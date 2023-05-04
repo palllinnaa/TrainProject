@@ -10,7 +10,7 @@ router
         const result = await Reviews.findAll({
             attributes: ['id', 'reviewText', 'rating'],
             include: [
-                { model: Users, attributes: ['id', 'name', 'email', 'role'] },
+                { model: Users, attributes: ['id', 'firstName', 'lastName', 'email', 'role'] },
                 { model: Stores, attributes: ['id', 'storeName', 'userId'] }],
         })
         const reviewsUsers = JSON.parse(JSON.stringify(result));

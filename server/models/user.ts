@@ -1,10 +1,11 @@
-import { Model, DataTypes, BuildOptions } from 'sequelize';
+import { DataTypes } from 'sequelize';
 import db from '../db';
+import { IUserModel } from '../interfaces/users';
 import Reviews from './review';
 import Stores from './store';
+const bcrypt = require('bcrypt');
 
-
-const Users = db.define('users', {
+const Users = db.define<IUserModel>('users', {
   id: {
     allowNull: false,
     autoIncrement: true,
@@ -12,7 +13,12 @@ const Users = db.define('users', {
     type: DataTypes.INTEGER
   },
 
-  name: {
+  firstName: {
+    allowNull: false,
+    type: DataTypes.STRING
+  },
+
+  lastName: {
     allowNull: false,
     type: DataTypes.STRING
   },
@@ -32,6 +38,11 @@ const Users = db.define('users', {
     type: DataTypes.STRING
   },
 
+  slug: {
+    allowNull: false,
+    type: DataTypes.STRING
+  },
+
   createdAt: {
     type: DataTypes.DATE,
     defaultValue: DataTypes.NOW
@@ -44,9 +55,21 @@ const Users = db.define('users', {
 });
 
 Users.hasMany(Reviews);
-Reviews.belongsTo(Users, {foreignKey: 'userId'});
+Reviews.belongsTo(Users, { foreignKey: 'userId' });
 
 Users.hasMany(Stores);
-Stores.belongsTo(Users, {foreignKey: 'userId'});
+Stores.belongsTo(Users, { foreignKey: 'userId' });
+
+Users.beforeCreate(async (user) => {
+  try {
+    if (user.changed('password')) {
+      const salt = await bcrypt.genSalt(10);
+      const hash = await bcrypt.hash(user.password, salt);
+      user.password = hash;
+    }
+  } catch (err) {
+    throw new Error(err);
+  }
+});
 
 export default Users;
