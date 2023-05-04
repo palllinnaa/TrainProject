@@ -6,7 +6,7 @@ const router = createRouter<NextApiRequest, NextApiResponse>();
 router
   .get(async (req, res) => {
     const result = await Users.findAll({
-      attributes: ['id', 'name', 'email', 'role']
+      attributes: ['id', 'firstName', 'lastName', 'email', 'role']
     });
     const users = JSON.parse(JSON.stringify(result));
     res.status(200).json(users)

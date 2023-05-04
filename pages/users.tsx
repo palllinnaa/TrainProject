@@ -7,7 +7,7 @@ import { createRouter } from "next-connect";
 const router = createRouter()
     .get(async (req, res) => {
         const result = await Users.findAll({
-            attributes: ['id', 'name', 'email', 'role']
+            attributes: ['id', 'firstName', 'lastName', 'email', 'role']
         });
         const users = JSON.parse(JSON.stringify(result));
         return { props: { users } };
@@ -35,7 +35,8 @@ export default function AllUsers(props) {
                 users?.map((user) => (
                     <div>
                         <Link href="/user/[id]" as={`/user/${user.id}`}>User: {user.id}</Link>
-                        <p>Name: {user.name}</p>
+                        <p>Name: {user.firstName}</p>
+                        <p>Surname: {user.lastName}</p>
                         <p>Email: {user.email}</p>
                         <p>Role: {user.role}</p>
                         <p>----------------------------------------------------------------------</p>

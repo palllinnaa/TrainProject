@@ -13,7 +13,7 @@ router
             attributes: ['id', 'reviewText', 'rating'],
             where: { id: id },
             include: [
-                { model: Users, attributes: ['id', 'name', 'email', 'role'] },
+                { model: Users, attributes: ['id', 'firstName', 'lastName', 'email', 'role'] },
                 { model: Stores, attributes: ['id', 'storeName', 'userId'] }],
         })
         const reviewsUser = JSON.parse(JSON.stringify(result));
