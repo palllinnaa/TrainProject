@@ -1,7 +1,8 @@
 import { Model, DataTypes, BuildOptions } from 'sequelize';
 import db from '../db';
+import { IProductModel } from '../interfaces/products';
 
-const Products = db.define('products', {
+const Products = db.define<IProductModel>('products', {
     id: {
         allowNull: false,
         autoIncrement: true,

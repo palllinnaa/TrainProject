@@ -1,8 +1,9 @@
-import { Model, DataTypes, BuildOptions } from 'sequelize';
+import { DataTypes, } from 'sequelize';
 import db from '../db';
-import Stores from './store';
+import { IReviewModel } from '../interfaces/reviews';
 
-const Reviews = db.define('reviews', {
+
+const Reviews = db.define<IReviewModel>('reviews', {
   id: {
     allowNull: false,
     autoIncrement: true,

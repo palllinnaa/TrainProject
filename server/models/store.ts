@@ -1,9 +1,10 @@
-import { Model, DataTypes, BuildOptions } from 'sequelize';
+import { DataTypes } from 'sequelize';
 import db from '../db';
+import { IStoreModel } from '../interfaces/stores';
 import Products from './product';
 import Reviews from './review';
 
-const Stores = db.define('stores', {
+const Stores = db.define<IStoreModel>('stores', {
   id: {
     allowNull: false,
     autoIncrement: true,
@@ -37,9 +38,9 @@ const Stores = db.define('stores', {
 });
 
 Stores.hasMany(Reviews);
-Reviews.belongsTo(Stores), {foreignKey: 'storeId'};
+Reviews.belongsTo(Stores), { foreignKey: 'storeId' };
 
 Stores.hasMany(Products);
-Products.belongsTo(Stores, {foreignKey: 'storeId'});
+Products.belongsTo(Stores, { foreignKey: 'storeId' });
 
 export default Stores;

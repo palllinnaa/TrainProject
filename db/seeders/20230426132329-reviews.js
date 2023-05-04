@@ -7,6 +7,7 @@ module.exports = {
     const reviews=[];
     for (let index = 0; index < 300; index++) {
       reviews.push({
+        id:index+1,
         reviewText: faker.lorem.sentences(faker.datatype.number({min: 1, max: 5})),
         rating: faker.datatype.number({min: 1, max:5}),
         storeId: faker.datatype.number({min: 1, max: 50}),
