@@ -1,12 +1,15 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { createRouter } from 'next-connect';
 import { Sequelize } from 'sequelize';
+import { passportInitialize, passportSession } from '../../../server/middleware/passport';
 import Reviews from '../../../server/models/review';
 import Stores from '../../../server/models/store';
 import Users from '../../../server/models/user';
 
 const router = createRouter<NextApiRequest, NextApiResponse>();
 router
+    .use(passportInitialize)
+    .use(passportSession)
     .get(async (req, res) => {
         const { query } = req;
         const id = parseInt(query.id as string, 10);

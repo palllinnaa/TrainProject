@@ -1,9 +1,12 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { createRouter } from 'next-connect';
+import { passportInitialize, passportSession } from '../../server/middleware/passport';
 import Reviews from '../../server/models/review';
 
 const router = createRouter<NextApiRequest, NextApiResponse>();
 router
+    .use(passportInitialize)
+    .use(passportSession)
     .get(async (req, res) => {
         const result = await Reviews.findAll();
         const reviews = JSON.parse(JSON.stringify(result));
