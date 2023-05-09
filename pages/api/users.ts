@@ -1,9 +1,12 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { createRouter } from 'next-connect';
+import { passportInitialize, passportSession } from '../../server/middleware/passport';
 import Users from '../../server/models/user';
 
 const router = createRouter<NextApiRequest, NextApiResponse>();
 router
+  .use(passportInitialize)
+  .use(passportSession)
   .get(async (req, res) => {
     const result = await Users.findAll({
       attributes: ['id', 'firstName', 'lastName', 'email', 'role']
