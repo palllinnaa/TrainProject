@@ -32,7 +32,7 @@ passport.use(
                     } else {
                         console.log('Email or password is incorrect from clo')
                         // TODO send custom message
-                        done(null, false/*, { message: 'Email or password is incorrect' }*/);
+                        done(null, false, { message: 'Email or password is incorrect' });
                     }
                 });
         }
