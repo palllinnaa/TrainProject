@@ -14,7 +14,8 @@ router
     .use(passportAuth)
     .post((req, res) => {
         console.log('here---------------', req.user);
-        res.status(200).json(req.user)
+        const user = JSON.parse(JSON.stringify(req.user));
+        res.status(200).json({user})
     })
 
 export default router.handler({
