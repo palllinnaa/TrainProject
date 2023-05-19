@@ -2,28 +2,19 @@ import { createRouter } from 'next-connect';
 import Link from 'next/link';
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react';
-import { Sequelize } from 'sequelize';
-import Reviews from '../../server/models/review';
-import Stores from '../../server/models/store';
-import Users from '../../server/models/user';
+import container from '../../server/container';
 
 const router = createRouter()
     .get("store/:id", async (req: any) => {
         const id = req.params.id;
-        const result = await Stores.findAll({
-            where: { id },
-            attributes: ['id', 'storeName', 'userId',
-                [Sequelize.fn("COUNT", Sequelize.col("reviews.storeId")), "reviewCount"],
-                [Sequelize.fn("avg", Sequelize.col("reviews.rating")), "rating"]],
-            include: [
-                { model: Users, attributes: ['firstName', 'lastName'] },
-                { model: Reviews, attributes: [] },
-            ],
-            group: ['id']
-        });
+        const result = await container.resolve("StoreService").findStoreOwnerReviews(id)
         const store = JSON.parse(JSON.stringify(result));
         return { props: { store } };
     })
+    .all(() => {
+        console.log("----------------------------------------------all----------------------------------------------")
+        return { props:  {} };
+    });
 
 export async function getServerSideProps({ req, res }) {
     return router.run(req, res);
@@ -32,13 +23,13 @@ export async function getServerSideProps({ req, res }) {
 export default function StorePage(props) {
     const { query } = useRouter();
     const [store, setStores] = useState(props.store || []);
-    // useEffect(() => {
-    //     fetch(`/api/store/` + query.id)
-    //         .then(res => res.json())
-    //         .then(json => {
-    //             setStores(json);
-    //         })
-    // }, []);
+    useEffect(() => {
+        fetch(`/api/store/` + query.id)
+            .then(res => res.json())
+            .then(json => {
+                setStores(json);
+            })
+    }, [query]);
 
     return (
         <div>

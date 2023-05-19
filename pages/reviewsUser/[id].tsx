@@ -2,23 +2,19 @@ import { createRouter } from 'next-connect';
 import Link from 'next/link';
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react';
-import Reviews from '../../server/models/review';
-import Stores from '../../server/models/store';
-import Users from '../../server/models/user';
+import container from '../../server/container';
 
 const router = createRouter()
     .get("reviewsUser/:id", async (req: any) => {
         const id = req.params.id;
-        const result = await Reviews.findAll({
-            attributes: ['id', 'reviewText', 'rating'],
-            where: { id },
-            include: [
-                { model: Users, attributes: ['id', 'firstName', 'lastName', 'email', 'role'] },
-                { model: Stores, attributes: ['id', 'storeName', 'userId'] }],
-        })
+        const result = await container.resolve("ReviewService").findReviewUserOnStore(id)
         let reviewsUser = JSON.parse(JSON.stringify(result));
         return { props: { reviewsUser } };
     })
+    .all(() => {
+        console.log("----------------------------------------------all----------------------------------------------")
+        return { props: {} };
+    });
 
 export async function getServerSideProps({ req, res }) {
     return router.run(req, res);
@@ -27,13 +23,13 @@ export async function getServerSideProps({ req, res }) {
 export default function StorePage(props) {
     const { query } = useRouter();
     const [reviewsUser, setReviewsUser] = useState(props.reviewsUser || []);
-    // useEffect(() => {
-    //     fetch(`/api/reviewsUser/` + query.id)
-    //         .then(res => res.json())
-    //         .then(json => {
-    //             setReviewsUser(json);
-    //         })
-    // }, []);
+    useEffect(() => {
+        fetch(`/api/reviewsUser/` + query.id)
+            .then(res => res.json())
+            .then(json => {
+                setReviewsUser(json);
+            })
+    }, [query]);
 
     return (
         <div>

@@ -1,14 +1,12 @@
-import Users from "../server/models/user";
 import React, { useEffect, useState } from 'react';
 import { useRouter } from "next/router";
 import Link from "next/link";
 import { createRouter } from "next-connect";
+import container from "../server/container";
 
 const router = createRouter()
     .get(async (req, res) => {
-        const result = await Users.findAll({
-            attributes: ['id', 'firstName', 'lastName', 'email', 'role']
-        });
+        const result = await container.resolve("UserService").findAllUsers()
         const users = JSON.parse(JSON.stringify(result));
         return { props: { users } };
     })
@@ -20,13 +18,13 @@ export async function getServerSideProps({ req, res }) {
 export default function AllUsers(props) {
     const { query } = useRouter();
     const [users, setUsers] = useState(props.users || []);
-    // useEffect(() => {
-    //     fetch(`/api/users`)
-    //         .then(res => res.json())
-    //         .then(json => {
-    //             setUsers(json);
-    //         })
-    // }, []);
+    useEffect(() => {
+        fetch(`/api/users`)
+            .then(res => res.json())
+            .then(json => {
+                setUsers(json);
+            })
+    }, [query]);
 
     return (
         <div>

@@ -2,13 +2,11 @@ import { createRouter } from 'next-connect';
 import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react';
 import App from '../components/App';
-import Products from '../server/models/product';
+import container from '../server/container';
 
 const router = createRouter()
   .get(async (req, res) => {
-    const result = await Products.findAll({
-      attributes: ['id', 'productName', 'image', 'property', 'price', 'description']
-    });
+    const result = await container.resolve("ProductService").findAllProducts()
     const data = JSON.parse(JSON.stringify(result));
     const products = data.map((item) => ({
       ...item,
@@ -24,13 +22,13 @@ export async function getServerSideProps({ req, res }) {
 export default function StartTailwind(props) {
   const { query } = useRouter();
   const [data, setData] = useState(props.data || []);
-  // useEffect(() => {
-  // fetch(`/api/products`)
-  //   .then(res => res.json())
-  //   .then(json => {
-  //     setData(json);
-  //   })
-  // }, []);
+  useEffect(() => {
+  fetch(`/api/products`)
+    .then(res => res.json())
+    .then(json => {
+      setData(json);
+    })
+  }, [query]);
 
   return (
     <App data={data} />

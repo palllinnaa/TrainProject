@@ -2,15 +2,19 @@ import { createRouter } from 'next-connect';
 import Link from 'next/link';
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react';
-import Reviews from '../../server/models/review';
+import container from '../../server/container';
 
 const router = createRouter()
     .get("review/:id", async (req: any) => {
         const id = req.params.id;
-        const res = await Reviews.findByPk(id)
-        const review = JSON.parse(JSON.stringify(res));
+        const result = await container.resolve("ReviewService").findReviewById(id);
+        const review = JSON.parse(JSON.stringify(result));
         return { props: { review } };
     })
+    .all(() => {
+        console.log("----------------------------------------------all----------------------------------------------")
+        return { props: {} };
+    });
 
 export async function getServerSideProps({ req, res }) {
     return router.run(req, res);
@@ -19,13 +23,13 @@ export async function getServerSideProps({ req, res }) {
 export default function ReviewPage(props) {
     const { query } = useRouter();
     const [review, setReview] = useState(props.review || []);
-    // useEffect(() => {
-    //     fetch(`/api/review/` + query.id)
-    //         .then(res => res.json())
-    //         .then(json => {
-    //             setReview(json);
-    //         })
-    // }, []);
+    useEffect(() => {
+        fetch(`/api/review/` + query.id)
+            .then(res => res.json())
+            .then(json => {
+                setReview(json);
+            })
+    }, [query]);
 
     return (
         <div >

@@ -1,13 +1,11 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { createRouter } from 'next-connect';
-import Products from '../../server/models/product';
+import container from '../../server/container';
 
 const router = createRouter<NextApiRequest, NextApiResponse>();
 router
     .get(async (req, res) => {
-        const result = await Products.findAll({
-            attributes: ['id', 'productName', 'image', 'property', 'price', 'description']
-        });
+        const result = await container.resolve("ProductService").findAllProducts()
         const data = JSON.parse(JSON.stringify(result));
         const products = data.map((item) => ({
             ...item,
