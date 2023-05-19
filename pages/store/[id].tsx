@@ -5,20 +5,17 @@ import { useEffect, useState } from 'react';
 import container from '../../server/container';
 
 const router = createRouter()
-    .get("store/:id", async (req: any) => {
+    .get(async (req: any) => {
         const id = req.params.id;
         const result = await container.resolve("StoreService").findStoreOwnerReviews(id)
         const store = JSON.parse(JSON.stringify(result));
         return { props: { store } };
     })
-    .all(() => {
-        console.log("----------------------------------------------all----------------------------------------------")
-        return { props:  {} };
-    });
-
-export async function getServerSideProps({ req, res }) {
-    return router.run(req, res);
+    
+export async function getServerSideProps(context) {
+    return router.run({ ...context.req, params: context.params }, context.res);
 }
+
 
 export default function StorePage(props) {
     const { query } = useRouter();

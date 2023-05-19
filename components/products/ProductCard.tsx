@@ -13,7 +13,7 @@ export default function ProductCard(props) {
             </div>
             <div className='relative px-3 -mt-16'>
                 <div className='px-3 py-3 bg-white rounded-lg shadow-lg'>
-                    <Link href="/product/[id]" as={`/product/${product.id}`} className='mt-1 text-lg font-semibold text-gray-900 hover:text-gray-600 focus:text-gray-600 hover:no-underline'>{product.productName}</Link>
+                    <Link href={`/product/${product.id}`} className='mt-1 text-lg font-semibold text-gray-900 hover:text-gray-600 focus:text-gray-600 hover:no-underline'>{product.productName}</Link>
                     <div >
                         <span className='text-gray-600 text-md'>Price: ${product.price}</span>
                         <span className='ml-1 text-sm text-gray-300'>/one</span>

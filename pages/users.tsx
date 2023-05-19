@@ -32,7 +32,7 @@ export default function AllUsers(props) {
             {
                 users?.map((user) => (
                     <div>
-                        <Link href="/user/[id]" as={`/user/${user.id}`}>User: {user.id}</Link>
+                        <Link href={`/user/${user.id}`}>User: {user.id}</Link>
                         <p>Name: {user.firstName}</p>
                         <p>Surname: {user.lastName}</p>
                         <p>Email: {user.email}</p>

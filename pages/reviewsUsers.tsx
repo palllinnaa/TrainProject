@@ -32,7 +32,7 @@ export default function reviewsUser(props) {
             {
                 reviewsUsers?.map((reviewsUser) => (
                     <div>
-                        <Link href="/reviewsUser/[id]" as={`/reviewsUser/${reviewsUser.id}`}>Review id: {reviewsUser.id}</Link>
+                        <Link href={`/reviewsUser/${reviewsUser.id}`}>Review id: {reviewsUser.id}</Link>
                         <p>User id: {reviewsUser.user.id}</p>
                         <p>Name: {reviewsUser.user.firstName}</p>
                         <p>Surname: {reviewsUser.user.lastName}</p>

@@ -7,7 +7,7 @@ import SiteHeader from '../../components/SiteHeader';
 import container from '../../server/container';
 
 const router = createRouter()
-  .get("product/:id", async (req: any) => {
+  .get(async (req: any) => {
     const id = req.params.id;
     const result = await container.resolve("ProductService").findProductById(id);
     let product = JSON.parse(JSON.stringify(result));
@@ -18,14 +18,11 @@ const router = createRouter()
     }
     return { props: { data: product } };
   })
-  .all(() => {
-    console.log("----------------------------------------------all----------------------------------------------")
-    return { props: {} };
-  });
 
-export async function getServerSideProps({ req, res }) {
-  return router.run(req, res);
+export async function getServerSideProps(context) {
+  return router.run({ ...context.req, params: context.params }, context.res);
 }
+
 
 export default function ProductPage(props) {
   const { query } = useRouter();

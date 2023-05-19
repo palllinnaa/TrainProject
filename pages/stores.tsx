@@ -32,7 +32,7 @@ export default function AllStores(props) {
             {
                 stores?.map((store) => (
                     <div>
-                        <Link href="/store/[id]" as={`/store/${store.id}`}>store: {store.id}</Link>
+                        <Link href={`/store/${store.id}`}>store: {store.id}</Link>
                         <p>Store Name: {store.storeName}</p>
                         <p>Seller id: {store.userId}</p>
                         <p>Seller name: {store.user.firstName} {store.user.lastName}</p>

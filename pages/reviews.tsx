@@ -32,7 +32,7 @@ export default function AllReviews(props) {
             {
                 reviews?.map((review) => (
                     <div>
-                        <Link href="/review/[id]" as={`/review/${review.id}`}>Review {review.id}</Link>
+                        <Link href={`/review/${review.id}`}>Review {review.id}</Link>
                         <p>Review text: {review.reviewText}</p>
                         <p>Review count: {review.reviewCount}</p>
                         <p>Rating: {review.rating}</p>
