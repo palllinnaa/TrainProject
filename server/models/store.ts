@@ -1,46 +1,57 @@
-import { DataTypes } from 'sequelize';
-import db from '../db';
+import { BuildOptions, DataTypes, Model } from 'sequelize';
+import { IContextContainer } from '../container';
 import { IStoreModel } from '../interfaces/stores';
-import Products from './product';
-import Reviews from './review';
 
-const Stores = db.define<IStoreModel>('stores', {
-  id: {
-    allowNull: false,
-    autoIncrement: true,
-    primaryKey: true,
-    type: DataTypes.INTEGER
-  },
+export type StoreType = typeof Model & {
+  new(values?: object, options?: BuildOptions): IStoreModel;
+  init(): void;
+}
 
-  storeName: {
-    allowNull: false,
-    type: DataTypes.STRING
-  },
-
-  userId: {
-    allowNull: false,
-    type: DataTypes.INTEGER,
-    references: {
-      model: "users",
-      key: 'id'
+export default (ctx: IContextContainer) => {
+  const Stores = <StoreType>ctx.db.define<IStoreModel>('stores', {
+    id: {
+      allowNull: false,
+      autoIncrement: true,
+      primaryKey: true,
+      type: DataTypes.INTEGER
     },
-  },
 
-  createdAt: {
-    type: DataTypes.DATE,
-    defaultValue: DataTypes.NOW
-  },
+    storeName: {
+      allowNull: false,
+      type: DataTypes.STRING
+    },
 
-  updatedAt: {
-    type: DataTypes.DATE,
-    defaultValue: DataTypes.NOW
+    userId: {
+      allowNull: false,
+      type: DataTypes.INTEGER,
+      references: {
+        model: "users",
+        key: 'id'
+      },
+    },
+
+    createdAt: {
+      type: DataTypes.DATE,
+      defaultValue: DataTypes.NOW
+    },
+
+    updatedAt: {
+      type: DataTypes.DATE,
+      defaultValue: DataTypes.NOW
+    }
+  });
+
+  Stores.init = (): any => {
+    Stores.hasMany(ctx.Reviews, {
+      sourceKey: 'id',
+      foreignKey: 'storeId',
+    });
+    Stores.hasMany(ctx.Products, {
+      sourceKey: 'id',
+      foreignKey: 'storeId',
+    });
+    Stores.belongsTo(ctx.Users);
   }
-});
 
-Stores.hasMany(Reviews);
-Reviews.belongsTo(Stores), { foreignKey: 'storeId' };
-
-Stores.hasMany(Products);
-Products.belongsTo(Stores, { foreignKey: 'storeId' });
-
-export default Stores;
+  return Stores;
+}

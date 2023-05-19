@@ -1,75 +1,85 @@
-import { DataTypes } from 'sequelize';
-import db from '../db';
+import { BuildOptions, DataTypes, Model } from 'sequelize';
+import { IContextContainer } from '../container';
 import { IUserModel } from '../interfaces/users';
-import Reviews from './review';
-import Stores from './store';
 const bcrypt = require('bcrypt');
 
-const Users = db.define<IUserModel>('users', {
-  id: {
-    allowNull: false,
-    autoIncrement: true,
-    primaryKey: true,
-    type: DataTypes.INTEGER
-  },
+export type UserType = typeof Model & {
+  new(values?: object, options?: BuildOptions): IUserModel;
+  init(): void;
+}
 
-  firstName: {
-    allowNull: false,
-    type: DataTypes.STRING
-  },
+export default (ctx: IContextContainer) => {
+  const Users = <UserType>ctx.db.define<IUserModel>('users', {
+    id: {
+      allowNull: false,
+      autoIncrement: true,
+      primaryKey: true,
+      type: DataTypes.INTEGER
+    },
 
-  lastName: {
-    allowNull: false,
-    type: DataTypes.STRING
-  },
+    firstName: {
+      allowNull: false,
+      type: DataTypes.STRING
+    },
 
-  email: {
-    allowNull: false,
-    type: DataTypes.STRING
-  },
+    lastName: {
+      allowNull: false,
+      type: DataTypes.STRING
+    },
 
-  role: {
-    allowNull: false,
-    type: DataTypes.STRING
-  },
+    email: {
+      allowNull: false,
+      type: DataTypes.STRING
+    },
 
-  password: {
-    allowNull: false,
-    type: DataTypes.STRING
-  },
+    role: {
+      allowNull: false,
+      type: DataTypes.STRING
+    },
 
-  slug: {
-    allowNull: false,
-    type: DataTypes.STRING
-  },
+    password: {
+      allowNull: false,
+      type: DataTypes.STRING
+    },
 
-  createdAt: {
-    type: DataTypes.DATE,
-    defaultValue: DataTypes.NOW
-  },
+    slug: {
+      allowNull: false,
+      type: DataTypes.STRING
+    },
 
-  updatedAt: {
-    type: DataTypes.DATE,
-    defaultValue: DataTypes.NOW
-  }
-});
+    createdAt: {
+      type: DataTypes.DATE,
+      defaultValue: DataTypes.NOW
+    },
 
-Users.hasMany(Reviews);
-Reviews.belongsTo(Users, { foreignKey: 'userId' });
-
-Users.hasMany(Stores);
-Stores.belongsTo(Users, { foreignKey: 'userId' });
-
-Users.beforeCreate(async (user) => {
-  try {
-    if (user.changed('password')) {
-      const salt = await bcrypt.genSalt(10);
-      const hash = await bcrypt.hash(user.password, salt);
-      user.password = hash;
+    updatedAt: {
+      type: DataTypes.DATE,
+      defaultValue: DataTypes.NOW
     }
-  } catch (err) {
-    throw new Error(err);
-  }
-});
+  });
 
-export default Users;
+  Users.beforeCreate(async (user) => {
+    try {
+      if (user.changed('password')) {
+        const salt = await bcrypt.genSalt(10);
+        const hash = await bcrypt.hash(user.password, salt);
+        user.password = hash;
+      }
+    } catch (err) {
+      throw new Error(err);
+    }
+  });
+
+  Users.init = (): any => {
+    Users.hasMany(ctx.Reviews, {
+      sourceKey: 'id',
+      foreignKey: 'userId',
+    });
+    Users.hasMany(ctx.Stores, {
+      sourceKey: 'id',
+      foreignKey: 'userId',
+    });
+  };
+
+  return Users;
+};
