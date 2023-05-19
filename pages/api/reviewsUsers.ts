@@ -1,21 +1,14 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { createRouter } from 'next-connect';
+import container from '../../server/container';
 import { passportInitialize, passportSession } from '../../server/middleware/passport';
-import Reviews from '../../server/models/review';
-import Stores from '../../server/models/store';
-import Users from '../../server/models/user';
 
 const router = createRouter<NextApiRequest, NextApiResponse>();
 router
     .use(passportInitialize)
     .use(passportSession)
     .get(async (req, res) => {
-        const result = await Reviews.findAll({
-            attributes: ['id', 'reviewText', 'rating'],
-            include: [
-                { model: Users, attributes: ['id', 'firstName', 'lastName', 'email', 'role'] },
-                { model: Stores, attributes: ['id', 'storeName', 'userId'] }],
-        })
+        const result = await container.resolve("ReviewService").findReviewsUsersOnStores()
         const reviewsUsers = JSON.parse(JSON.stringify(result));
         res.status(200).json(reviewsUsers)
     })

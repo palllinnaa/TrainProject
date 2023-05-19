@@ -4,13 +4,13 @@ import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react';
 import ProductDetails from '../../components/products/ProductDetails';
 import SiteHeader from '../../components/SiteHeader';
-import Products from '../../server/models/product';
+import container from '../../server/container';
 
 const router = createRouter()
   .get("product/:id", async (req: any) => {
     const id = req.params.id;
-    const res = await Products.findByPk(id)
-    let product = JSON.parse(JSON.stringify(res));
+    const result = await container.resolve("ProductService").findProductById(id);
+    let product = JSON.parse(JSON.stringify(result));
     product = {
       ...product,
       property: product.property.split(";"),
@@ -18,6 +18,10 @@ const router = createRouter()
     }
     return { props: { data: product } };
   })
+  .all(() => {
+    console.log("----------------------------------------------all----------------------------------------------")
+    return { props: {} };
+  });
 
 export async function getServerSideProps({ req, res }) {
   return router.run(req, res);
@@ -26,13 +30,13 @@ export async function getServerSideProps({ req, res }) {
 export default function ProductPage(props) {
   const { query } = useRouter();
   const [data, setData] = useState(props.data || []);
-  // useEffect(() => {
-  //   fetch(`/api/product/` + query.id)
-  //     .then(res => res.json())
-  //     .then(json => {
-  //       setData(json);
-  //     })
-  // }, []);
+  useEffect(() => {
+    fetch(`/api/product/` + query.id)
+      .then(res => res.json())
+      .then(json => {
+        setData(json);
+      })
+  }, [query]);
 
   return (
     <div >
