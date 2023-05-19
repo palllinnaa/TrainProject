@@ -1,5 +1,6 @@
 import passport from 'passport';
 import { Strategy as LocalStrategy } from 'passport-local';
+import container from '../container';
 import Users from '../models/user';
 import findUserWithEmailAndPassword from '../utils/users';
 
@@ -10,7 +11,7 @@ passport.serializeUser((user, done) => {
 
 passport.deserializeUser((req, id, done) => {
     console.log('passport deserialize, userId', id);
-    Users.findByPk(id)
+    container.resolve("UserService").findUserById(id)
         .then(
             (user) => done(null, user.toJSON()),
             (err) => done(err)
