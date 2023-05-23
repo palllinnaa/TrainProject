@@ -2,20 +2,19 @@ import BaseContext from "../baseContext";
 import validator from 'validator';
 import { IUserModel } from "../interfaces/users";
 import { Op } from "sequelize";
-import container from '../container';
 const bcrypt = require('bcrypt');
 const slug = require('slug')
 
 export default class UserService extends BaseContext {
-    public findUserById(userId: number) {
+    public findUserById(id: number) {
         const { Users } = this.di;
-        return Users.findByPk(userId, {
+        return Users.findByPk(id, {
             raw: true
         });
     }
 
     public findAllUsers() {
-        const { Users, Reviews } = this.di;
+        const { Users } = this.di;
         return Users.findAll({
             raw: true
         });
@@ -29,9 +28,7 @@ export default class UserService extends BaseContext {
         })
     }
     public async loginUser(email: string, password: string) {
-        const { Users } = this.di;
-        const userEmail = validator.normalizeEmail(email);
-        const user = await container.resolve("UserService").findUserByEmail(email);
+        const user = await this.findUserByEmail(email);
         if (user && (await bcrypt.compare(password, user.password))) {
             return user;
         }
@@ -86,5 +83,10 @@ export default class UserService extends BaseContext {
         }
         user = await Users.create(userData);
         return (user)
+    }
+
+    public async  findUserWithEmailAndPassword(email, password) {
+        const user = await this.loginUser(email, password);
+        return user;
     }
 }
