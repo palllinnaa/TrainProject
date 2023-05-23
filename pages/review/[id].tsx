@@ -4,18 +4,13 @@ import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react';
 import container from '../../server/container';
 
+const reviewController = container.resolve("ReviewController");
 const router = createRouter()
-    .get(async (req: any) => {
-        const id = req.params.id;
-        const result = await container.resolve("ReviewService").findReviewById(id);
-        const review = JSON.parse(JSON.stringify(result));
-        return { props: { review } };
-    })
+    .get(reviewController.findReviewByIdServerSideProps)
 
 export async function getServerSideProps(context) {
     return router.run({ ...context.req, params: context.params }, context.res);
 }
-
 
 export default function ReviewPage(props) {
     const { query } = useRouter();

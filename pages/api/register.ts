@@ -1,15 +1,11 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { createRouter } from 'next-connect';
-
 import container from '../../server/container';
-const slug = require('slug')
 
+const userController = container.resolve("UserController");
 const router = createRouter<NextApiRequest, NextApiResponse>();
 router
-  .post(async (req, res) => {
-    const user = await container.resolve("UserService").registerUser(req.body)
-    res.status(200).json(user)
-  })
+  .post(userController.registerUser)
 
 export async function registerUser({ req, res }) {
   return router.run(req, res);

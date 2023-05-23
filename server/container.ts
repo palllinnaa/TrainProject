@@ -2,9 +2,10 @@ import * as awilix from 'awilix';
 import { Sequelize } from 'sequelize';
 import modelContainer, { IModelContainer } from './models';
 import services, { IServicesContainer } from './services';
+import controllers, { IControllerContainer } from './controllers';
 import mysql2 from 'mysql2';
 
-export interface IContextContainer extends IModelContainer, IServicesContainer {
+export interface IContextContainer extends IModelContainer, IServicesContainer, IControllerContainer {
     db: Sequelize;
     config: {
         db: {
@@ -19,11 +20,11 @@ export interface IContextContainer extends IModelContainer, IServicesContainer {
 const container = awilix.createContainer<IContextContainer>({
     injectionMode: awilix.InjectionMode.PROXY,
 });
-const createDB = (ctx: IContextContainer) => {
+const createDB = () => {
     return new Sequelize(
-        ctx.config.db.database,
-        ctx.config.db.username,
-        ctx.config.db.password,
+        process.env.DB_NAME,
+        process.env.DB_USER,
+        process.env.DB_PSWD,
         {
             dialect: 'mysql',
             dialectModule: mysql2,
@@ -34,16 +35,8 @@ const createDB = (ctx: IContextContainer) => {
 container.register({
     ...modelContainer,
     ...services,
-    config: awilix.asValue({
-        db: {
-            database: 'foodstore',
-            username: 'root',
-            password: 'qwerty',
-            dialect: 'mysql',
-        },
-    }),
+    ...controllers,
     db: awilix.asFunction(createDB).singleton(),
-
 })
 
 export default container;

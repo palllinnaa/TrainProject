@@ -4,13 +4,9 @@ import { useEffect, useState } from 'react';
 import { createRouter } from "next-connect";
 import container from '../../server/container';
 
+const userController = container.resolve("UserController");
 const router = createRouter()
-    .get(async (req: any) => {
-        const id = req.params.id;
-        const result = await container.resolve("UserService").findUserById(id)
-        const user = JSON.parse(JSON.stringify(result));
-        return { props: { user } };
-    });
+    .get(userController.findUserByIdServerSideProps);
 
 export async function getServerSideProps(context) {
     return router.run({ ...context.req, params: context.params }, context.res);

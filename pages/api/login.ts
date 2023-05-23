@@ -4,19 +4,16 @@ import { createRouter } from 'next-connect';
 import { passportAuth } from '../../server/middleware/passport';
 import session from '../../server/middleware/session';
 import { INextApiRequestExtended } from '../../server/interfaces/common'
-const slug = require('slug')
+import container from '../../server/container';
 
+const userController = container.resolve("UserController");
 const router = createRouter<INextApiRequestExtended, NextApiResponse>();
 router
     .use(session)
     .use(passportInitialize)
     .use(passportSession)
     .use(passportAuth)
-    .post((req, res) => {
-        console.log('here---------------', req.user);
-        const user = JSON.parse(JSON.stringify(req.user));
-        res.status(200).json({user})
-    })
+    .post(userController.loginUser);
 
 export default router.handler({
     onError: (err, req, res) => {

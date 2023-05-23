@@ -2,17 +2,11 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 import { createRouter } from 'next-connect';
 import container from '../../server/container';
 
+const productController = container.resolve("ProductController");
 const router = createRouter<NextApiRequest, NextApiResponse>();
 router
-    .get(async (req, res) => {
-        const result = await container.resolve("ProductService").findAllProducts()
-        const data = JSON.parse(JSON.stringify(result));
-        const products = data.map((item) => ({
-            ...item,
-            property: item.property.split(';'),
-        }));
-        res.status(200).json(products)
-    })
+    .get(productController.findAllProducts)
+    
 export default router.handler({
     onError: (err, req, res) => {
         console.error(err);

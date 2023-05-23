@@ -3,20 +3,11 @@ import Products from '../../../server/models/product';
 import { createRouter } from 'next-connect';
 import container from '../../../server/container';
 
+const productController = container.resolve("ProductController");
 const router = createRouter<NextApiRequest, NextApiResponse>();
 router
-    .get(async (req, res) => {
-        const { query } = req;
-        const id = parseInt(query.id as string, 10);
-        const result = await container.resolve("ProductService").findProductById(id);
-        let product = JSON.parse(JSON.stringify(result));
-        product = {
-            ...product,
-            property: product.property.split(";"),
-            ingredients: product.ingredients.split(";")
-        }
-        res.status(200).json(product)
-    })
+    .get(productController.findProductById)
+    
 export default router.handler({
     onError: (err, req, res) => {
         console.error(err);

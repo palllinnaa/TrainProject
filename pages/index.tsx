@@ -4,16 +4,9 @@ import React, { useEffect, useState } from 'react';
 import App from '../components/App';
 import container from '../server/container';
 
+const productController = container.resolve("ProductController");
 const router = createRouter()
-  .get(async (req, res) => {
-    const result = await container.resolve("ProductService").findAllProducts()
-    const data = JSON.parse(JSON.stringify(result));
-    const products = data.map((item) => ({
-      ...item,
-      property: item.property.split(";"),
-    }));
-    return { props: { data: products } };
-  })
+  .get(productController.findAllProductsServerSideProps)
 
 export async function getServerSideProps({ req, res }) {
   return router.run(req, res);

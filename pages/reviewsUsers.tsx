@@ -4,12 +4,9 @@ import Link from 'next/link';
 import { createRouter } from 'next-connect';
 import container from '../server/container';
 
+const reviewController = container.resolve("ReviewController");
 const router = createRouter()
-    .get(async (req, res) => {
-        const result = await container.resolve("ReviewService").findReviewsUsersOnStores()
-        const reviewsUsers = JSON.parse(JSON.stringify(result));
-        return { props: { reviewsUsers } };
-    })
+    .get(reviewController.findAllReviewsUsersOnStoresServerSideProps)
 
 export async function getServerSideProps({ req, res }) {
     return router.run(req, res);
