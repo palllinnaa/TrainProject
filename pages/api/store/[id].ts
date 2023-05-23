@@ -3,17 +3,13 @@ import { createRouter } from 'next-connect';
 import container from '../../../server/container';
 import { passportInitialize, passportSession } from '../../../server/middleware/passport';
 
+const storeController = container.resolve("StoreController");
 const router = createRouter<NextApiRequest, NextApiResponse>();
 router
     .use(passportInitialize)
     .use(passportSession)
-    .get(async (req, res) => {
-        const { query } = req;
-        const id = parseInt(query.id as string, 10);
-        const result = await container.resolve("StoreService").findStoreOwnerReviews(id)
-        const store = JSON.parse(JSON.stringify(result));
-        res.status(200).json(store)
-    })
+    .get(storeController.findStoreById)
+    
 export default router.handler({
     onError: (err, req, res) => {
         console.error(err);

@@ -1,8 +1,6 @@
 import passport from 'passport';
 import { Strategy as LocalStrategy } from 'passport-local';
 import container from '../container';
-import Users from '../models/user';
-import findUserWithEmailAndPassword from '../utils/users';
 
 passport.serializeUser((user, done) => {
     console.log('passport serialize, userId=', user.id);
@@ -13,7 +11,7 @@ passport.deserializeUser((req, id, done) => {
     console.log('passport deserialize, userId', id);
     container.resolve("UserService").findUserById(id)
         .then(
-            (user) => done(null, user.toJSON()),
+            (user) => done(null, user),
             (err) => done(err)
         );
 });
@@ -25,10 +23,10 @@ passport.use(
             passReqToCallback: true,
         },
         (req, email, password, done) => {
-            findUserWithEmailAndPassword(email, password)
+            container.resolve("UserService")
+                .findUserWithEmailAndPassword(email, password)
                 .then((user) => {
                     if (user) {
-                        console.log('user--------------------', user);
                         done(null, user);
                     } else {
                         console.log('Email or password is incorrect from clo')

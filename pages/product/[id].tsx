@@ -6,23 +6,13 @@ import ProductDetails from '../../components/products/ProductDetails';
 import SiteHeader from '../../components/SiteHeader';
 import container from '../../server/container';
 
+const productController = container.resolve("ProductController");
 const router = createRouter()
-  .get(async (req: any) => {
-    const id = req.params.id;
-    const result = await container.resolve("ProductService").findProductById(id);
-    let product = JSON.parse(JSON.stringify(result));
-    product = {
-      ...product,
-      property: product.property.split(";"),
-      ingredients: product.ingredients.split(";")
-    }
-    return { props: { data: product } };
-  })
+  .get(productController.findProductByIdServerSideProps)
 
 export async function getServerSideProps(context) {
   return router.run({ ...context.req, params: context.params }, context.res);
 }
-
 
 export default function ProductPage(props) {
   const { query } = useRouter();
