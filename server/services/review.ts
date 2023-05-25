@@ -1,40 +1,34 @@
 import BaseContext from "../baseContext";
 
 export default class ReviewService extends BaseContext {
-    public findReviewById(reviewId: number) {
+    public async findReviewById(id: number) {
         const { Reviews } = this.di;
-        return Reviews.findByPk(reviewId, {
-            raw: true
-        });
+        return await Reviews.findByPk(id);
     }
 
-    public findAllReviews() {
+    public async findAllReviews() {
         const { Reviews } = this.di;
-        return Reviews.findAll({
-            raw: true
-        });
+        return await Reviews.findAll();
     }
 
-    public findReviewsUsersOnStores() {
+    public async findReviewsUsersOnStores() {
         const { Reviews, Users, Stores } = this.di;
-        return Reviews.findAll({
-            attributes: ['id', 'rating', 'reviewText'],
+        return await Reviews.findAll({
             include: [
-                { model: Users, attributes: ['id', 'firstName', 'lastName', 'email', 'role'] },
-                { model: Stores, attributes: ['id', 'storeName', 'userId'] }
-            ],
+                { model: Users },
+                { model: Stores }
+            ]
         })
     }
 
-    public findReviewUserOnStore(id: number) {
+    public async findReviewUserOnStore(id: number) {
         const { Reviews, Users, Stores } = this.di;
-        return Reviews.findAll({
-            attributes: ['id', 'reviewText', 'rating'],
+        return await Reviews.findAll({
             where: { id },
             include: [
-                { model: Users, attributes: ['id', 'firstName', 'lastName', 'email', 'role'] },
-                { model: Stores, attributes: ['id', 'storeName', 'userId'] }
-            ],
+                { model: Users },
+                { model: Stores }
+            ]
         })
     }
 }

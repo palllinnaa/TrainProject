@@ -6,30 +6,29 @@ const bcrypt = require('bcrypt');
 const slug = require('slug')
 
 export default class UserService extends BaseContext {
-    public findUserById(id: number) {
+    public async findUserById(id: number) {
         const { Users } = this.di;
-        return Users.findByPk(id, {
-            raw: true
-        });
+        console.log(' ----------------------------  in services ---------------------------- ')
+        return await Users.findByPk(id);
     }
 
-    public findAllUsers() {
+    public async findAllUsers() {
         const { Users } = this.di;
-        return Users.findAll({
-            raw: true
-        });
+        console.log(' ----------------------------  in services ---------------------------- ')
+        return await Users.findAll();
     }
 
-    public findUserByEmail(email: string) {
+    public async findUserByEmail(email: string) {
         const { Users } = this.di;
-        return Users.findOne({
+        return await Users.findOne({
             where: { email },
-            raw: true
         })
     }
     public async loginUser(email: string, password: string) {
         const user = await this.findUserByEmail(email);
+        console.log(' ----------------------------  in services ---------------------------- ')
         if (user && (await bcrypt.compare(password, user.password))) {
+            console.log('user in services ------------ ', user)
             return user;
         }
         return null;

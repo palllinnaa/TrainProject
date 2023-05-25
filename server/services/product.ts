@@ -1,17 +1,13 @@
 import BaseContext from "../baseContext";
 
 export default class ProductService extends BaseContext {
-    public findProductById(id: number) {
+    public async findProductById(id: number) {
         const { Products } = this.di;
-        return Products.findByPk(id, {
-            raw: true
-        });
+        return await Products.findByPk(id);
     }
 
-    public findAllProducts() {
+    public async findAllProducts() {
         const { Products } = this.di;
-        return Products.findAll({
-            raw: true
-        });
+        return await Products.findAll();
     }
 }
