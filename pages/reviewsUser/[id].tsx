@@ -15,12 +15,15 @@ export async function getServerSideProps(context) {
 export default function StorePage(props) {
     const { query } = useRouter();
     const [reviewsUser, setReviewsUser] = useState(props.reviewsUser || []);
+
     useEffect(() => {
-        fetch(`/api/reviewsUser/` + query.id)
-            .then(res => res.json())
-            .then(json => {
-                setReviewsUser(json);
-            })
+        if (query?.id) {
+            fetch(`/api/reviewsUser/` + query.id)
+                .then(res => res.json())
+                .then(json => {
+                    setReviewsUser(json);
+                })
+        }
     }, [query]);
 
     return (

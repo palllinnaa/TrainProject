@@ -17,12 +17,15 @@ export async function getServerSideProps(context) {
 export default function ProductPage(props) {
   const { query } = useRouter();
   const [data, setData] = useState(props.data || []);
+  
   useEffect(() => {
-    fetch(`/api/product/` + query.id)
-      .then(res => res.json())
-      .then(json => {
-        setData(json);
-      })
+    if (query?.id) {
+      fetch(`/api/product/` + query.id)
+        .then(res => res.json())
+        .then(json => {
+          setData(json);
+        })
+    }
   }, [query]);
 
   return (

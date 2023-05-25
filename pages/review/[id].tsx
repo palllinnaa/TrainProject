@@ -15,12 +15,15 @@ export async function getServerSideProps(context) {
 export default function ReviewPage(props) {
     const { query } = useRouter();
     const [review, setReview] = useState(props.review || []);
+
     useEffect(() => {
-        fetch(`/api/review/` + query.id)
-            .then(res => res.json())
-            .then(json => {
-                setReview(json);
-            })
+        if (query?.id) {
+            fetch(`/api/review/` + query.id)
+                .then(res => res.json())
+                .then(json => {
+                    setReview(json);
+                })
+        }
     }, [query]);
 
     return (
