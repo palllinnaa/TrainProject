@@ -1,6 +1,6 @@
 import { INextApiRequestExtended } from './../interfaces/common';
 import BaseController from './baseController';
-import GET from './decorators/get';
+import GET from '../decorators/get';
 
 export default class StoreController extends BaseController {
     @GET("/store/:id")

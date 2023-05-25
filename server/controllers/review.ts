@@ -1,7 +1,7 @@
 import { NextApiRequest } from "next";
 import { INextApiRequestExtended } from "../interfaces/common";
 import BaseController from "./baseController";
-import GET from "./decorators/get";
+import GET from "../decorators/get";
 
 export default class ReviewController extends BaseController {
     @GET("/review/:id")
