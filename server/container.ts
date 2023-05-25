@@ -7,14 +7,6 @@ import mysql2 from 'mysql2';
 
 export interface IContextContainer extends IModelContainer, IServicesContainer, IControllerContainer {
     db: Sequelize;
-    config: {
-        db: {
-            database: string;
-            username: string;
-            password: string;
-            dialect: string;
-        };
-    };
 }
 
 const container = awilix.createContainer<IContextContainer>({
