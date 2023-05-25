@@ -1,8 +1,10 @@
-import { NextApiRequest, NextApiResponse } from "next";
-import BaseContext from "../baseContext";
+import { NextApiRequest } from "next";
 import { INextApiRequestExtended } from "../interfaces/common";
+import BaseController from "./baseController";
+import GET from "./decorators/get";
 
-export default class ProductController extends BaseContext {
+export default class ProductController extends BaseController {
+    @GET('/product/:id')
     public findProductByIdServerSideProps = async (req: INextApiRequestExtended) => {
         const { ProductService } = this.di;
         const id = req.params.id;
@@ -16,10 +18,11 @@ export default class ProductController extends BaseContext {
         return { props: { data: product } };
     }
 
-    public findProductById = async (req: NextApiRequest, res: NextApiResponse) => {
+    @GET('/api/product/:id')
+    public async findProductById(req: INextApiRequestExtended) {
         const { ProductService } = this.di;
-        const { query } = req;
-        const id = parseInt(query.id as string, 10);
+        const { params } = req;
+        const id = parseInt(params.id as string, 10);
         const result = await ProductService.findProductById(id);
         let product = JSON.parse(JSON.stringify(result));
         product = {
@@ -27,9 +30,10 @@ export default class ProductController extends BaseContext {
             property: product.property.split(";"),
             ingredients: product.ingredients.split(";")
         }
-        res.status(200).json(product)
+        return product;
     }
 
+    @GET()
     public findAllProductsServerSideProps = async (req: NextApiRequest) => {
         const { ProductService } = this.di;
         const result = await ProductService.findAllProducts()
@@ -41,7 +45,8 @@ export default class ProductController extends BaseContext {
         return { props: { data: products } };
     }
 
-    public findAllProducts = async (req: NextApiRequest, res: NextApiResponse) => {
+    @GET('/api/products')
+    public async findAllProducts() {
         const { ProductService } = this.di;
         const result = await ProductService.findAllProducts()
         const data = JSON.parse(JSON.stringify(result));
@@ -49,6 +54,6 @@ export default class ProductController extends BaseContext {
             ...item,
             property: item.property.split(';'),
         }));
-        res.status(200).json(products)
+        return products;
     }
 }

@@ -1,8 +1,9 @@
 import { INextApiRequestExtended } from './../interfaces/common';
-import BaseContext from "../baseContext";
-import { NextApiRequest, NextApiResponse } from 'next';
+import BaseController from './baseController';
+import GET from './decorators/get';
 
-export default class StoreController extends BaseContext {
+export default class StoreController extends BaseController {
+    @GET("/store/:id")
     public findStoreByIdServerSideProps = async (req: INextApiRequestExtended) => {
         const { StoreService } = this.di;
         const id = req.params.id;
@@ -11,15 +12,17 @@ export default class StoreController extends BaseContext {
         return { props: { store } };
     }
 
-    public findStoreById = async (req: NextApiRequest, res: NextApiResponse) => {
+    @GET("/api/store/:id")
+    public async findStoreById(req: INextApiRequestExtended) {
         const { StoreService } = this.di;
-        const { query } = req;
-        const id = parseInt(query.id as string, 10);
+        const { params } = req;
+        const id = parseInt(params.id as string, 10);
         const result = await StoreService.findStoreOwnerReviews(id)
         const store = JSON.parse(JSON.stringify(result));
-        res.status(200).json(store)
+        return store;
     }
 
+    @GET("/stores")
     public findAllStoresServerSideProps = async () => {
         const { StoreService } = this.di;
         const result = await StoreService.findStoresOwnerReviews()
@@ -27,10 +30,11 @@ export default class StoreController extends BaseContext {
         return { props: { stores } };
     }
 
-    public findAllStores = async (req: NextApiRequest, res: NextApiResponse) => {
+    @GET("/api/stores")
+    public async findAllStores() {
         const { StoreService } = this.di;
-        const result = await StoreService.findStoresOwnerReviews() 
+        const result = await StoreService.findStoresOwnerReviews()
         const stores = JSON.parse(JSON.stringify(result));
-        res.status(200).json(stores)
+        return stores;
     }
 }
