@@ -50,17 +50,11 @@ export default (ctx: IContextContainer) => {
                 key: 'id'
             },
         },
-
-        createdAt: {
-            type: DataTypes.DATE,
-            defaultValue: DataTypes.NOW
-        },
-
-        updatedAt: {
-            type: DataTypes.DATE,
-            defaultValue: DataTypes.NOW
+    },
+        {
+            timestamps: false
         }
-    });
+    );
 
     Products.init = (): any => {
         Products.belongsTo(ctx.Stores);

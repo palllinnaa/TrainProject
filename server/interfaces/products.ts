@@ -9,6 +9,4 @@ export interface IProductModel extends Model<InferAttributes<IProductModel>, Inf
     description: string;
     ingredients: string;
     storeId: number;
-    updatedAt: Date;
-    createdAt: Date;
 }

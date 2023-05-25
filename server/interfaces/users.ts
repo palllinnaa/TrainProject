@@ -9,7 +9,5 @@ export interface IUserModel extends Model<InferAttributes<IUserModel>, InferCrea
     email: string;
     role: Roles;
     slug: string;
-    updatedAt: Date;
-    createdAt: Date;
   }
   
