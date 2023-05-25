@@ -2,23 +2,19 @@ import { Sequelize } from "sequelize";
 import BaseContext from "../baseContext";
 
 export default class StoreService extends BaseContext {
-    public findStoreById(storeId: number) {
+    public async findStoreById(id: number) {
         const { Stores } = this.di;
-        return Stores.findByPk(storeId, {
-            raw: true
-        });
+        return await Stores.findByPk(id);
     }
 
-    public findAllStores() {
+    public async findAllStores() {
         const { Stores } = this.di;
-        return Stores.findAll({
-            raw: true
-        });
+        return await Stores.findAll();
     }
 
-    public findStoresOwnerReviews() {
+    public async findStoresOwnerReviews() {
         const { Stores, Users, Reviews } = this.di;
-        return Stores.findAll({
+        return await Stores.findAll({
             attributes: ['id', 'storeName', 'userId',
                 [Sequelize.fn("COUNT", Sequelize.col("reviews.storeId")), "reviewCount"],
                 [Sequelize.fn("avg", Sequelize.col("reviews.rating")), "rating"]],
@@ -26,13 +22,15 @@ export default class StoreService extends BaseContext {
                 { model: Users, attributes: ['firstName', 'lastName'] },
                 { model: Reviews, attributes: [] },
             ],
-            group: ['id'],
+            group: ['id']
+
         });
     }
 
-    public findStoreOwnerReviews(id: number) {
+    public async findStoreOwnerReviews(id: number) {
+        console.log('id from services ----- ', id)
         const { Stores, Users, Reviews } = this.di;
-        return Stores.findAll({
+        return await Stores.findAll({
             where: { id },
             attributes: ['id', 'storeName', 'userId',
                 [Sequelize.fn("COUNT", Sequelize.col("reviews.storeId")), "reviewCount"],
@@ -41,7 +39,7 @@ export default class StoreService extends BaseContext {
                 { model: Users, attributes: ['firstName', 'lastName'] },
                 { model: Reviews, attributes: [] },
             ],
-            group: ['id'],
+            group: ['id']
         });
     }
 }

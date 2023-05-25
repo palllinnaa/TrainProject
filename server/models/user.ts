@@ -46,17 +46,11 @@ export default (ctx: IContextContainer) => {
       allowNull: false,
       type: DataTypes.STRING
     },
-
-    createdAt: {
-      type: DataTypes.DATE,
-      defaultValue: DataTypes.NOW
-    },
-
-    updatedAt: {
-      type: DataTypes.DATE,
-      defaultValue: DataTypes.NOW
+  },
+    {
+      timestamps: false
     }
-  });
+  );
 
   Users.beforeCreate(async (user) => {
     try {

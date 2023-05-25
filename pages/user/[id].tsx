@@ -14,8 +14,8 @@ export async function getServerSideProps(context) {
 
 export default function UserPage(props) {
     const { query } = useRouter();
-
     const [user, setUser] = useState(props.user || []);
+    
     useEffect(() => {
         if (query?.id) {
             fetch(`/api/user/` + query.id)

@@ -4,7 +4,5 @@ export interface IStoreModel extends Model<InferAttributes<IStoreModel>, InferCr
     id: number;
     storeName: string;
     userId: number;
-    updatedAt: Date;
-    createdAt: Date;
   }
   

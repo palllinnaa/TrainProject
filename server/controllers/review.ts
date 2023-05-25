@@ -1,8 +1,10 @@
-import { NextApiRequest, NextApiResponse } from "next";
-import BaseContext from "../baseContext";
+import { NextApiRequest } from "next";
 import { INextApiRequestExtended } from "../interfaces/common";
+import BaseController from "./baseController";
+import GET from "./decorators/get";
 
-export default class ReviewController extends BaseContext {
+export default class ReviewController extends BaseController {
+    @GET("/review/:id")
     public findReviewByIdServerSideProps = async (req: INextApiRequestExtended) => {
         const { ReviewService } = this.di;
         const id = req.params.id;
@@ -11,15 +13,17 @@ export default class ReviewController extends BaseContext {
         return { props: { review } };
     }
 
-    public findReviewById = async (req: NextApiRequest, res: NextApiResponse) => {
+    @GET("/api/review/:id")
+    public async findReviewById(req: INextApiRequestExtended) {
         const { ReviewService } = this.di;
-        const { query } = req;
-        const id = parseInt(query.id as string, 10);
+        const { params } = req;
+        const id = parseInt(params.id as string, 10);
         const result = await ReviewService.findReviewById(id);
         const review = JSON.parse(JSON.stringify(result));
-        res.status(200).json(review)
+        return review;
     }
 
+    @GET("/reviews")
     public findAllReviewsServerSideProps = async () => {
         const { ReviewService } = this.di;
         const result = await ReviewService.findAllReviews();
@@ -27,13 +31,15 @@ export default class ReviewController extends BaseContext {
         return { props: { reviews } };
     }
 
-    public findAllReviews = async (req: NextApiRequest, res: NextApiResponse) => {
+    @GET("/api/reviews")
+    public async findAllReviews() {
         const { ReviewService } = this.di;
         const result = await ReviewService.findAllReviews();
         const reviews = JSON.parse(JSON.stringify(result));
-        res.status(200).json(reviews)
+        return reviews;
     }
 
+    @GET("/reviewsUser/:id")
     public findReviewUserOnStoreByIdServerSideProps = async (req: INextApiRequestExtended) => {
         const { ReviewService } = this.di;
         const id = req.params.id;
@@ -42,15 +48,17 @@ export default class ReviewController extends BaseContext {
         return { props: { reviewsUser } };
     }
 
-    public findReviewUserOnStoreById = async (req: NextApiRequest, res: NextApiResponse) => {
+    @GET("/api/reviewsUser/:id")
+    public async findReviewUserOnStoreById(req: INextApiRequestExtended) {
         const { ReviewService } = this.di;
-        const { query } = req;
-        const id = parseInt(query.id as string, 10);
+        const { params } = req;
+        const id = parseInt(params.id as string, 10);
         const result = await ReviewService.findReviewUserOnStore(id)
         const reviewsUser = JSON.parse(JSON.stringify(result));
-        res.status(200).json(reviewsUser)
+        return reviewsUser;
     }
 
+    @GET("/reviewsUsers")
     public findAllReviewsUsersOnStoresServerSideProps = async (req: NextApiRequest) => {
         const { ReviewService } = this.di;
         const result = await ReviewService.findReviewsUsersOnStores()
@@ -58,10 +66,11 @@ export default class ReviewController extends BaseContext {
         return { props: { reviewsUsers } };
     }
 
-    public findAllReviewsUsersOnStores = async (req: NextApiRequest, res: NextApiResponse) => {
+    @GET("/api/reviewsUsers")
+    public async findAllReviewsUsersOnStores() {
         const { ReviewService } = this.di;
         const result = await ReviewService.findReviewsUsersOnStores()
         const reviewsUsers = JSON.parse(JSON.stringify(result));
-        res.status(200).json(reviewsUsers)
+        return reviewsUsers;
     }
 }

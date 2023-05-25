@@ -7,7 +7,7 @@ import container from '../../server/container';
 const storeController = container.resolve("StoreController");
 const router = createRouter()
     .get(storeController.findStoreByIdServerSideProps)
-    
+
 export async function getServerSideProps(context) {
     return router.run({ ...context.req, params: context.params }, context.res);
 }
@@ -15,12 +15,15 @@ export async function getServerSideProps(context) {
 export default function StorePage(props) {
     const { query } = useRouter();
     const [store, setStores] = useState(props.store || []);
+
     useEffect(() => {
-        fetch(`/api/store/` + query.id)
-            .then(res => res.json())
-            .then(json => {
-                setStores(json);
-            })
+        if (query?.id) {
+            fetch(`/api/store/` + query.id)
+                .then(res => res.json())
+                .then(json => {
+                    setStores(json);
+                })
+        }
     }, [query]);
 
     return (

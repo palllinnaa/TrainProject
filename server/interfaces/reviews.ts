@@ -6,7 +6,5 @@ export interface IReviewModel extends Model<InferAttributes<IReviewModel>, Infer
     rating: number;
     storeId: number;
     userId: number;
-    updatedAt: Date;
-    createdAt: Date;
   }
   
