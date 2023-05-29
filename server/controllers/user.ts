@@ -4,7 +4,16 @@ import { INextApiRequestExtended } from './../interfaces/common';
 import GET from '../decorators/get';
 import POST from '../decorators/post';
 import SSR from '../decorators/ssr';
+import USE from '../decorators/use';
+import session from '../middleware/session';
+import { passportAuth, passportInitialize, passportSession } from '../middleware/passport';
 
+// async function testFunc (req, res, next) {
+//     console.log('in testFunc');
+//     await next();
+// }
+
+@USE([session, passportInitialize, passportSession])
 export default class UserController extends BaseController {
     @SSR("/user/:id")
     @GET("/api/user/:id")
@@ -29,10 +38,12 @@ export default class UserController extends BaseController {
     }
 
     @POST("/api/login")
-    public loginUser(req: INextApiRequestExtended) {
-        if (!req.user) {
+    @USE(passportAuth)
+    public async loginUser(req: INextApiRequestExtended) {
+        const { identity } = req;
+        if (!identity) {
             throw new Error("User not Found");
         }
-        return { user: req.user };
+        return { identity };
     }
 }

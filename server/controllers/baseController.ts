@@ -5,6 +5,25 @@ import { INextApiRequestExtended } from '../interfaces/common';
 import 'reflect-metadata';
 
 export default class BaseController extends BaseContext {
+
+    // private useClassMiddleware(router) {
+    //     const classMiddleware = Reflect.getMetadata(
+    //         this.constructor.name,
+    //         this.constructor
+    //     );
+    //     const classArgs = Array.isArray(classMiddleware) ? classMiddleware : [];
+    //     for (let i = 0; i < classArgs.length; i++) {
+    //         router.use(classArgs[i]);
+    //     }
+    //     return classArgs;
+    // }
+
+    private useMethodMiddleware(methodName: string) {
+        const key = this.constructor.name + '_' + methodName;
+        const methodMiddleware = Reflect.getMetadata(key, this.constructor);
+        const methodArgs = Array.isArray(methodMiddleware) ? methodMiddleware : [];
+        return methodArgs;
+    }
     public run = (context) =>
         createRouter()
             .get(async (req: INextApiRequestExtended, res: NextApiResponse) => {
@@ -34,30 +53,33 @@ export default class BaseController extends BaseContext {
 
     public handler(routeName: string) {
         const router = createRouter<NextApiRequest, NextApiResponse>();
+        // const classArgs = this.useClassMiddleware(router);
         const members: any = Reflect.getMetadata(routeName, this);
         Object.keys(members).map((method) => {
-            const [firstMethod] = members[method];
-            // for (let i = 0; i < members[method].length; i++) {
-            const methodName: string = method.toLowerCase();
-            if (typeof router[methodName] === 'function') {
-                const callback = this[firstMethod].bind(this);
-                const action = async (req, res, next) => {
-                    try {
-                        let data = await callback({
-                            body: req?.body,
-                            params: req?.params,
-                            session: req?.session,
-                        } as any);
-                        data = JSON.parse(JSON.stringify(data));
-                        return res.status(200).json(data);
-                    } catch (err: any) {
-                        const message = err?.message ? err.message : err;
-                        return res.status(400).json({ message });
+            for (let i = 0; i < members[method].length; i++) {
+                const methodName: string = method.toLowerCase();
+                if (typeof router[methodName] === 'function') {
+                    const methodArgs = this.useMethodMiddleware(members[method][i]);
+                    const callback = this[members[method][i]].bind(this);
+                    const action = async (req, res, next) => {
+                        try {
+                            let data = await callback({
+                                body: req?.body,
+                                params: req?.params,
+                                session: req?.session,
+                                identity: req?.user,
+                            } as any);
+                            data = JSON.parse(JSON.stringify(data));
+                            return res.status(200).json(data);
+                        } catch (err: any) {
+                            const message = err?.message ? err.message : err;
+                            return res.status(400).json({ message });
+                        }
                     }
+                    const args = [...methodArgs, action];
+                    router[methodName](routeName, ...args)
                 }
-                router[methodName](routeName, action)
             }
-            // }
         })
         return router.handler();
     }
