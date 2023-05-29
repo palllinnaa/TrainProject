@@ -1,3 +1,3 @@
 import container from '../../server/container';
 
-export default container.resolve("UserController").handler("/api/register");
+export default container.resolve("AuthController").handler("/api/register");
