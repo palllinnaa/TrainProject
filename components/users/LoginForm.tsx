@@ -49,7 +49,7 @@ export default function LoginForm() {
         })
         if (res.ok) {
           let result = await res.json();
-          router.push(`/user/${result.user.id}`)
+          router.push(`/user/${result.identity.id}`)
         } else {
           console.log('in else');
           setToast({ showToast: true, text: 'Email or password is incorrect!' })
