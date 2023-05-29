@@ -1,33 +1,27 @@
 import React, { useEffect, useState } from 'react';
-import { useRouter } from "next/router";
-import Link from "next/link";
-import { createRouter } from "next-connect";
 import container from "../server/container";
+import Link from "next/link";
 
-const userController = container.resolve("UserController");
-const router = createRouter()
-    .get(userController.findAllUsersServerSideProps)
-
-export async function getServerSideProps({ req, res }) {
-    return router.run(req, res);
+export function getServerSideProps(context) {
+    return container.resolve("UserController").run(context);
 }
 
 export default function AllUsers(props) {
-    const { query } = useRouter();
-    const [users, setUsers] = useState(props.users || []);
+    const [data, setData] = useState(props.data || []);
+
     useEffect(() => {
         fetch(`/api/users`)
             .then(res => res.json())
             .then(json => {
-                setUsers(json);
+                setData(json);
             })
-    }, [query]);
+    }, []);
 
     return (
         <div>
             <Link href='/'>Home</Link>
             {
-                users?.map((user) => (
+                data?.map((user) => (
                     <div>
                         <Link href={`/user/${user.id}`}>User: {user.id}</Link>
                         <p>Name: {user.firstName}</p>

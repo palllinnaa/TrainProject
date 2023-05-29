@@ -1,33 +1,27 @@
 import React, { useEffect, useState } from 'react';
-import { useRouter } from "next/router";
-import Link from 'next/link';
-import { createRouter } from 'next-connect';
 import container from '../server/container';
+import Link from 'next/link';
 
-const reviewController = container.resolve("ReviewController");
-const router = createRouter()
-    .get(reviewController.findAllReviewsUsersOnStoresServerSideProps)
-
-export async function getServerSideProps({ req, res }) {
-    return router.run(req, res);
+export function getServerSideProps(context) {
+    return container.resolve("ReviewController").run(context);
 }
 
 export default function reviewsUser(props) {
-    const { query } = useRouter();
-    const [reviewsUsers, setReviewsUsers] = useState(props.reviewsUsers || []);
+    const [data, setData] = useState(props.data || []);
+
     useEffect(() => {
         fetch(`/api/reviewsUsers`)
             .then(res => res.json())
             .then(json => {
-                setReviewsUsers(json);
+                setData(json);
             })
-    }, [query]);
+    }, []);
 
     return (
         <div>
             <Link href='/'>Home</Link>
             {
-                reviewsUsers?.map((reviewsUser) => (
+                data?.map((reviewsUser) => (
                     <div>
                         <Link href={`/reviewsUser/${reviewsUser.id}`}>Review id: {reviewsUser.id}</Link>
                         <p>User id: {reviewsUser.user.id}</p>

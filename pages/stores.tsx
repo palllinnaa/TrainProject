@@ -1,33 +1,27 @@
 import React, { useEffect, useState } from 'react';
-import { useRouter } from "next/router";
-import Link from "next/link";
-import { createRouter } from 'next-connect';
 import container from '../server/container';
+import Link from "next/link";
 
-const storeController = container.resolve("StoreController");
-const router = createRouter()
-    .get(storeController.findAllStoresServerSideProps)
-
-export async function getServerSideProps({ req, res }) {
-    return router.run(req, res);
+export function getServerSideProps(context) {
+    return container.resolve("StoreController").run(context);
 }
 
 export default function AllStores(props) {
-    const { query } = useRouter();
-    const [stores, setStores] = useState(props.stores || []);
+    const [data, setData] = useState(props.data || []);
+
     useEffect(() => {
         fetch(`/api/stores`)
             .then(res => res.json())
             .then(json => {
-                setStores(json);
+                setData(json);
             })
-    }, [query]);
+    }, []);
 
     return (
         <div>
             <Link href='/'>Home</Link>
             {
-                stores?.map((store) => (
+                data?.map((store) => (
                     <div>
                         <Link href={`/store/${store.id}`}>store: {store.id}</Link>
                         <p>Store Name: {store.storeName}</p>
