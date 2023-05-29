@@ -2,7 +2,11 @@ import BaseController from "./baseController";
 import { INextApiRequestExtended } from "../interfaces/common";
 import GET from "../decorators/get";
 import SSR from "../decorators/ssr";
+import USE from "../decorators/use";
+import session from "../middleware/session";
+import { passportInitialize, passportSession } from "../middleware/passport";
 
+@USE([session, passportInitialize, passportSession])
 export default class ReviewController extends BaseController {
     @SSR("/review/:id")
     @GET("/api/review/:id")
