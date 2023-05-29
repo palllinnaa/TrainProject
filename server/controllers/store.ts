@@ -1,40 +1,22 @@
-import { INextApiRequestExtended } from './../interfaces/common';
 import BaseController from './baseController';
+import { INextApiRequestExtended } from './../interfaces/common';
 import GET from '../decorators/get';
+import SSR from '../decorators/ssr';
 
 export default class StoreController extends BaseController {
-    @GET("/store/:id")
-    public findStoreByIdServerSideProps = async (req: INextApiRequestExtended) => {
-        const { StoreService } = this.di;
-        const id = req.params.id;
-        const result = await StoreService.findStoreOwnerReviews(id)
-        const store = JSON.parse(JSON.stringify(result));
-        return { props: { store } };
-    }
-
+    @SSR("/store/:id")
     @GET("/api/store/:id")
     public async findStoreById(req: INextApiRequestExtended) {
         const { StoreService } = this.di;
         const { params } = req;
         const id = parseInt(params.id as string, 10);
-        const result = await StoreService.findStoreOwnerReviews(id)
-        const store = JSON.parse(JSON.stringify(result));
-        return store;
+        return await StoreService.findStoreOwnerReviews(id);
     }
 
-    @GET("/stores")
-    public findAllStoresServerSideProps = async () => {
-        const { StoreService } = this.di;
-        const result = await StoreService.findStoresOwnerReviews()
-        const stores = JSON.parse(JSON.stringify(result));
-        return { props: { stores } };
-    }
-
+    @SSR("/stores")
     @GET("/api/stores")
     public async findAllStores() {
         const { StoreService } = this.di;
-        const result = await StoreService.findStoresOwnerReviews()
-        const stores = JSON.parse(JSON.stringify(result));
-        return stores;
+        return await StoreService.findStoresOwnerReviews();
     }
 }
