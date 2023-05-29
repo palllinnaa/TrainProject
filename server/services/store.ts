@@ -28,7 +28,6 @@ export default class StoreService extends BaseContext {
     }
 
     public async findStoreOwnerReviews(id: number) {
-        console.log('id from services ----- ', id)
         const { Stores, Users, Reviews } = this.di;
         return await Stores.findAll({
             where: { id },

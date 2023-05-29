@@ -8,13 +8,11 @@ const slug = require('slug')
 export default class UserService extends BaseContext {
     public async findUserById(id: number) {
         const { Users } = this.di;
-        console.log(' ----------------------------  in services ---------------------------- ')
         return await Users.findByPk(id);
     }
 
     public async findAllUsers() {
         const { Users } = this.di;
-        console.log(' ----------------------------  in services ---------------------------- ')
         return await Users.findAll();
     }
 
@@ -26,9 +24,7 @@ export default class UserService extends BaseContext {
     }
     public async loginUser(email: string, password: string) {
         const user = await this.findUserByEmail(email);
-        console.log(' ----------------------------  in services ---------------------------- ')
         if (user && (await bcrypt.compare(password, user.password))) {
-            console.log('user in services ------------ ', user)
             return user;
         }
         return null;

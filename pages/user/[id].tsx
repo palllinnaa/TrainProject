@@ -1,39 +1,34 @@
-import Link from 'next/link';
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react';
-import { createRouter } from "next-connect";
 import container from '../../server/container';
+import Link from 'next/link';
 
-const userController = container.resolve("UserController");
-const router = createRouter()
-    .get(userController.findUserByIdServerSideProps);
-
-export async function getServerSideProps(context) {
-    return router.run({ ...context.req, params: context.params }, context.res);
+export function getServerSideProps(context) {
+    return container.resolve("UserController").run({ ...context, routeName: "/user/:id" });
 }
 
 export default function UserPage(props) {
     const { query } = useRouter();
-    const [user, setUser] = useState(props.user || []);
-    
+    const [data, setData] = useState(props.data || []);
+
     useEffect(() => {
         if (query?.id) {
             fetch(`/api/user/` + query.id)
                 .then(res => res.json())
                 .then(json => {
-                    setUser(json);
+                    setData(json);
                 })
         }
     }, [query]);
-
+    
     return (
         <div >
             <Link href='/users'>Back to users</Link>
-            <h1>User {user.id}</h1>
-            <p>Name: {user.firstName}</p>
-            <p>Surname: {user.lastName}</p>
-            <p>Email: {user.email}</p>
-            <p>Role: {user.role}</p>
+            <h1>User {data.id}</h1>
+            <p>Name: {data.firstName}</p>
+            <p>Surname: {data.lastName}</p>
+            <p>Email: {data.email}</p>
+            <p>Role: {data.role}</p>
         </div >
     )
 }

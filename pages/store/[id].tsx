@@ -1,27 +1,22 @@
-import { createRouter } from 'next-connect';
-import Link from 'next/link';
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react';
 import container from '../../server/container';
+import Link from 'next/link';
 
-const storeController = container.resolve("StoreController");
-const router = createRouter()
-    .get(storeController.findStoreByIdServerSideProps)
-
-export async function getServerSideProps(context) {
-    return router.run({ ...context.req, params: context.params }, context.res);
+export function getServerSideProps(context) {
+    return container.resolve("StoreController").run({...context, routeName: "/store/:id"});
 }
 
 export default function StorePage(props) {
     const { query } = useRouter();
-    const [store, setStores] = useState(props.store || []);
+    const [data, setData] = useState(props.data || []);
 
     useEffect(() => {
         if (query?.id) {
             fetch(`/api/store/` + query.id)
                 .then(res => res.json())
                 .then(json => {
-                    setStores(json);
+                    setData(json);
                 })
         }
     }, [query]);
@@ -30,14 +25,14 @@ export default function StorePage(props) {
         <div>
             <Link href='/stores'>Back to stores</Link>
             {
-                store?.map((item) => (
+                data?.map((store) => (
                     <div>
-                        <h1>Store {item.id}</h1>
-                        <p>Store Name: {item.storeName}</p>
-                        <p>Seller id: {item.userId}</p>
-                        <p>Seller name: {item.user.firstName} {item.user.lastName}</p>
-                        <p>Review count: {item.reviewCount}</p>
-                        <p>Rating: {Number(item.rating).toFixed(1)}</p>
+                        <h1>Store {store.id}</h1>
+                        <p>Store Name: {store.storeName}</p>
+                        <p>Seller id: {store.userId}</p>
+                        <p>Seller name: {store.user.firstName} {store.user.lastName}</p>
+                        <p>Review count: {store.reviewCount}</p>
+                        <p>Rating: {Number(store.rating).toFixed(1)}</p>
                     </div>
                 ))
             }

@@ -1,76 +1,38 @@
-import { NextApiRequest } from "next";
-import { INextApiRequestExtended } from "../interfaces/common";
 import BaseController from "./baseController";
-import GET from "./decorators/get";
+import { INextApiRequestExtended } from "../interfaces/common";
+import GET from "../decorators/get";
+import SSR from "../decorators/ssr";
 
 export default class ReviewController extends BaseController {
-    @GET("/review/:id")
-    public findReviewByIdServerSideProps = async (req: INextApiRequestExtended) => {
-        const { ReviewService } = this.di;
-        const id = req.params.id;
-        const result = await ReviewService.findReviewById(id);
-        const review = JSON.parse(JSON.stringify(result));
-        return { props: { review } };
-    }
-
+    @SSR("/review/:id")
     @GET("/api/review/:id")
     public async findReviewById(req: INextApiRequestExtended) {
         const { ReviewService } = this.di;
         const { params } = req;
         const id = parseInt(params.id as string, 10);
-        const result = await ReviewService.findReviewById(id);
-        const review = JSON.parse(JSON.stringify(result));
-        return review;
+        return await ReviewService.findReviewById(id);
     }
 
-    @GET("/reviews")
-    public findAllReviewsServerSideProps = async () => {
-        const { ReviewService } = this.di;
-        const result = await ReviewService.findAllReviews();
-        const reviews = JSON.parse(JSON.stringify(result));
-        return { props: { reviews } };
-    }
-
+    @SSR("/reviews")
     @GET("/api/reviews")
     public async findAllReviews() {
         const { ReviewService } = this.di;
-        const result = await ReviewService.findAllReviews();
-        const reviews = JSON.parse(JSON.stringify(result));
-        return reviews;
+        return await ReviewService.findAllReviews();
     }
 
-    @GET("/reviewsUser/:id")
-    public findReviewUserOnStoreByIdServerSideProps = async (req: INextApiRequestExtended) => {
-        const { ReviewService } = this.di;
-        const id = req.params.id;
-        const result = await ReviewService.findReviewUserOnStore(id)
-        let reviewsUser = JSON.parse(JSON.stringify(result));
-        return { props: { reviewsUser } };
-    }
-
+    @SSR("/reviewsUser/:id")
     @GET("/api/reviewsUser/:id")
     public async findReviewUserOnStoreById(req: INextApiRequestExtended) {
         const { ReviewService } = this.di;
         const { params } = req;
         const id = parseInt(params.id as string, 10);
-        const result = await ReviewService.findReviewUserOnStore(id)
-        const reviewsUser = JSON.parse(JSON.stringify(result));
-        return reviewsUser;
+        return await ReviewService.findReviewUserOnStore(id);
     }
 
-    @GET("/reviewsUsers")
-    public findAllReviewsUsersOnStoresServerSideProps = async (req: NextApiRequest) => {
-        const { ReviewService } = this.di;
-        const result = await ReviewService.findReviewsUsersOnStores()
-        const reviewsUsers = JSON.parse(JSON.stringify(result));
-        return { props: { reviewsUsers } };
-    }
-
+    @SSR("/reviewsUsers")
     @GET("/api/reviewsUsers")
     public async findAllReviewsUsersOnStores() {
         const { ReviewService } = this.di;
-        const result = await ReviewService.findReviewsUsersOnStores()
-        const reviewsUsers = JSON.parse(JSON.stringify(result));
-        return reviewsUsers;
+        return await ReviewService.findReviewsUsersOnStores();
     }
 }
