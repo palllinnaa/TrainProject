@@ -19,23 +19,14 @@ export interface ICardData {
     rating: number;
 }
 
-// export type Product = {
-//     id: number
-//     productName: string
-// }
-
-
 export type Product = {
     id: number
     productName: string
     image: string
-    // organic: boolean
-    // vegan: boolean
     property: string[]
     price: number
     description: string
     reviewCount: number
     rating: number
-    // cookingTime: string
     ingredients: string[]
 }  
