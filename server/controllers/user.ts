@@ -6,11 +6,6 @@ import USE from '../decorators/use';
 import session from '../middleware/session';
 import { passportInitialize, passportSession } from '../middleware/passport';
 
-// async function testFunc (req, res, next) {
-//     console.log('in testFunc');
-//     await next();
-// }
-
 @USE([session, passportInitialize, passportSession])
 export default class UserController extends BaseController {
     @SSR("/user/:id")
