@@ -68,16 +68,16 @@ export default function RegisterForm() {
                         role: values.role
                     })
                 })
+                let result = await res.json();
                 if (res.ok) {
-                    let result = await res.json();
                     router.push(`/user/${result.id}`)
-                    console.log('result---------', result)
                 } else {
-                    setToast({ showToast: true, text: 'Something went wrong!' })
+                    console.log('in else');
+                    setToast({ showToast: true, text: result?.message?.message || 'Something went wrong!' })
                 }
-            } catch (err) {
+            } catch (error) {
                 console.log('catch');
-                console.log('err------------------------', err);
+                console.log('error------------------------', error);
             }
         },
 
@@ -147,7 +147,7 @@ export default function RegisterForm() {
                             onChange={handleChange}
                             onBlur={handleBlur}
                             error={touched.role && errors.role}
-                            options = {options}
+                            options={options}
                         />
                     </div>
                     <div className='my-4'>

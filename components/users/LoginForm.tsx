@@ -13,6 +13,7 @@ const validationSchema = Yup.object({
     .required("Email can't be blank!"),
   password: Yup
     .string()
+    .test('len', 'Password is too short!', val => val.length > 3)
     .required("Password can't be blank!"),
 });
 
@@ -47,16 +48,16 @@ export default function LoginForm() {
           })
 
         })
+        let result = await res.json();
         if (res.ok) {
-          let result = await res.json();
           router.push(`/user/${result.identity.id}`)
         } else {
           console.log('in else');
-          setToast({ showToast: true, text: 'Email or password is incorrect!' })
+          setToast({ showToast: true, text: result?.message?.message || 'Email or password is incorrect!' })
         }
-      } catch (err) {
+      } catch (error) {
         console.log('catch');
-        console.log('err------------------------', err);
+        console.log('error------------------------', error);
       }
     },
 
