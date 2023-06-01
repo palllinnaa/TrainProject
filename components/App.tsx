@@ -34,7 +34,7 @@ export default function App(props) {
                 <Link className='px-4 py-1.5 focus:bg-red-500 focus:border-red-500 hover:bg-red-500 hover:border-red-500 mx-1 mb-4 text-gray-900 border border-gray-200 rounded-full sm:mx-2 hover:no-underline' href='/reviewsUsers'>Reviews Users</Link>
             </div>
             <div className='justify-center font-serif sm:px-4 lg:px-6'>
-                <ProductBox data={props.data} />
+                <ProductBox data={props?.data} />
             </div>
         </div>
     );

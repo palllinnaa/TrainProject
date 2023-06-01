@@ -6,6 +6,8 @@ import Input from './Input';
 import Select from './Select';
 import Link from 'next/link';
 import Toast from './Toast';
+import { connect } from 'react-redux';
+import { registerUser } from '../../redux/actions/user';
 
 const validationSchema = Yup.object({
     firstName: Yup
@@ -31,7 +33,7 @@ const validationSchema = Yup.object({
         .required("Role can't be blank!")
 });
 
-export default function RegisterForm() {
+function RegisterForm({registerUser, user}) {
     const [toast, setToast] = useState({ showToast: false, text: '' });
     const router = useRouter();
     const initialValues = useMemo(() => ({
@@ -69,6 +71,8 @@ export default function RegisterForm() {
                     })
                 })
                 let result = await res.json();
+                await registerUser(result);
+                
                 if (res.ok) {
                     router.push(`/user/${result.id}`)
                 } else {
@@ -175,3 +179,18 @@ export default function RegisterForm() {
         </div>
     )
 }
+
+const mapStateToProps = (state) => ({
+    identity: state.userReducer.identity
+  });
+  
+  const mapDispatchToProps = (dispatch) => {
+    return {
+      registerUser: (user) => dispatch(registerUser(user))
+    }
+  }
+  
+  export default connect(
+    mapStateToProps,
+    mapDispatchToProps,
+  )(RegisterForm)

@@ -1,14 +1,14 @@
 import '../styles/global.css';
 import { AppProps } from 'next/app';
 import { ReactNode } from 'react';
+import store from '../redux/store';
+import { Provider } from 'react-redux';
 
-
-// export default function App({Component, pageProps}:AppProps) {
-//     return <Component {...pageProps}/>;
-// }
 const App = (props: AppProps): ReactNode => {
-    const {Component, pageProps} = props;
-    return <Component {...pageProps}/>;
+    const { Component, pageProps } = props;
+    return <Provider store={store}>
+        <Component {...pageProps} />
+    </Provider>
 }
 
 export default App;
