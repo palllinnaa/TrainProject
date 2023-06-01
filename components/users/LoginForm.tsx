@@ -5,6 +5,8 @@ import Input from './Input';
 import Link from 'next/link';
 import Toast from './Toast';
 import { useRouter } from 'next/router';
+import { connect } from 'react-redux';
+import { loginUser } from '../../redux/actions/user';
 
 const validationSchema = Yup.object({
   email: Yup
@@ -17,7 +19,7 @@ const validationSchema = Yup.object({
     .required("Password can't be blank!"),
 });
 
-export default function LoginForm() {
+function LoginForm({ loginUser, user }) {
   const [toast, setToast] = useState({ showToast: false, text: '' });
   const router = useRouter();
   const initialValues = useMemo(() => ({
@@ -48,7 +50,9 @@ export default function LoginForm() {
           })
 
         })
-        let result = await res.json();
+        const result = await res.json();
+        await loginUser(result);
+        
         if (res.ok) {
           router.push(`/user/${result.identity.id}`)
         } else {
@@ -112,3 +116,18 @@ export default function LoginForm() {
     </div>
   )
 }
+
+const mapStateToProps = (state) => ({
+  identity: state.userReducer.identity
+});
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    loginUser: (user) => dispatch(loginUser(user))
+  }
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(LoginForm)
