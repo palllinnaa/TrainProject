@@ -56,9 +56,12 @@ export default (ctx: IContextContainer) => {
         }
     );
 
-    Products.init = (): any => {
-        Products.belongsTo(ctx.Stores);
-    };
+    ctx.Stores.hasMany(Products, {
+        sourceKey: 'id',
+        foreignKey: 'storeId',
+    });
+
+    Products.belongsTo(ctx.Stores);
 
     return Products;
 }

@@ -64,16 +64,5 @@ export default (ctx: IContextContainer) => {
     }
   });
 
-  Users.init = (): any => {
-    Users.hasMany(ctx.Reviews, {
-      sourceKey: 'id',
-      foreignKey: 'userId',
-    });
-    Users.hasMany(ctx.Stores, {
-      sourceKey: 'id',
-      foreignKey: 'userId',
-    });
-  };
-
   return Users;
 };

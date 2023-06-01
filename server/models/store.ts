@@ -35,17 +35,12 @@ export default (ctx: IContextContainer) => {
     }
   );
 
-  Stores.init = (): any => {
-    Stores.hasMany(ctx.Reviews, {
-      sourceKey: 'id',
-      foreignKey: 'storeId',
-    });
-    Stores.hasMany(ctx.Products, {
-      sourceKey: 'id',
-      foreignKey: 'storeId',
-    });
-    Stores.belongsTo(ctx.Users);
-  }
+  ctx.Users.hasMany(Stores, {
+    sourceKey: 'id',
+    foreignKey: 'userId',
+  });
+
+  Stores.belongsTo(ctx.Users);
 
   return Stores;
 }
