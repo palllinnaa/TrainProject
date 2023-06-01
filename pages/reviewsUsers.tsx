@@ -1,27 +1,32 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import container from '../server/container';
 import Link from 'next/link';
+import { connect } from 'react-redux';
+import { receivedReviewsUsers } from '../redux/actions/review';
+import { IAllReviewsUsersProps } from '../server/interfaces/common';
 
 export function getServerSideProps(context) {
     return container.resolve("ReviewController").run(context);
 }
 
-export default function reviewsUser(props) {
-    const [data, setData] = useState(props.data || []);
+function AllReviewsUsers(props: IAllReviewsUsersProps) {
+    const { receivedReviewsUsers, data, reviewsUsers } = props;
 
     useEffect(() => {
         fetch(`/api/reviewsUsers`)
             .then(res => res.json())
             .then(json => {
-                setData(json);
+                receivedReviewsUsers(json);
             })
     }, []);
+
+    const allReviewsUsers = data || reviewsUsers || [];
 
     return (
         <div>
             <Link href='/'>Home</Link>
             {
-                data?.map((reviewsUser) => (
+                allReviewsUsers?.map((reviewsUser) => (
                     <div>
                         <Link href={`/reviewsUser/${reviewsUser.id}`}>Review id: {reviewsUser.id}</Link>
                         <p>User id: {reviewsUser.user.id}</p>
@@ -40,3 +45,18 @@ export default function reviewsUser(props) {
         </div>
     );
 }
+
+const mapStateToProps = (state) => ({
+    reviewsUsers: state.reviewReducer.reviewsUsers
+});
+
+const mapDispatchToProps = (dispatch) => {
+    return {
+        receivedReviewsUsers: (reviewsUsers) => dispatch(receivedReviewsUsers(reviewsUsers))
+    }
+}
+
+export default connect(
+    mapStateToProps,
+    mapDispatchToProps,
+)(AllReviewsUsers)

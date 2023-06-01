@@ -1,27 +1,32 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import container from "../server/container";
 import Link from "next/link";
+import { connect } from "react-redux"
+import { receivedUsers } from '../redux/actions/user';
+import { IAllUsersProps } from '../server/interfaces/common';
 
 export function getServerSideProps(context) {
     return container.resolve("UserController").run(context);
 }
 
-export default function AllUsers(props) {
-    const [data, setData] = useState(props.data || []);
+function AllUsers(props: IAllUsersProps) {
+    const { receivedUsers, data, users } = props;
 
     useEffect(() => {
         fetch(`/api/users`)
             .then(res => res.json())
             .then(json => {
-                setData(json);
+                receivedUsers(json);
             })
     }, []);
+
+    const allUsers = data || users || [];  
 
     return (
         <div>
             <Link href='/'>Home</Link>
             {
-                data?.map((user) => (
+                allUsers?.map((user) => (
                     <div>
                         <Link href={`/user/${user.id}`}>User: {user.id}</Link>
                         <p>Name: {user.firstName}</p>
@@ -34,4 +39,19 @@ export default function AllUsers(props) {
             }
         </div>
     );
+};
+
+const mapStateToProps = (state) => ({
+    users: state.userReducer.users
+});
+
+const mapDispatchToProps = (dispatch) => {
+    return {
+        receivedUsers: (users) => dispatch(receivedUsers(users))
+    }
 }
+
+export default connect(
+    mapStateToProps,
+    mapDispatchToProps,
+)(AllUsers)
