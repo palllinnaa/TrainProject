@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { connect } from 'react-redux';
 import { receivedUserById } from '../../redux/actions/user';
 import { IUserPageProps } from '../../server/interfaces/common';
+import { entity } from '../../server/constants';
 
 export function getServerSideProps(context) {
     return container.resolve("UserController").run({ ...context, routeName: "/user/:id" });
@@ -13,19 +14,19 @@ export function getServerSideProps(context) {
 function UserPage(props: IUserPageProps) {
     const { query } = useRouter();
     const { receivedUserById, data, user } = props;
-
+    const url = `user/${query.id}`;
+    
     useEffect(() => {
         if (query?.id) {
-            fetch(`/api/user/` + query.id)
-                .then(res => res.json())
-                .then(json => {
-                    receivedUserById(json);
+            entity.readData(url)
+                .then(result => {
+                    receivedUserById(result);
                 })
         }
     }, [query]);
-
-    const currentUser = data || user;
     
+    const currentUser = data || user;
+
     return (
         <div >
             <Link href='/users'>Back to users</Link>

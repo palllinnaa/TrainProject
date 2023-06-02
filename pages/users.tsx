@@ -4,6 +4,7 @@ import Link from "next/link";
 import { connect } from "react-redux"
 import { receivedUsers } from '../redux/actions/user';
 import { IAllUsersProps } from '../server/interfaces/common';
+import { entity } from '../server/constants';
 
 export function getServerSideProps(context) {
     return container.resolve("UserController").run(context);
@@ -11,16 +12,16 @@ export function getServerSideProps(context) {
 
 function AllUsers(props: IAllUsersProps) {
     const { receivedUsers, data, users } = props;
-
+    const url = 'users';
+    
     useEffect(() => {
-        fetch(`/api/users`)
-            .then(res => res.json())
-            .then(json => {
-                receivedUsers(json);
+        entity.readData(url)
+            .then(result => {
+                receivedUsers(result);
             })
     }, []);
-
-    const allUsers = data || users || [];  
+    
+    const allUsers = data || users || [];
 
     return (
         <div>

@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { connect } from 'react-redux';
 import { receivedReviewById } from '../../redux/actions/review';
 import { IReviewPageProps } from '../../server/interfaces/common';
+import { entity } from '../../server/constants';
 
 export function getServerSideProps(context){
     return container.resolve("ReviewController").run({...context, routeName: "/review/:id"});
@@ -13,13 +14,13 @@ export function getServerSideProps(context){
 function ReviewPage(props: IReviewPageProps) {
     const { query } = useRouter();
     const { receivedReviewById, data, review } = props;
-
+    const url = `review/${query.id}`;
+    
     useEffect(() => {
         if (query?.id) {
-            fetch(`/api/review/` + query.id)
-                .then(res => res.json())
-                .then(json => {
-                    receivedReviewById(json);
+            entity.readData(url)
+                .then(result => {
+                    receivedReviewById(result);
                 })
         }
     }, [query]);

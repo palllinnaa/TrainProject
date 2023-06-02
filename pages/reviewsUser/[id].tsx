@@ -5,25 +5,26 @@ import Link from 'next/link';
 import { connect } from 'react-redux';
 import { receivedReviewsUsersById } from '../../redux/actions/review';
 import { IReviewsUserPageProps } from '../../server/interfaces/common';
+import { entity } from '../../server/constants';
 
-export function getServerSideProps(context){
-    return container.resolve("ReviewController").run({...context, routeName: "/reviewsUser/:id"});
+export function getServerSideProps(context) {
+    return container.resolve("ReviewController").run({ ...context, routeName: "/reviewsUser/:id" });
 }
 
 function ReviewsUserPage(props: IReviewsUserPageProps) {
     const { query } = useRouter();
     const { receivedReviewsUsersById, data, reviewsUser } = props;
-
+    const url = `reviewsUser/${query.id}`;
+    
     useEffect(() => {
         if (query?.id) {
-            fetch(`/api/reviewsUser/` + query.id)
-                .then(res => res.json())
-                .then(json => {
-                    receivedReviewsUsersById(json);
+            entity.readData(url)
+                .then(result => {
+                    receivedReviewsUsersById(result);
                 })
         }
     }, [query]);
-
+    
     const currentReviewsUser = data || reviewsUser;
 
     return (
