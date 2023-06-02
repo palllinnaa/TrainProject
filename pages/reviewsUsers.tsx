@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { connect } from 'react-redux';
 import { receivedReviewsUsers } from '../redux/actions/review';
 import { IAllReviewsUsersProps } from '../server/interfaces/common';
+import { entity } from '../server/constants';
 
 export function getServerSideProps(context) {
     return container.resolve("ReviewController").run(context);
@@ -11,15 +12,15 @@ export function getServerSideProps(context) {
 
 function AllReviewsUsers(props: IAllReviewsUsersProps) {
     const { receivedReviewsUsers, data, reviewsUsers } = props;
-
+    const url = 'reviewsUsers';
+    
     useEffect(() => {
-        fetch(`/api/reviewsUsers`)
-            .then(res => res.json())
-            .then(json => {
-                receivedReviewsUsers(json);
+        entity.readData(url)
+            .then(result => {
+                receivedReviewsUsers(result);
             })
     }, []);
-
+    
     const allReviewsUsers = data || reviewsUsers || [];
 
     return (

@@ -7,6 +7,7 @@ import Toast from './Toast';
 import { useRouter } from 'next/router';
 import { connect } from 'react-redux';
 import { loginUser } from '../../redux/actions/user';
+import { entity } from '../../server/constants';
 
 const validationSchema = Yup.object({
   email: Yup
@@ -19,7 +20,7 @@ const validationSchema = Yup.object({
     .required("Password can't be blank!"),
 });
 
-function LoginForm({ loginUser, user }) {
+function LoginForm({ loginUser }) {
   const [toast, setToast] = useState({ showToast: false, text: '' });
   const router = useRouter();
   const initialValues = useMemo(() => ({
@@ -39,21 +40,15 @@ function LoginForm({ loginUser, user }) {
 
     onSubmit: async () => {
       try {
-        let res = await fetch(`/api/login`, {
-          method: 'POST',
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            email: values.email,
-            password: values.password
-          })
-
-        })
-        const result = await res.json();
+        const url = 'login';
+        const data = {
+          email: values.email,
+          password: values.password
+        }
+        const result = await entity.saveData(url, { ...values })
         await loginUser(result);
-        
-        if (res.ok) {
+
+        if (result.identity) {
           router.push(`/user/${result.identity.id}`)
         } else {
           console.log('in else');

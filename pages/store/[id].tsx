@@ -5,27 +5,28 @@ import Link from 'next/link';
 import { connect } from 'react-redux';
 import { receivedStoreById } from '../../redux/actions/store';
 import { IStorePageProps } from '../../server/interfaces/common';
+import { entity } from '../../server/constants';
 
 
 export function getServerSideProps(context) {
-    return container.resolve("StoreController").run({...context, routeName: "/store/:id"});
+    return container.resolve("StoreController").run({ ...context, routeName: "/store/:id" });
 }
 
 function StorePage(props: IStorePageProps) {
     const { query } = useRouter();
     const { receivedStoreById, data, store } = props;
-
-        useEffect(() => {
-            if (query?.id) {
-                fetch(`/api/store/` + query.id)
-                    .then(res => res.json())
-                    .then(json => {
-                        receivedStoreById(json);
-                    })
-            }
-        }, [query]);
-
-        const currentStore = data || store;
+    const url = `store/${query.id}`;
+    
+    useEffect(() => {
+        if (query?.id) {
+            entity.readData(url)
+                .then(result => {
+                    receivedStoreById(result);
+                })
+        }
+    }, [query]);
+    
+    const currentStore = data || store;
 
     return (
         <div>

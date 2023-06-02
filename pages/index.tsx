@@ -4,6 +4,7 @@ import App from '../components/App';
 import { receivedProducts } from '../redux/actions/product';
 import { connect } from 'react-redux';
 import { IAllProductProps } from '../server/interfaces/common';
+import { entity } from '../server/constants';
 
 export async function getServerSideProps(context) {
   return container.resolve("ProductController").run(context);
@@ -11,15 +12,15 @@ export async function getServerSideProps(context) {
 
 function Home(props: IAllProductProps) {
   const { receivedProducts, data, products } = props;
-
-  useEffect(() => {
-    fetch(`/api/products`)
-      .then(res => res.json())
-      .then(json => {
-        receivedProducts(json);
-      })
-  }, []);
-
+  const url = 'products';
+  
+    useEffect(() => {
+        entity.readData(url)
+            .then(result => {
+                receivedProducts(result);
+            })
+    }, []);
+    
   const allProducts = data || products || [];
 
   return (

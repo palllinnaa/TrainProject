@@ -4,6 +4,7 @@ import Link from "next/link";
 import { connect } from 'react-redux';
 import { receivedStores } from '../redux/actions/store';
 import { IAllStoresProps } from '../server/interfaces/common';
+import { entity } from '../server/constants';
 
 export function getServerSideProps(context) {
     return container.resolve("StoreController").run(context);
@@ -11,15 +12,15 @@ export function getServerSideProps(context) {
 
 function AllStores(props: IAllStoresProps) {
     const { receivedStores, data, stores } = props;
-
+    const url = 'stores';
+    
     useEffect(() => {
-        fetch(`/api/stores`)
-            .then(res => res.json())
-            .then(json => {
-                receivedStores(json);
+        entity.readData(url)
+            .then(result => {
+                receivedStores(result);
             })
     }, []);
-
+    
     const allStores = data || stores || [];
 
     return (

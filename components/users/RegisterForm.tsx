@@ -8,6 +8,7 @@ import Link from 'next/link';
 import Toast from './Toast';
 import { connect } from 'react-redux';
 import { registerUser } from '../../redux/actions/user';
+import { entity } from '../../server/constants';
 
 const validationSchema = Yup.object({
     firstName: Yup
@@ -33,7 +34,7 @@ const validationSchema = Yup.object({
         .required("Role can't be blank!")
 });
 
-function RegisterForm({registerUser, user}) {
+function RegisterForm({ registerUser }) {
     const [toast, setToast] = useState({ showToast: false, text: '' });
     const router = useRouter();
     const initialValues = useMemo(() => ({
@@ -56,24 +57,18 @@ function RegisterForm({registerUser, user}) {
 
         onSubmit: async () => {
             try {
-                const res = await fetch(`/api/register`, {
-                    method: 'POST',
-                    headers: {
-                        Accept: "application/json",
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({
-                        firstName: values.firstName,
-                        lastName: values.lastName,
-                        email: values.email,
-                        password: values.password,
-                        role: values.role
-                    })
-                })
-                let result = await res.json();
+                const url = 'register';
+                const data = {
+                    firstName: values.firstName,
+                    lastName: values.lastName,
+                    email: values.email,
+                    password: values.password,
+                    role: values.role
+                }
+                const result = await entity.saveData(url, { ...values})
                 await registerUser(result);
                 
-                if (res.ok) {
+                if (result.id) {
                     router.push(`/user/${result.id}`)
                 } else {
                     console.log('in else');
@@ -182,15 +177,15 @@ function RegisterForm({registerUser, user}) {
 
 const mapStateToProps = (state) => ({
     identity: state.userReducer.identity
-  });
-  
-  const mapDispatchToProps = (dispatch) => {
+});
+
+const mapDispatchToProps = (dispatch) => {
     return {
-      registerUser: (user) => dispatch(registerUser(user))
+        registerUser: (user) => dispatch(registerUser(user))
     }
-  }
-  
-  export default connect(
+}
+
+export default connect(
     mapStateToProps,
     mapDispatchToProps,
-  )(RegisterForm)
+)(RegisterForm)

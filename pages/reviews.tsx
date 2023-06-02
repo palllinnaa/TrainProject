@@ -4,23 +4,24 @@ import Link from "next/link";
 import { connect } from 'react-redux';
 import { receivedReviews } from '../redux/actions/review';
 import { IAllReviewsProps } from '../server/interfaces/common';
+import { entity } from '../server/constants';
 
 export function getServerSideProps(context) {
     return container.resolve("ReviewController").run(context);
 }
 
 function AllReviews(props: IAllReviewsProps) {
-const { receivedReviews, data, reviews } = props;
-
+    const { receivedReviews, data, reviews } = props;
+    const url = 'reviews';
+    
     useEffect(() => {
-        fetch(`/api/reviews`)
-            .then(res => res.json())
-            .then(json => {
-                receivedReviews(json);
+        entity.readData(url)
+            .then(result => {
+                receivedReviews(result);
             })
     }, []);
-
-    const allReviews = data || reviews || []; 
+    
+    const allReviews = data || reviews || [];
 
     return (
         <div>
