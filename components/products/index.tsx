@@ -1,7 +1,7 @@
-import { Product } from '../../src/interfaces';
+import { IProduct } from '../../server/interfaces/common';
 import ProductCard from './ProductCard';
 interface IPropertyCardProps {
-    data: Product[];
+    data: IProduct[];
 }
 
 
