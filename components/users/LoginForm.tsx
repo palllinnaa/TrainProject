@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { useFormik } from 'formik';
 import * as Yup from "yup";
 import Input from './Input';
@@ -6,8 +6,8 @@ import Link from 'next/link';
 import Toast from './Toast';
 import { useRouter } from 'next/router';
 import { connect } from 'react-redux';
-import { loginUser } from '../../redux/actions/user';
-import { entity } from '../../server/constants';
+import { loginUserRequest } from '../../redux/actions/user';
+import { ILoginFormPageProps } from '../../server/interfaces/common';
 
 const validationSchema = Yup.object({
   email: Yup
@@ -20,7 +20,8 @@ const validationSchema = Yup.object({
     .required("Password can't be blank!"),
 });
 
-function LoginForm({ loginUser }) {
+function LoginForm(props: ILoginFormPageProps) {
+  const { loginUserRequest, identity, error } = props;
   const [toast, setToast] = useState({ showToast: false, text: '' });
   const router = useRouter();
   const initialValues = useMemo(() => ({
@@ -40,28 +41,23 @@ function LoginForm({ loginUser }) {
 
     onSubmit: async () => {
       try {
-        const url = 'login';
-        const data = {
-          email: values.email,
-          password: values.password
-        }
-        const result = await entity.saveData(url, { ...values })
-        await loginUser(result);
-
-        if (result.identity) {
-          router.push(`/user/${result.identity.id}`)
-        } else {
-          console.log('in else');
-          setToast({ showToast: true, text: result?.message?.message || 'Email or password is incorrect!' })
-        }
+        loginUserRequest({ ...values })
       } catch (error) {
-        console.log('catch');
-        console.log('error------------------------', error);
+        console.log('Error in LoginForm', error);
       }
     },
-
     validationSchema,
   });
+
+  useEffect(() => {
+    if (identity) {
+      router.push(`/user/${identity?.id}`)
+    }
+    if (error) {
+      //TODO for text:error need to send custom message in passport
+      setToast({ showToast: true, text: /*error ||*/ 'Email or password is incorrect!' })
+    }
+  }, [identity, error])
 
   return (
     <div className='flex items-center justify-center min-h-screen px-4 font-serif lg:h-full lg:relative'>
@@ -113,12 +109,13 @@ function LoginForm({ loginUser }) {
 }
 
 const mapStateToProps = (state) => ({
-  identity: state.userReducer.identity
+  identity: state.userReducer.identity,
+  error: state.userReducer.error
 });
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    loginUser: (user) => dispatch(loginUser(user))
+    loginUserRequest: (data) => dispatch(loginUserRequest(data)),
   }
 }
 

@@ -3,9 +3,8 @@ import { useEffect } from 'react';
 import container from '../../server/container';
 import Link from 'next/link';
 import { connect } from 'react-redux';
-import { receivedUserById } from '../../redux/actions/user';
 import { IUserPageProps } from '../../server/interfaces/common';
-import { entity } from '../../server/constants';
+import { userByIdRequest } from '../../redux/actions/user';
 
 export function getServerSideProps(context) {
     return container.resolve("UserController").run({ ...context, routeName: "/user/:id" });
@@ -13,18 +12,15 @@ export function getServerSideProps(context) {
 
 function UserPage(props: IUserPageProps) {
     const { query } = useRouter();
-    const { receivedUserById, data, user } = props;
+    const { userByIdRequest, data, user } = props;
     const url = `user/${query.id}`;
-    
+
     useEffect(() => {
         if (query?.id) {
-            entity.readData(url)
-                .then(result => {
-                    receivedUserById(result);
-                })
+            userByIdRequest(query.id);
         }
     }, [query]);
-    
+
     const currentUser = data || user;
 
     return (
@@ -45,7 +41,7 @@ const mapStateToProps = (state) => ({
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        receivedUserById: (user) => dispatch(receivedUserById(user))
+        userByIdRequest: (id) => dispatch(userByIdRequest(id))
     }
 }
 

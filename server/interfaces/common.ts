@@ -7,13 +7,13 @@ export interface INextApiRequestExtended extends NextApiRequest {
 }
 
 export interface IAllUsersProps {
-    receivedUsers: (data: IUser[]) => IUser[];
+    usersRequest: () => void;
     data: IUser[];
     users: IUser[];
 }
 
 export interface IUserPageProps {
-    receivedUserById: (data: IUser) => IUser;
+    userByIdRequest: (data: any) => void;
     data: IUser;
     user: IUser;
 }
@@ -28,13 +28,13 @@ export interface IUser {
 }
 
 export interface IAllStoresProps {
-    receivedStores: (data: IStore[]) => IStore[];
+    storesRequest: () => void;
     data: IStore[];
     stores: IStore[];
 }
 
 export interface IStorePageProps {
-    receivedStoreById: (data: IStore[]) => IStore[];
+    storeByIdRequest: (data: any) => void;
     data: IStore[];
     store: IStore[];
 }
@@ -49,24 +49,24 @@ export interface IStore {
 }
 
 export interface IAllReviewsProps {
-    receivedReviews: (data: IReview[]) => IReview[];
+    reviewsRequest: () => void;
     data: IReview[];
     reviews: IReview[];
 }
 
 export interface IReviewPageProps {
-    receivedReviewById: (data: IReview) => IReview;
+    reviewByIdRequest: (data: any) => void;
     data: IReview;
     review: IReview;
 }
 export interface IAllReviewsUsersProps {
-    receivedReviewsUsers: (data: IReview[]) => IReview[];
+    reviewsUsersRequest: () => void;
     data: IReview[];
     reviewsUsers: IReview[];
 }
 
 export interface IReviewsUserPageProps {
-    receivedReviewsUsersById: (data: IReview[]) => IReview[];
+    reviewsUserByIdRequest: (data: any) => void;
     data: IReview[];
     reviewsUser: IReview[];
 }
@@ -83,13 +83,13 @@ export interface IReview {
 }
 
 export interface IAllProductProps {
-    receivedProducts: (data: IProduct[]) => IProduct[];
+    productsRequest: () => void;
     data: IProduct[];
     products: IProduct[];
 }
 
 export interface IProductPageProps {
-    receivedProductById: (data: IProduct) => IProduct;
+    productByIdRequest: (data: any) => void;
     data: IProduct;
     product: IProduct;
 }
@@ -103,4 +103,16 @@ export interface IProduct {
     description: string;
     ingredients: string;
     storeId: number;
+}
+
+export interface ILoginFormPageProps {
+    loginUserRequest: (data: any) => void;
+    identity: IUser;
+    error: string;
+}
+
+export interface IRegisterFormPageProps {
+    registerUserRequest: (data: any) => void;
+    identity: IUser;
+    error: string;
 }
