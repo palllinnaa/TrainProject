@@ -3,10 +3,8 @@ import { useEffect } from 'react';
 import container from '../../server/container';
 import Link from 'next/link';
 import { connect } from 'react-redux';
-import { receivedStoreById } from '../../redux/actions/store';
+import { storeByIdRequest } from '../../redux/actions/store';
 import { IStorePageProps } from '../../server/interfaces/common';
-import { entity } from '../../server/constants';
-
 
 export function getServerSideProps(context) {
     return container.resolve("StoreController").run({ ...context, routeName: "/store/:id" });
@@ -14,15 +12,11 @@ export function getServerSideProps(context) {
 
 function StorePage(props: IStorePageProps) {
     const { query } = useRouter();
-    const { receivedStoreById, data, store } = props;
-    const url = `store/${query.id}`;
+    const { storeByIdRequest, data, store } = props;
     
     useEffect(() => {
         if (query?.id) {
-            entity.readData(url)
-                .then(result => {
-                    receivedStoreById(result);
-                })
+            storeByIdRequest(query.id)
         }
     }, [query]);
     
@@ -32,8 +26,8 @@ function StorePage(props: IStorePageProps) {
         <div>
             <Link href='/stores'>Back to stores</Link>
             {
-                currentStore?.map((store) => (
-                    <div>
+                currentStore?.map((store, index) => (
+                    <div key={index}>
                         <h1>Store {store?.id}</h1>
                         <p>Store Name: {store?.storeName}</p>
                         <p>Seller id: {store?.userId}</p>
@@ -53,7 +47,7 @@ const mapStateToProps = (state) => ({
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        receivedStoreById: (store) => dispatch(receivedStoreById(store))
+        storeByIdRequest: (id) => dispatch(storeByIdRequest(id))
     }
 }
 

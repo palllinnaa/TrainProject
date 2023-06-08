@@ -27,8 +27,8 @@ export default function ProductDetails(props) {
                 <h3 className='mt-2 font-semibold text-gray-900 text-md '>Ingredients:</h3>
                 <div>
                     {
-                        product?.ingredients?.map((ingredient) => (
-                            <p className='mt-1 ml-3 text-sm text-gray-600'>&#9702; {ingredient}</p>
+                        product?.ingredients?.map((ingredient, index) => (
+                            <p key={index} className='mt-1 ml-3 text-sm text-gray-600'>&#9702; {ingredient}</p>
                         ))
                     }
                 </div>

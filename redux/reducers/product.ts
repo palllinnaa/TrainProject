@@ -1,15 +1,26 @@
 const productReducer = (state, action) => {
     switch (action.type) {
-        case 'RECEIVED_PRODUCTS':
+        case 'PRODUCTS_REQUEST':
+        case 'PRODUCT_BY_ID_REQUEST':
+            return {
+                ...state,
+            }
+        case 'PRODUCTS_FETCH_SUCCEEDED':
             return {
                 ...state,
                 products: action.payload
-            };
-        case 'RECEIVED_PRODUCT_BY_ID':
+            }
+        case 'PRODUCT_BY_ID_FETCH_SUCCEEDED':
             return {
                 ...state,
                 product: action.payload
-            };
+            }
+        case 'PRODUCTS_FETCH_FAILED':
+        case 'PRODUCT_BY_ID_FETCH_FAILED':
+            return {
+                ...state,
+                error: action.payload
+            }
         default:
             return { ...state };
     }

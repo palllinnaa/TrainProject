@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/router';
 import { useFormik } from 'formik';
 import * as Yup from "yup";
@@ -7,8 +7,8 @@ import Select from './Select';
 import Link from 'next/link';
 import Toast from './Toast';
 import { connect } from 'react-redux';
-import { registerUser } from '../../redux/actions/user';
-import { entity } from '../../server/constants';
+import { registerUserRequest } from '../../redux/actions/user';
+import { IRegisterFormPageProps } from '../../server/interfaces/common';
 
 const validationSchema = Yup.object({
     firstName: Yup
@@ -34,7 +34,8 @@ const validationSchema = Yup.object({
         .required("Role can't be blank!")
 });
 
-function RegisterForm({ registerUser }) {
+function RegisterForm(props: IRegisterFormPageProps) {
+    const { registerUserRequest, identity, error } = props;
     const [toast, setToast] = useState({ showToast: false, text: '' });
     const router = useRouter();
     const initialValues = useMemo(() => ({
@@ -57,31 +58,22 @@ function RegisterForm({ registerUser }) {
 
         onSubmit: async () => {
             try {
-                const url = 'register';
-                const data = {
-                    firstName: values.firstName,
-                    lastName: values.lastName,
-                    email: values.email,
-                    password: values.password,
-                    role: values.role
-                }
-                const result = await entity.saveData(url, { ...values})
-                await registerUser(result);
-                
-                if (result.id) {
-                    router.push(`/user/${result.id}`)
-                } else {
-                    console.log('in else');
-                    setToast({ showToast: true, text: result?.message?.message || 'Something went wrong!' })
-                }
+                registerUserRequest({ ...values })
             } catch (error) {
-                console.log('catch');
-                console.log('error------------------------', error);
+                console.log('Error in RegisterForm: ', error);
             }
         },
-
         validationSchema,
     });
+
+    useEffect(() => {
+        if (identity) {
+            router.push(`/user/${identity?.id}`)
+        }
+        if (error) {
+            setToast({ showToast: true, text: /*error ||*/ 'Something went wrong!' })
+        }
+    }, [identity, error])
 
     const options = [
         {
@@ -176,12 +168,13 @@ function RegisterForm({ registerUser }) {
 }
 
 const mapStateToProps = (state) => ({
-    identity: state.userReducer.identity
+    identity: state.userReducer.identity,
+    error: state.userReducer.error
 });
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        registerUser: (user) => dispatch(registerUser(user))
+        registerUserRequest: (data) => dispatch(registerUserRequest(data))
     }
 }
 

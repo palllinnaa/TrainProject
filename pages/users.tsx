@@ -2,33 +2,28 @@ import React, { useEffect } from 'react';
 import container from "../server/container";
 import Link from "next/link";
 import { connect } from "react-redux"
-import { receivedUsers } from '../redux/actions/user';
+import { usersRequest } from '../redux/actions/user';
 import { IAllUsersProps } from '../server/interfaces/common';
-import { entity } from '../server/constants';
 
 export function getServerSideProps(context) {
     return container.resolve("UserController").run(context);
 }
 
 function AllUsers(props: IAllUsersProps) {
-    const { receivedUsers, data, users } = props;
-    const url = 'users';
-    
+    const { usersRequest, data, users } = props;
+
     useEffect(() => {
-        entity.readData(url)
-            .then(result => {
-                receivedUsers(result);
-            })
+        usersRequest()
     }, []);
-    
+
     const allUsers = data || users || [];
 
     return (
         <div>
             <Link href='/'>Home</Link>
             {
-                allUsers?.map((user) => (
-                    <div>
+                allUsers?.map((user, id) => (
+                    <div key={id}>
                         <Link href={`/user/${user.id}`}>User: {user.id}</Link>
                         <p>Name: {user.firstName}</p>
                         <p>Surname: {user.lastName}</p>
@@ -48,7 +43,7 @@ const mapStateToProps = (state) => ({
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        receivedUsers: (users) => dispatch(receivedUsers(users))
+        usersRequest: () => dispatch(usersRequest())
     }
 }
 

@@ -2,23 +2,19 @@ import React, { useEffect } from 'react';
 import container from '../server/container';
 import Link from 'next/link';
 import { connect } from 'react-redux';
-import { receivedReviewsUsers } from '../redux/actions/review';
+import { reviewsUsersRequest } from '../redux/actions/review';
 import { IAllReviewsUsersProps } from '../server/interfaces/common';
-import { entity } from '../server/constants';
 
 export function getServerSideProps(context) {
     return container.resolve("ReviewController").run(context);
 }
 
 function AllReviewsUsers(props: IAllReviewsUsersProps) {
-    const { receivedReviewsUsers, data, reviewsUsers } = props;
+    const { reviewsUsersRequest, data, reviewsUsers } = props;
     const url = 'reviewsUsers';
-    
+
     useEffect(() => {
-        entity.readData(url)
-            .then(result => {
-                receivedReviewsUsers(result);
-            })
+        reviewsUsersRequest()
     }, []);
     
     const allReviewsUsers = data || reviewsUsers || [];
@@ -27,8 +23,8 @@ function AllReviewsUsers(props: IAllReviewsUsersProps) {
         <div>
             <Link href='/'>Home</Link>
             {
-                allReviewsUsers?.map((reviewsUser) => (
-                    <div>
+                allReviewsUsers?.map((reviewsUser, id) => (
+                    <div key={id}>
                         <Link href={`/reviewsUser/${reviewsUser.id}`}>Review id: {reviewsUser.id}</Link>
                         <p>User id: {reviewsUser.user.id}</p>
                         <p>Name: {reviewsUser.user.firstName}</p>
@@ -53,7 +49,7 @@ const mapStateToProps = (state) => ({
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        receivedReviewsUsers: (reviewsUsers) => dispatch(receivedReviewsUsers(reviewsUsers))
+        reviewsUsersRequest: () => dispatch(reviewsUsersRequest())
     }
 }
 

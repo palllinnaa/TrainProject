@@ -3,9 +3,8 @@ import { useEffect } from 'react';
 import container from '../../server/container';
 import Link from 'next/link';
 import { connect } from 'react-redux';
-import { receivedReviewsUsersById } from '../../redux/actions/review';
+import { reviewsUserByIdRequest } from '../../redux/actions/review';
 import { IReviewsUserPageProps } from '../../server/interfaces/common';
-import { entity } from '../../server/constants';
 
 export function getServerSideProps(context) {
     return container.resolve("ReviewController").run({ ...context, routeName: "/reviewsUser/:id" });
@@ -13,26 +12,23 @@ export function getServerSideProps(context) {
 
 function ReviewsUserPage(props: IReviewsUserPageProps) {
     const { query } = useRouter();
-    const { receivedReviewsUsersById, data, reviewsUser } = props;
+    const { reviewsUserByIdRequest, data, reviewsUser } = props;
     const url = `reviewsUser/${query.id}`;
-    
+
     useEffect(() => {
         if (query?.id) {
-            entity.readData(url)
-                .then(result => {
-                    receivedReviewsUsersById(result);
-                })
+            reviewsUserByIdRequest(query.id);
         }
     }, [query]);
-    
+
     const currentReviewsUser = data || reviewsUser;
 
     return (
         <div>
             <Link href='/reviewsUsers'>Back to reviews users</Link>
             {
-                currentReviewsUser?.map((reviewsUser) => (
-                    <div>
+                currentReviewsUser?.map((reviewsUser, index) => (
+                    <div key={index}>
                         <h1 >Id: {reviewsUser?.id}</h1>
                         <p>User id: {reviewsUser?.user.id}</p>
                         <p>Name: {reviewsUser?.user.firstName}</p>
@@ -57,7 +53,7 @@ const mapStateToProps = (state) => ({
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        receivedReviewsUsersById: (reviewsUser) => dispatch(receivedReviewsUsersById(reviewsUser))
+        reviewsUserByIdRequest: (id) => dispatch(reviewsUserByIdRequest(id))
     }
 }
 

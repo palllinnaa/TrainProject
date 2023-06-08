@@ -3,28 +3,24 @@ import { useEffect } from 'react';
 import container from '../../server/container';
 import Link from 'next/link';
 import { connect } from 'react-redux';
-import { receivedReviewById } from '../../redux/actions/review';
+import { reviewByIdRequest } from '../../redux/actions/review';
 import { IReviewPageProps } from '../../server/interfaces/common';
-import { entity } from '../../server/constants';
 
-export function getServerSideProps(context){
-    return container.resolve("ReviewController").run({...context, routeName: "/review/:id"});
+export function getServerSideProps(context) {
+    return container.resolve("ReviewController").run({ ...context, routeName: "/review/:id" });
 }
 
 function ReviewPage(props: IReviewPageProps) {
     const { query } = useRouter();
-    const { receivedReviewById, data, review } = props;
+    const { reviewByIdRequest, data, review } = props;
     const url = `review/${query.id}`;
-    
+
     useEffect(() => {
         if (query?.id) {
-            entity.readData(url)
-                .then(result => {
-                    receivedReviewById(result);
-                })
+            reviewByIdRequest(query.id)
         }
     }, [query]);
-    
+
     const currentReview = data || review;
 
     return (
@@ -46,7 +42,7 @@ const mapStateToProps = (state) => ({
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        receivedReviewById: (review) => dispatch(receivedReviewById(review))
+        reviewByIdRequest: (id) => dispatch(reviewByIdRequest(id))
     }
 }
 
