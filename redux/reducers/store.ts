@@ -1,15 +1,26 @@
 const storeReducer = (state, action) => {
     switch (action.type) {
-        case 'RECEIVED_STORES':
+        case 'STORES_REQUEST':
+        case 'STORE_BY_ID_REQUEST':
+            return {
+                ...state,
+            };
+        case 'STORES_FETCH_SUCCEEDED':
             return {
                 ...state,
                 stores: action.payload
-            };
-        case 'RECEIVED_STORE_BY_ID':
+            }
+        case 'STORE_BY_ID_FETCH_SUCCEEDED':
             return {
                 ...state,
                 store: action.payload
-            };
+            }
+        case 'STORES_FETCH_FAILED':
+        case 'STORE_BY_ID_FETCH_FAILED':
+            return {
+                ...state,
+                error: action.payload
+            }
         default:
             return { ...state };
     }
