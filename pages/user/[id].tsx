@@ -2,8 +2,8 @@ import { useRouter } from 'next/router'
 import { useEffect } from 'react';
 import container from '../../server/container';
 import Link from 'next/link';
-import { connect } from 'react-redux';
-import { IUserPageProps } from '../../server/interfaces/common';
+import { connect, useSelector } from 'react-redux';
+import { IUserPageProps, IStateData } from '../../server/interfaces/common';
 import { userByIdRequest } from '../../redux/actions/user';
 
 export function getServerSideProps(context) {
@@ -12,14 +12,14 @@ export function getServerSideProps(context) {
 
 function UserPage(props: IUserPageProps) {
     const { query } = useRouter();
-    const { userByIdRequest, data, user } = props;
-    const url = `user/${query.id}`;
+    const { userByIdRequest, data } = props;
+    const user = useSelector((state: IStateData) => state.userReducer?.users?.find((item) => String(item.id) === query.id));
 
     useEffect(() => {
-        if (query?.id) {
+        if (query?.id && !user) {
             userByIdRequest(query.id);
         }
-    }, [query]);
+    }, [query, user]);
 
     const currentUser = data || user;
 
@@ -35,17 +35,11 @@ function UserPage(props: IUserPageProps) {
     )
 }
 
-const mapStateToProps = (state) => ({
-    user: state.userReducer.user
-});
-
+const mapStateToProps = () => ({});
 const mapDispatchToProps = (dispatch) => {
     return {
         userByIdRequest: (id) => dispatch(userByIdRequest(id))
     }
 }
 
-export default connect(
-    mapStateToProps,
-    mapDispatchToProps,
-)(UserPage)
+export default connect(mapStateToProps, mapDispatchToProps,)(UserPage)

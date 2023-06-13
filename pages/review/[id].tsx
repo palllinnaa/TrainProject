@@ -2,9 +2,9 @@ import { useRouter } from 'next/router'
 import { useEffect } from 'react';
 import container from '../../server/container';
 import Link from 'next/link';
-import { connect } from 'react-redux';
+import { connect, useSelector } from 'react-redux';
 import { reviewByIdRequest } from '../../redux/actions/review';
-import { IReviewPageProps } from '../../server/interfaces/common';
+import { IReviewPageProps, IStateData } from '../../server/interfaces/common';
 
 export function getServerSideProps(context) {
     return container.resolve("ReviewController").run({ ...context, routeName: "/review/:id" });
@@ -12,14 +12,14 @@ export function getServerSideProps(context) {
 
 function ReviewPage(props: IReviewPageProps) {
     const { query } = useRouter();
-    const { reviewByIdRequest, data, review } = props;
-    const url = `review/${query.id}`;
+    const { reviewByIdRequest, data } = props;
+    const review = useSelector((state: IStateData) => state.reviewReducer?.reviews?.find((item) => String(item.id) === query.id));
 
     useEffect(() => {
-        if (query?.id) {
+        if (query?.id && !review) {
             reviewByIdRequest(query.id)
         }
-    }, [query]);
+    }, [query, review]);
 
     const currentReview = data || review;
 
@@ -36,17 +36,11 @@ function ReviewPage(props: IReviewPageProps) {
     )
 }
 
-const mapStateToProps = (state) => ({
-    review: state.reviewReducer.review
-});
-
+const mapStateToProps = () => ({});
 const mapDispatchToProps = (dispatch) => {
     return {
         reviewByIdRequest: (id) => dispatch(reviewByIdRequest(id))
     }
 }
 
-export default connect(
-    mapStateToProps,
-    mapDispatchToProps,
-)(ReviewPage)
+export default connect(mapStateToProps, mapDispatchToProps,)(ReviewPage)
