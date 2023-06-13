@@ -23,7 +23,7 @@ export default class ReviewService extends BaseContext {
 
     public async findReviewUserOnStore(id: number) {
         const { Reviews, Users, Stores } = this.di;
-        return await Reviews.findAll({
+        return await Reviews.findOne({
             where: { id },
             include: [
                 { model: Users },

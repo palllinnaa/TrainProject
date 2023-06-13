@@ -29,7 +29,7 @@ export default class StoreService extends BaseContext {
 
     public async findStoreOwnerReviews(id: number) {
         const { Stores, Users, Reviews } = this.di;
-        return await Stores.findAll({
+        return await Stores.findOne({
             where: { id },
             attributes: ['id', 'storeName', 'userId',
                 [Sequelize.fn("COUNT", Sequelize.col("reviews.storeId")), "reviewCount"],

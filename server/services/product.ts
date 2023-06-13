@@ -21,6 +21,7 @@ export default class ProductService extends BaseContext {
         return products.map((item) => ({
             ...item,
             property: item.property.split(';'),
+            ingredients: item.ingredients.split(";")
         }));
     }
 }
