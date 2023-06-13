@@ -1,28 +1,8 @@
-export const productsRequest = () =>({
-    type: 'PRODUCTS_REQUEST',
-});
+import { action } from "./action";
 
-export const productsFetchSucceeded = (products) => ({
-    type: 'PRODUCTS_FETCH_SUCCEEDED',
-    payload: products
-});
-
-export const productsFetchFailed = (error) => ({
-    type: 'PRODUCTS_FETCH_FAILED',
-    payload: error.message
-});
-
-export const productByIdRequest = (id) =>({
-    type: 'PRODUCT_BY_ID_REQUEST',
-    id: id
-});
-
-export const productByIdFetchSucceeded = (product) => ({
-    type: 'PRODUCT_BY_ID_FETCH_SUCCEEDED',
-    payload: product
-});
-
-export const productByIdFetchFailed = (error) => ({
-    type: 'PRODUCT_BY_ID_FETCH_FAILED',
-    payload: error.message
-});
+export const productsRequest = () => action('PRODUCTS_REQUEST');
+export const productsFetchSucceeded = (products) => action('PRODUCTS_FETCH_SUCCEEDED', products);
+export const productsFetchFailed = (error) => action('PRODUCTS_FETCH_FAILED', error);
+export const productByIdRequest = (id) => action('PRODUCT_BY_ID_REQUEST', id);
+export const productByIdFetchSucceeded = (product) => action('PRODUCT_BY_ID_FETCH_SUCCEEDED', product);
+export const productByIdFetchFailed = (error) => action('PRODUCT_BY_ID_FETCH_FAILED', error);

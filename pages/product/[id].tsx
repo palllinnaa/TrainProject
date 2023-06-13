@@ -4,9 +4,9 @@ import container from '../../server/container';
 import Link from 'next/link';
 import ProductDetails from '../../components/products/ProductDetails';
 import SiteHeader from '../../components/SiteHeader';
-import { connect } from 'react-redux';
+import { connect, useSelector } from 'react-redux';
 import { productByIdRequest } from '../../redux/actions/product';
-import { IProductPageProps } from '../../server/interfaces/common';
+import { IProductPageProps, IStateData } from '../../server/interfaces/common';
 
 export function getServerSideProps(context) {
   return container.resolve("ProductController").run({ ...context, routeName: "/product/:id" });
@@ -14,14 +14,14 @@ export function getServerSideProps(context) {
 
 function ProductPage(props: IProductPageProps) {
   const { query } = useRouter();
-  const { productByIdRequest, data, product } = props;
-  const url = `product/${query.id}`;
+  const { productByIdRequest, data } = props;
+  const product = useSelector((state: IStateData) => state.productReducer?.products?.find((item) => String(item.id) === query.id));
 
   useEffect(() => {
-    if (query?.id) {
+    if (query?.id && !product) {
       productByIdRequest(query.id)
     }
-  }, [query]);
+  }, [query, product]);
 
   const currentProduct = data || product;
 
@@ -36,17 +36,11 @@ function ProductPage(props: IProductPageProps) {
   )
 }
 
-const mapStateToProps = (state) => ({
-  product: state.productReducer.product
-});
-
+const mapStateToProps = () => ({});
 const mapDispatchToProps = (dispatch) => {
   return {
     productByIdRequest: (id) => dispatch(productByIdRequest(id))
   }
 }
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(ProductPage)
+export default connect(mapStateToProps, mapDispatchToProps,)(ProductPage)

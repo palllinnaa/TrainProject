@@ -2,9 +2,9 @@ import { useRouter } from 'next/router'
 import { useEffect } from 'react';
 import container from '../../server/container';
 import Link from 'next/link';
-import { connect } from 'react-redux';
+import { connect, useSelector } from 'react-redux';
 import { reviewsUserByIdRequest } from '../../redux/actions/review';
-import { IReviewsUserPageProps } from '../../server/interfaces/common';
+import { IReviewsUserPageProps, IStateData } from '../../server/interfaces/common';
 
 export function getServerSideProps(context) {
     return container.resolve("ReviewController").run({ ...context, routeName: "/reviewsUser/:id" });
@@ -12,52 +12,40 @@ export function getServerSideProps(context) {
 
 function ReviewsUserPage(props: IReviewsUserPageProps) {
     const { query } = useRouter();
-    const { reviewsUserByIdRequest, data, reviewsUser } = props;
-    const url = `reviewsUser/${query.id}`;
+    const { reviewsUserByIdRequest, data } = props;
+    const reviewsUser = useSelector((state: IStateData) => state.reviewReducer.reviewsUsers?.find((item) => String(item.id) === query.id));
 
     useEffect(() => {
-        if (query?.id) {
+        if (query?.id && !reviewsUser) {
             reviewsUserByIdRequest(query.id);
         }
-    }, [query]);
+    }, [query, reviewsUser]);
 
     const currentReviewsUser = data || reviewsUser;
 
     return (
         <div>
             <Link href='/reviewsUsers'>Back to reviews users</Link>
-            {
-                currentReviewsUser?.map((reviewsUser, index) => (
-                    <div key={index}>
-                        <h1 >Id: {reviewsUser?.id}</h1>
-                        <p>User id: {reviewsUser?.user.id}</p>
-                        <p>Name: {reviewsUser?.user.firstName}</p>
-                        <p>Surname: {reviewsUser?.user.lastName}</p>
-                        <p>Email: {reviewsUser?.user.email}</p>
-                        <p>Role: {reviewsUser?.user.role}</p>
-                        <p>Review Text: {reviewsUser?.reviewText}</p>
-                        <p>Rating: {reviewsUser?.rating}</p>
-                        <p>Store id: {reviewsUser?.store.id}</p>
-                        <p>Store name: {reviewsUser?.store.storeName}</p>
-                        <p>----------------------------------------------------------------------</p>
-                    </div>
-                ))
-            }
+                <h1 >Id: {currentReviewsUser?.id}</h1>
+                <p>User id: {currentReviewsUser?.user.id}</p>
+                <p>Name: {currentReviewsUser?.user.firstName}</p>
+                <p>Surname: {currentReviewsUser?.user.lastName}</p>
+                <p>Email: {currentReviewsUser?.user.email}</p>
+                <p>Role: {currentReviewsUser?.user.role}</p>
+                <p>Review Text: {currentReviewsUser?.reviewText}</p>
+                <p>Rating: {currentReviewsUser?.rating}</p>
+                <p>Store id: {currentReviewsUser?.store.id}</p>
+                <p>Store name: {currentReviewsUser?.store.storeName}</p>
+                <p>----------------------------------------------------------------------</p>
         </div>
     )
 }
 
-const mapStateToProps = (state) => ({
-    reviewsUser: state.reviewReducer.reviewsUser
-});
-
+const mapStateToProps = () => ({});
 const mapDispatchToProps = (dispatch) => {
     return {
         reviewsUserByIdRequest: (id) => dispatch(reviewsUserByIdRequest(id))
     }
 }
 
-export default connect(
-    mapStateToProps,
-    mapDispatchToProps,
-)(ReviewsUserPage)
+export default connect(mapStateToProps, mapDispatchToProps,)(ReviewsUserPage)

@@ -8,24 +8,16 @@ const reviewReducer = (state, action) => {
                 ...state,
             };
         case 'REVIEWS_FETCH_SUCCEEDED':
+        case 'REVIEW_BY_ID_FETCH_SUCCEEDED':
             return {
                 ...state,
                 reviews: action.payload
             }
         case 'REVIEWS_USERS_FETCH_SUCCEEDED':
-            return {
-                ...state,
-                reviewsUsers: action.payload
-            }
-        case 'REVIEW_BY_ID_FETCH_SUCCEEDED':
-            return {
-                ...state,
-                review: action.payload
-            }
         case 'REVIEWS_USER_BY_ID_FETCH_SUCCEEDED':
             return {
                 ...state,
-                reviewsUser: action.payload
+                reviewsUsers: action.payload
             }
         case 'REVIEWS_FETCH_FAILED':
         case 'REVIEWS_USERS_FETCH_FAILED':

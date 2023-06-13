@@ -8,14 +8,10 @@ const userReducer = (state, action) => {
                 ...state,
             }
         case 'USERS_FETCH_SUCCEEDED':
-            return {
-                ...state,
-                users: action.payload
-            }
         case 'USER_BY_ID_FETCH_SUCCEEDED':
             return {
                 ...state,
-                user: action.payload
+                users: action.payload
             }
         case 'LOGIN_USER_FETCH_SUCCEEDED':
             return {

@@ -2,9 +2,9 @@ import { useRouter } from 'next/router'
 import { useEffect } from 'react';
 import container from '../../server/container';
 import Link from 'next/link';
-import { connect } from 'react-redux';
+import { connect, useSelector } from 'react-redux';
 import { storeByIdRequest } from '../../redux/actions/store';
-import { IStorePageProps } from '../../server/interfaces/common';
+import { IStorePageProps, IStateData } from '../../server/interfaces/common';
 
 export function getServerSideProps(context) {
     return container.resolve("StoreController").run({ ...context, routeName: "/store/:id" });
@@ -12,46 +12,35 @@ export function getServerSideProps(context) {
 
 function StorePage(props: IStorePageProps) {
     const { query } = useRouter();
-    const { storeByIdRequest, data, store } = props;
-    
+    const { storeByIdRequest, data } = props;
+    const store = useSelector((state: IStateData) => state.storeReducer.stores?.find((item) => String(item.id) === query.id));
+
     useEffect(() => {
-        if (query?.id) {
+        if (query?.id && !store) {
             storeByIdRequest(query.id)
         }
-    }, [query]);
-    
+    }, [query, store]);
+
     const currentStore = data || store;
 
     return (
         <div>
             <Link href='/stores'>Back to stores</Link>
-            {
-                currentStore?.map((store, index) => (
-                    <div key={index}>
-                        <h1>Store {store?.id}</h1>
-                        <p>Store Name: {store?.storeName}</p>
-                        <p>Seller id: {store?.userId}</p>
-                        <p>Seller name: {store?.user.firstName} {store?.user.lastName}</p>
-                        <p>Review count: {store?.reviewCount}</p>
-                        <p>Rating: {Number(store?.rating).toFixed(1)}</p>
-                    </div>
-                ))
-            }
+                <h1>Store {currentStore?.id}</h1>
+                <p>Store Name: {currentStore?.storeName}</p>
+                <p>Seller id: {currentStore?.userId}</p>
+                <p>Seller name: {currentStore?.user.firstName} {currentStore?.user.lastName}</p>
+                <p>Review count: {currentStore?.reviewCount}</p>
+                <p>Rating: {currentStore?.rating ? Number(currentStore?.rating).toFixed(1) : '0.0'}</p>
         </div>
     );
 }
 
-const mapStateToProps = (state) => ({
-    store: state.storeReducer.store
-});
-
+const mapStateToProps = () => ({});
 const mapDispatchToProps = (dispatch) => {
     return {
         storeByIdRequest: (id) => dispatch(storeByIdRequest(id))
     }
 }
 
-export default connect(
-    mapStateToProps,
-    mapDispatchToProps,
-)(StorePage)
+export default connect(mapStateToProps, mapDispatchToProps)(StorePage)

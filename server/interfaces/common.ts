@@ -15,7 +15,6 @@ export interface IAllUsersProps {
 export interface IUserPageProps {
     userByIdRequest: (data: any) => void;
     data: IUser;
-    user: IUser;
 }
 export interface IUser {
     id: number;
@@ -35,8 +34,7 @@ export interface IAllStoresProps {
 
 export interface IStorePageProps {
     storeByIdRequest: (data: any) => void;
-    data: IStore[];
-    store: IStore[];
+    data: IStore;
 }
 
 export interface IStore {
@@ -57,7 +55,6 @@ export interface IAllReviewsProps {
 export interface IReviewPageProps {
     reviewByIdRequest: (data: any) => void;
     data: IReview;
-    review: IReview;
 }
 export interface IAllReviewsUsersProps {
     reviewsUsersRequest: () => void;
@@ -67,8 +64,7 @@ export interface IAllReviewsUsersProps {
 
 export interface IReviewsUserPageProps {
     reviewsUserByIdRequest: (data: any) => void;
-    data: IReview[];
-    reviewsUser: IReview[];
+    data: IReview;
 }
 
 export interface IReview {
@@ -91,7 +87,6 @@ export interface IAllProductProps {
 export interface IProductPageProps {
     productByIdRequest: (data: any) => void;
     data: IProduct;
-    product: IProduct;
 }
 
 export interface IProduct {
@@ -115,4 +110,38 @@ export interface IRegisterFormPageProps {
     registerUserRequest: (data: any) => void;
     identity: IUser;
     error: string;
+}
+
+export interface IAction {
+    type: string;
+    payload?: any;
+}
+
+export interface IStateData {
+    userReducer: IUserReducer,
+    storeReducer: IStoreReducer,
+    reviewReducer: IReviewReducer,
+    productReducer: IProductReducer
+}
+
+export interface IUserReducer {
+    users?: IUser[];
+    identity?: IUser;
+    error?: string;
+}
+
+export interface IStoreReducer {
+    stores?: IStore[];
+    error?: string;
+}
+
+export interface IReviewReducer {
+    reviews?: IReview[];
+    reviewsUsers?: IReview[];
+    error?: string;
+}
+
+export interface IProductReducer {
+    products?: IProduct[];
+    error?: string;
 }

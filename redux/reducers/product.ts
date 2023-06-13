@@ -6,14 +6,10 @@ const productReducer = (state, action) => {
                 ...state,
             }
         case 'PRODUCTS_FETCH_SUCCEEDED':
-            return {
-                ...state,
-                products: action.payload
-            }
         case 'PRODUCT_BY_ID_FETCH_SUCCEEDED':
             return {
                 ...state,
-                product: action.payload
+                products: action.payload
             }
         case 'PRODUCTS_FETCH_FAILED':
         case 'PRODUCT_BY_ID_FETCH_FAILED':
