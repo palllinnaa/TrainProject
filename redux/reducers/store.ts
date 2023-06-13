@@ -6,14 +6,10 @@ const storeReducer = (state, action) => {
                 ...state,
             };
         case 'STORES_FETCH_SUCCEEDED':
-            return {
-                ...state,
-                stores: action.payload
-            }
         case 'STORE_BY_ID_FETCH_SUCCEEDED':
             return {
                 ...state,
-                store: action.payload
+                stores: action.payload
             }
         case 'STORES_FETCH_FAILED':
         case 'STORE_BY_ID_FETCH_FAILED':
