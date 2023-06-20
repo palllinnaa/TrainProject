@@ -24,6 +24,7 @@
     "next-connect": "1.0.0-next.3",
     "next-redux-wrapper": "^8.1.0",
     "next-session": "^4.0.5",
+    "normalizr": "^3.6.2",
     "passport": "0.5",
     "passport-local": "^1.0.0",
     "postcss": "^8.4.21",
