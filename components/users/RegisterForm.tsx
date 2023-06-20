@@ -9,6 +9,7 @@ import Toast from './Toast';
 import { connect } from 'react-redux';
 import { registerUserRequest } from '../../redux/actions/user';
 import { IRegisterFormPageProps } from '../../server/interfaces/common';
+import { clearReducerError } from '../../redux/actions/action';
 
 const validationSchema = Yup.object({
     firstName: Yup
@@ -35,7 +36,7 @@ const validationSchema = Yup.object({
 });
 
 function RegisterForm(props: IRegisterFormPageProps) {
-    const { registerUserRequest, identity, error } = props;
+    const { registerUserRequest, clearReducerError, identity, error } = props;
     const [toast, setToast] = useState({ showToast: false, text: '' });
     const router = useRouter();
     const initialValues = useMemo(() => ({
@@ -68,11 +69,16 @@ function RegisterForm(props: IRegisterFormPageProps) {
 
     useEffect(() => {
         if (identity) {
-            router.push(`/user/${identity?.id}`)
+            if (error) {
+                clearReducerError();
+            }
+            router.push(`/user/${identity.id}`)
         }
         if (error) {
-            setToast({ showToast: true, text: /*error ||*/ 'Something went wrong!' })
-        }
+            setToast({ showToast: true, text: /*error ||*/ 'This email is already taken!' })
+        } else (
+            setToast({ showToast: false, text: '' })
+        )
     }, [identity, error])
 
     const options = [
@@ -147,11 +153,13 @@ function RegisterForm(props: IRegisterFormPageProps) {
                             className='px-5 py-2 font-serif font-medium text-white bg-blue-500 rounded-md hover:bg-blue-600'>
                             Submit
                         </button>
-                        <Link
-                            href='/login'
-                            className='px-5 py-3 mx-3 font-serif font-medium text-blue-500 bg-blue-100 rounded-md hover:bg-blue-500 hover:text-white hover:no-underline'>
-                            Cancel
-                        </Link>
+                        <button onClick={clearReducerError}>
+                            <Link
+                                href='/login'
+                                className='px-5 py-3 mx-3 font-serif font-medium text-blue-500 bg-blue-100 rounded-md hover:bg-blue-500 hover:text-white hover:no-underline'>
+                                Cancel
+                            </Link>
+                        </button>
                     </div>
                 </form>
                 <div className='inset-x-0 bottom-0 flex justify-center my-4 text-sm font-semibold lg:absolute'>
@@ -168,13 +176,14 @@ function RegisterForm(props: IRegisterFormPageProps) {
 }
 
 const mapStateToProps = (state) => ({
-    identity: state.userReducer.identity,
-    error: state.userReducer.error
+    identity: state.reducer.identity,
+    error: state.reducer.error
 });
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        registerUserRequest: (data) => dispatch(registerUserRequest(data))
+        registerUserRequest: (data) => dispatch(registerUserRequest(data)),
+        clearReducerError: () => dispatch(clearReducerError())
     }
 }
 

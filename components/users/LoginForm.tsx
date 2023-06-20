@@ -8,6 +8,7 @@ import { useRouter } from 'next/router';
 import { connect } from 'react-redux';
 import { loginUserRequest } from '../../redux/actions/user';
 import { ILoginFormPageProps } from '../../server/interfaces/common';
+import { clearReducerError } from '../../redux/actions/action';
 
 const validationSchema = Yup.object({
   email: Yup
@@ -21,7 +22,7 @@ const validationSchema = Yup.object({
 });
 
 function LoginForm(props: ILoginFormPageProps) {
-  const { loginUserRequest, identity, error } = props;
+  const { loginUserRequest, clearReducerError, identity, error } = props;
   const [toast, setToast] = useState({ showToast: false, text: '' });
   const router = useRouter();
   const initialValues = useMemo(() => ({
@@ -51,12 +52,17 @@ function LoginForm(props: ILoginFormPageProps) {
 
   useEffect(() => {
     if (identity) {
-      router.push(`/user/${identity?.id}`)
+      if (error) {
+        clearReducerError();
+      }
+      router.push(`/user/${identity.id}`)
     }
     if (error) {
       //TODO for text:error need to send custom message in passport
       setToast({ showToast: true, text: /*error ||*/ 'Email or password is incorrect!' })
-    }
+    } else (
+      setToast({ showToast: false, text: '' })
+    )
   }, [identity, error])
 
   return (
@@ -66,7 +72,9 @@ function LoginForm(props: ILoginFormPageProps) {
           <h1 className='items-center mt-6 font-bold lg:text-2xl sm:text-lg'>Welcome to FoodStore</h1>
           <div className='flex'>
             <h4 className='pr-2 mt-1 font-semibold text-gray-400 lg:text-lg'>New Here?</h4>
-            <Link href='/register' className='mt-1 font-semibold text-blue-500 lg:text-lg hover:no-underline hover:text-blue-600'>Create an Account</Link>
+            <button onClick={clearReducerError}>
+              <Link href='/register' className='mt-1 font-semibold text-blue-500 lg:text-lg hover:no-underline hover:text-blue-600'>Create an Account</Link>
+            </button>
           </div>
         </div>
         <Toast show={toast.showToast} text={toast.text} />
@@ -109,13 +117,14 @@ function LoginForm(props: ILoginFormPageProps) {
 }
 
 const mapStateToProps = (state) => ({
-  identity: state.userReducer.identity,
-  error: state.userReducer.error
+  identity: state.reducer.identity,
+  error: state.reducer.error
 });
 
 const mapDispatchToProps = (dispatch) => {
   return {
     loginUserRequest: (data) => dispatch(loginUserRequest(data)),
+    clearReducerError: () => dispatch(clearReducerError())
   }
 }
 
