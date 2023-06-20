@@ -5,13 +5,12 @@ import { connect } from 'react-redux';
 import { reviewsUsersRequest } from '../redux/actions/review';
 import { IAllReviewsUsersProps } from '../server/interfaces/common';
 
-export function getServerSideProps(context) {
-    return container.resolve("ReviewController").run(context);
-}
+// export function getServerSideProps(context) {
+//     return container.resolve("ReviewController").run(context);
+// }
 
 function AllReviewsUsers(props: IAllReviewsUsersProps) {
-    const { reviewsUsersRequest, data, reviewsUsers } = props;
-    const url = 'reviewsUsers';
+    const { reviewsUsersRequest, data, reviewsUsers, users, stores } = props;
 
     useEffect(() => {
         reviewsUsersRequest()
@@ -23,18 +22,18 @@ function AllReviewsUsers(props: IAllReviewsUsersProps) {
         <div>
             <Link href='/'>Home</Link>
             {
-                allReviewsUsers?.map((reviewsUser, id) => (
+                Object.values(allReviewsUsers)?.map((reviewsUser, id) => (
                     <div key={id}>
                         <Link href={`/reviewsUser/${reviewsUser.id}`}>Review id: {reviewsUser.id}</Link>
-                        <p>User id: {reviewsUser.user.id}</p>
-                        <p>Name: {reviewsUser.user.firstName}</p>
-                        <p>Surname: {reviewsUser.user.lastName}</p>
-                        <p>Email: {reviewsUser.user.email}</p>
-                        <p>Role: {reviewsUser.user.role}</p>
+                        <p>User id: {users[Number(reviewsUser.user)].id}</p>
+                        <p>Name: {users[Number(reviewsUser.user)].firstName}</p>
+                        <p>Surname: {users[Number(reviewsUser.user)].lastName}</p>
+                        <p>Email: {users[Number(reviewsUser.user)].email}</p>
+                        <p>Role: {users[Number(reviewsUser.user)].role}</p>
                         <p>Review Text: {reviewsUser.reviewText}</p>
                         <p>Rating: {reviewsUser.rating}</p>
-                        <p>Store id: {reviewsUser.store.id}</p>
-                        <p>Store name: {reviewsUser.store.storeName}</p>
+                        <p>Store id: {stores[Number(reviewsUser.store)].id}</p>
+                        <p>Store name: {stores[Number(reviewsUser.store)].storeName}</p>
                         <p>----------------------------------------------------------------------</p>
                     </div>
                 ))
@@ -44,7 +43,9 @@ function AllReviewsUsers(props: IAllReviewsUsersProps) {
 }
 
 const mapStateToProps = (state) => ({
-    reviewsUsers: state.reviewReducer.reviewsUsers
+    reviewsUsers: state.reducer.reviews,
+    users: state.reducer.users,
+    stores: state.reducer.stores
 });
 
 const mapDispatchToProps = (dispatch) => {

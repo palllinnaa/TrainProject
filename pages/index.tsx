@@ -5,13 +5,12 @@ import { productsRequest } from '../redux/actions/product';
 import { connect } from 'react-redux';
 import { IAllProductProps } from '../server/interfaces/common';
 
-export async function getServerSideProps(context) {
-  return container.resolve("ProductController").run(context);
-}
+// export async function getServerSideProps(context) {
+//   return container.resolve("ProductController").run(context);
+// }
 
 function Home(props: IAllProductProps) {
   const { productsRequest, data, products } = props;
-  const url = 'products';
 
   useEffect(() => {
     productsRequest()
@@ -26,7 +25,7 @@ function Home(props: IAllProductProps) {
 }
 
 const mapStateToProps = (state) => ({
-  products: state.productReducer.products
+  products: state.reducer.products
 });
 
 const mapDispatchToProps = (dispatch) => {
