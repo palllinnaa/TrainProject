@@ -1,7 +1,7 @@
 import rootReducer from "./reducers/rootReducer"
 import createSagaMiddleware from 'redux-saga'
 import { configureStore } from '@reduxjs/toolkit'
-import { productSaga, reviewSaga, storeSaga, userSaga } from "../server/constants"
+import { authSaga, productSaga, reviewSaga, storeSaga, userSaga } from "../server/constants"
 
 export const sagaMiddleware = createSagaMiddleware()
 export const store = configureStore({
@@ -10,6 +10,7 @@ export const store = configureStore({
 })
 
 sagaMiddleware.run(userSaga.myUserSaga)
+sagaMiddleware.run(authSaga.myAuthSaga)
 sagaMiddleware.run(storeSaga.myStoreSaga)
 sagaMiddleware.run(reviewSaga.myReviewSaga)
 sagaMiddleware.run(productSaga.myProductSaga)
