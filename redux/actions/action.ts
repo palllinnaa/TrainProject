@@ -6,4 +6,3 @@ export function action(type: string, payload?: any): IAction {
 
 export const fetchSucceeded = (data) => action('FETCH_SUCCEEDED', data);
 export const fetchFailed = (error) => action('FETCH_FAILED', error);
-export const clearReducerError = () => action('ERROR_CLEAR');
