@@ -1,4 +1,4 @@
-import rootReducer from "./reducers/rootReducer"
+import rootReducer from './reducers'
 import createSagaMiddleware from 'redux-saga'
 import { configureStore } from '@reduxjs/toolkit'
 import { authSaga, productSaga, reviewSaga, storeSaga, userSaga } from "../server/constants"
