@@ -39,7 +39,7 @@ function AllReviews(props: IAllReviewsProps) {
 }
 
 const mapStateToProps = (state) => ({
-    reviews: state.reducer.reviews
+    reviews: state.entitiesReducer.reviews
 });
 
 const mapDispatchToProps = (dispatch) => {

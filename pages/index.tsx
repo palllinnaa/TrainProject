@@ -25,7 +25,7 @@ function Home(props: IAllProductProps) {
 }
 
 const mapStateToProps = (state) => ({
-  products: state.reducer.products
+  products: state.entitiesReducer.products
 });
 
 const mapDispatchToProps = (dispatch) => {

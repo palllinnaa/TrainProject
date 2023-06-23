@@ -13,7 +13,7 @@ import { IReview, IReviewPageProps, IState } from '../../server/interfaces/commo
 function ReviewPage(props: IReviewPageProps) {
     const { query } = useRouter();
     const { reviewByIdRequest, data } = props;
-    const review: IReview = useSelector((state: IState) => state.reducer.reviews && state.reducer.reviews[Number(query.id)]);
+    const review: IReview = useSelector((state: IState) => state.entitiesReducer.reviews && state.entitiesReducer.reviews[Number(query.id)]);
 
     useEffect(() => {
         if (query?.id && !review) {

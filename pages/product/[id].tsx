@@ -15,7 +15,7 @@ import { IProduct, IProductPageProps, IState } from '../../server/interfaces/com
 function ProductPage(props: IProductPageProps) {
   const { query } = useRouter();
   const { productByIdRequest, data } = props;
-  const product: IProduct = useSelector((state: IState) => state.reducer.products && state.reducer.products[Number(query.id)]);
+  const product: IProduct = useSelector((state: IState) => state.entitiesReducer.products && state.entitiesReducer.products[Number(query.id)]);
 
   useEffect(() => {
     if (query?.id && !product) {

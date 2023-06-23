@@ -38,7 +38,7 @@ function AllUsers(props: IAllUsersProps) {
 };
 
 const mapStateToProps = (state) => ({
-    users: state.reducer.users
+    users: state.entitiesReducer.users
 });
 
 const mapDispatchToProps = (dispatch) => {

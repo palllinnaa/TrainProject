@@ -6,9 +6,9 @@ import Link from 'next/link';
 import Toast from './Toast';
 import { useRouter } from 'next/router';
 import { connect } from 'react-redux';
-import { loginUserRequest } from '../../redux/actions/user';
+import { loginUserRequest } from '../../redux/actions/auth';
 import { ILoginFormPageProps } from '../../server/interfaces/common';
-import { clearReducerError } from '../../redux/actions/action';
+import { clearIdentityError } from '../../redux/actions/auth';
 
 const validationSchema = Yup.object({
   email: Yup
@@ -51,19 +51,13 @@ function LoginForm(props: ILoginFormPageProps) {
   });
 
   useEffect(() => {
-    if (identity) {
-      if (error) {
-        clearReducerError();
-      }
-      router.push(`/user/${identity.id}`)
-    }
     if (error) {
       //TODO for text:error need to send custom message in passport
       setToast({ showToast: true, text: /*error ||*/ 'Email or password is incorrect!' })
     } else (
       setToast({ showToast: false, text: '' })
     )
-  }, [identity, error])
+  }, [error])
 
   return (
     <div className='flex items-center justify-center min-h-screen px-4 font-serif lg:h-full lg:relative'>
@@ -117,14 +111,14 @@ function LoginForm(props: ILoginFormPageProps) {
 }
 
 const mapStateToProps = (state) => ({
-  identity: state.reducer.identity,
-  error: state.reducer.error
+  identity: state.authReducer.identity,
+  error: state.authReducer.error
 });
 
 const mapDispatchToProps = (dispatch) => {
   return {
     loginUserRequest: (data) => dispatch(loginUserRequest(data)),
-    clearReducerError: () => dispatch(clearReducerError())
+    clearReducerError: () => dispatch(clearIdentityError())
   }
 }
 

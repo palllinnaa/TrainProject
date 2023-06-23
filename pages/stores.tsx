@@ -27,7 +27,7 @@ function AllStores(props: IAllStoresProps) {
                         <Link href={`/store/${store.id}`}>store: {store.id}</Link>
                         <p>Store Name: {store.storeName}</p>
                         <p>Seller id: {store.userId}</p>
-                        <p>Seller name: {users[Number(store.user)].firstName} {users[Number(store.user)].lastName}</p>
+                        <p>Seller name: {users && users[Number(store.user)]?.firstName} {users && users[Number(store.user)]?.lastName}</p>
                         <p>Review count: {store.reviewCount}</p>
                         <p>Rating: {Number(store.rating).toFixed(1)}</p>
                         <p>----------------------------------------------------------------------</p>
@@ -39,8 +39,8 @@ function AllStores(props: IAllStoresProps) {
 }
 
 const mapStateToProps = (state) => ({
-    stores: state.reducer.stores,
-    users: state.reducer.users
+    stores: state.entitiesReducer.stores,
+    users: state.entitiesReducer.users
 });
 
 const mapDispatchToProps = (dispatch) => {

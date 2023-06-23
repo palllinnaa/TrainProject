@@ -13,7 +13,7 @@ import { userByIdRequest } from '../../redux/actions/user';
 function UserPage(props: IUserPageProps) {
     const { query } = useRouter();
     const { userByIdRequest, data } = props;
-    const user: IUser = useSelector((state: IState) => state.reducer.users && state.reducer.users[Number(query.id)]);
+    const user: IUser = useSelector((state: IState) => state.entitiesReducer.users && state.entitiesReducer.users[Number(query.id)]);
 
     useEffect(() => {
         if (query?.id && !user) {

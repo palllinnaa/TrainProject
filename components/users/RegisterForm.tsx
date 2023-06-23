@@ -7,9 +7,9 @@ import Select from './Select';
 import Link from 'next/link';
 import Toast from './Toast';
 import { connect } from 'react-redux';
-import { registerUserRequest } from '../../redux/actions/user';
+import { registerUserRequest } from '../../redux/actions/auth';
 import { IRegisterFormPageProps } from '../../server/interfaces/common';
-import { clearReducerError } from '../../redux/actions/action';
+import { clearIdentityError } from '../../redux/actions/auth';
 
 const validationSchema = Yup.object({
     firstName: Yup
@@ -68,18 +68,12 @@ function RegisterForm(props: IRegisterFormPageProps) {
     });
 
     useEffect(() => {
-        if (identity) {
-            if (error) {
-                clearReducerError();
-            }
-            router.push(`/user/${identity.id}`)
-        }
         if (error) {
             setToast({ showToast: true, text: /*error ||*/ 'This email is already taken!' })
         } else (
             setToast({ showToast: false, text: '' })
         )
-    }, [identity, error])
+    }, [error])
 
     const options = [
         {
@@ -176,14 +170,14 @@ function RegisterForm(props: IRegisterFormPageProps) {
 }
 
 const mapStateToProps = (state) => ({
-    identity: state.reducer.identity,
-    error: state.reducer.error
+    identity: state.authReducer.identity,
+    error: state.authReducer.error
 });
 
 const mapDispatchToProps = (dispatch) => {
     return {
         registerUserRequest: (data) => dispatch(registerUserRequest(data)),
-        clearReducerError: () => dispatch(clearReducerError())
+        clearReducerError: () => dispatch(clearIdentityError())
     }
 }
 

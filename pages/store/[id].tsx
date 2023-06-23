@@ -13,8 +13,8 @@ import { IStorePageProps, IState, IStore, IUser } from '../../server/interfaces/
 function StorePage(props: IStorePageProps) {
     const { query } = useRouter();
     const { storeByIdRequest, data } = props;
-    const store: IStore = useSelector((state: IState) => state.reducer.stores && state.reducer.stores[Number(query.id)]);
-    const user: IUser = useSelector((state: IState) => state.reducer.users && state.reducer.users[Number(store.user)]);
+    const store: IStore = useSelector((state: IState) => state.entitiesReducer.stores && state.entitiesReducer.stores[Number(query.id)]);
+    const user: IUser = useSelector((state: IState) => state.entitiesReducer.users && state.entitiesReducer.users[Number(store.user)]);
 
     useEffect(() => {
         if (query?.id && !store) {

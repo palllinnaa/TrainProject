@@ -14,9 +14,9 @@ import { IReview, IReviewsUserPageProps, IState, IStore, IUser } from '../../ser
 function ReviewsUserPage(props: IReviewsUserPageProps) {
     const { query } = useRouter();
     const { reviewsUserByIdRequest, data } = props;
-    const review: IReview = useSelector((state: IState) => state.reducer.reviews && state.reducer.reviews[Number(query.id)]);
-    const user: IUser = useSelector((state: IState) => state.reducer.users && state.reducer.users[Number(review.user)]);
-    const store: IStore = useSelector((state: IState) => state.reducer.stores && state.reducer.stores[Number(review.store)]);
+    const review: IReview = useSelector((state: IState) => state.entitiesReducer.reviews && state.entitiesReducer.reviews[Number(query.id)]);
+    const user: IUser = useSelector((state: IState) => state.entitiesReducer.users && state.entitiesReducer.users[Number(review.user)]);
+    const store: IStore = useSelector((state: IState) => state.entitiesReducer.stores && state.entitiesReducer.stores[Number(review.store)]);
 
     useEffect(() => {
         if (query?.id && !review) {
