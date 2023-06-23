@@ -1,30 +1,34 @@
 import Entity from "./entity"
 import { call, take, all } from 'redux-saga/effects'
-import { userSaga } from "../../server/constants";
+import { schema } from "normalizr";
 
 export default class UserSaga extends Entity {
     constructor() {
-        super('users');
+        super('users', {
+            store: [new schema.Entity('stores')],
+            review: [new schema.Entity('reviews')]
+        });
+        this.myUserSaga = this.myUserSaga.bind(this); 
     }
 
     protected * fetchUsers() {
         while (true) {
             yield take('USERS_REQUEST');
-            yield call(this.readData, 'users', this.entityName)
+            yield call(this.readData, 'users')
         }
     }
 
     protected * fetchUserById() {
         while (true) {
             const data = yield take('USER_BY_ID_REQUEST');
-            yield call(this.readData, `user/${data.payload}`, this.entityName)
+            yield call(this.readData, `user/${data.payload}`)
         }
     }
 
     public * myUserSaga() {
         yield all([
-            userSaga.fetchUsers(),
-            userSaga.fetchUserById()
+            this.fetchUsers(),
+            this.fetchUserById()
         ])
     }
 }
