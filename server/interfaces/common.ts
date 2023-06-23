@@ -123,14 +123,19 @@ export interface IAction {
 }
 
 export interface IState {
-    reducer: IStateData
+    entitiesReducer: IStateEntityData;
+    authReducer: IStateAuthData
 }
 
-export interface IStateData {
+export interface IStateEntityData {
     users?: IUser;
-    identity?: IUser,
     stores?: IStore;
     reviews?: IReview;
     products?: IProduct;
+    error?: string;
+}
+
+export interface IStateAuthData {
+    identity?: IUser,
     error?: string;
 }
