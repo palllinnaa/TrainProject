@@ -1,7 +1,11 @@
 import rootReducer from './reducers'
 import createSagaMiddleware from 'redux-saga'
 import { configureStore } from '@reduxjs/toolkit'
-import { authSaga, productSaga, reviewSaga, storeSaga, userSaga } from "../server/constants"
+import userSaga from '../redux/models/user'
+import authSaga from '../redux/models/auth'
+import storeSaga from '../redux/models/store'
+import reviewSaga from '../redux/models/review'
+import productSaga from '../redux/models/product'
 
 export const sagaMiddleware = createSagaMiddleware()
 export const store = configureStore({
