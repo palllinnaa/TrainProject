@@ -62,6 +62,6 @@ export default class Entity {
     }
 
     protected saveData(url: string, data: Record<string, any>) {
-        return this.actionRequest(url, METHODS.POST, data)
+        return this.actionRequest(url, METHODS.POST, data);
     }
 }

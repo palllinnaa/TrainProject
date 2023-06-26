@@ -2,7 +2,7 @@ import Entity from "./entity"
 import { call, take, all } from 'redux-saga/effects'
 import { schema } from "normalizr";
 
-export default class UserSaga extends Entity {
+class UserSaga extends Entity {
     constructor() {
         super('users', {
             store: [new schema.Entity('stores')],
@@ -14,14 +14,14 @@ export default class UserSaga extends Entity {
     protected * fetchUsers() {
         while (true) {
             yield take('USERS_REQUEST');
-            yield call(this.readData, 'users')
+            yield call(this.readData, 'users');
         }
     }
 
     protected * fetchUserById() {
         while (true) {
             const data = yield take('USER_BY_ID_REQUEST');
-            yield call(this.readData, `user/${data.payload}`)
+            yield call(this.readData, `user/${data.payload}`);
         }
     }
 
@@ -32,3 +32,5 @@ export default class UserSaga extends Entity {
         ])
     }
 }
+
+export default new UserSaga();

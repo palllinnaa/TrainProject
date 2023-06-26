@@ -4,7 +4,7 @@ import { call, take, put, all } from 'redux-saga/effects'
 import { getIdentity, getIdentityError } from "../actions/auth";
 import Router from 'next/router'
 
-export default class AuthSaga extends Entity{
+class AuthSaga extends Entity{
     constructor() {
         super();
         this.myAuthSaga = this.myAuthSaga.bind(this);
@@ -17,7 +17,7 @@ export default class AuthSaga extends Entity{
                 const result = yield call(this.fetchWrapper, 'login', METHODS.POST, data.payload);
                 if (result.identity) {
                     yield put(getIdentity(result.identity));
-                    Router.push(`/user/${result.identity.id}`)
+                    Router.push(`/user/${result.identity.id}`);
                 }
             } catch (error) {
                 yield put(getIdentityError(error.message));
@@ -32,7 +32,7 @@ export default class AuthSaga extends Entity{
                 const result = yield call(this.fetchWrapper, 'register', METHODS.POST, data.payload);
                 if (result.identity) {
                     yield put(getIdentity(result.identity));
-                    Router.push(`/user/${result.identity.id}`)
+                    Router.push(`/user/${result.identity.id}`);
                 }
             } catch (error) {
                 yield put(getIdentityError(error.message));
@@ -47,3 +47,5 @@ export default class AuthSaga extends Entity{
         ])
     }
 }
+
+export default new AuthSaga;
