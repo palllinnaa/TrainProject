@@ -4,7 +4,6 @@ import * as Yup from "yup";
 import Input from './Input';
 import Link from 'next/link';
 import Toast from './Toast';
-import { useRouter } from 'next/router';
 import { connect } from 'react-redux';
 import { loginUserRequest } from '../../redux/actions/auth';
 import { ILoginFormPageProps } from '../../server/interfaces/common';
@@ -24,7 +23,6 @@ const validationSchema = Yup.object({
 function LoginForm(props: ILoginFormPageProps) {
   const { loginUserRequest, clearReducerError, identity, error } = props;
   const [toast, setToast] = useState({ showToast: false, text: '' });
-  const router = useRouter();
   const initialValues = useMemo(() => ({
     email: "",
     password: "",
@@ -42,7 +40,7 @@ function LoginForm(props: ILoginFormPageProps) {
 
     onSubmit: async () => {
       try {
-        loginUserRequest({ ...values })
+        loginUserRequest({ ...values });
       } catch (error) {
         console.log('Error in LoginForm', error);
       }

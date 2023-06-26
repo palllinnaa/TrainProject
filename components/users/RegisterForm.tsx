@@ -1,5 +1,4 @@
 import React, { useEffect, useMemo, useState } from 'react'
-import { useRouter } from 'next/router';
 import { useFormik } from 'formik';
 import * as Yup from "yup";
 import Input from './Input';
@@ -38,7 +37,6 @@ const validationSchema = Yup.object({
 function RegisterForm(props: IRegisterFormPageProps) {
     const { registerUserRequest, clearReducerError, identity, error } = props;
     const [toast, setToast] = useState({ showToast: false, text: '' });
-    const router = useRouter();
     const initialValues = useMemo(() => ({
         firstName: "",
         lastName: "",
@@ -59,7 +57,7 @@ function RegisterForm(props: IRegisterFormPageProps) {
 
         onSubmit: async () => {
             try {
-                registerUserRequest({ ...values })
+                registerUserRequest({ ...values });
             } catch (error) {
                 console.log('Error in RegisterForm: ', error);
             }
