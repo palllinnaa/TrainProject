@@ -5,12 +5,12 @@ import { connect } from 'react-redux';
 import { storesRequest } from '../redux/actions/store';
 import { IAllStoresProps } from '../server/interfaces/common';
 
-export function getServerSideProps(context) {
-    return container.resolve("StoreController").run(context);
-}
+// export function getServerSideProps(context) {
+//     return container.resolve("StoreController").run(context);
+// }
 
 function AllStores(props: IAllStoresProps) {
-    const { storesRequest, data, stores } = props;
+    const { storesRequest, data, stores, users } = props;
 
     useEffect(() => {
         storesRequest();
@@ -22,12 +22,12 @@ function AllStores(props: IAllStoresProps) {
         <div>
             <Link href='/'>Home</Link>
             {
-                allStores?.map((store, id) => (
+                Object.values(allStores)?.map((store, id) => (
                     <div key={id}>
                         <Link href={`/store/${store.id}`}>store: {store.id}</Link>
                         <p>Store Name: {store.storeName}</p>
                         <p>Seller id: {store.userId}</p>
-                        <p>Seller name: {store.user.firstName} {store.user.lastName}</p>
+                        <p>Seller name: {users && users[Number(store.user)]?.firstName} {users && users[Number(store.user)]?.lastName}</p>
                         <p>Review count: {store.reviewCount}</p>
                         <p>Rating: {Number(store.rating).toFixed(1)}</p>
                         <p>----------------------------------------------------------------------</p>
@@ -39,7 +39,8 @@ function AllStores(props: IAllStoresProps) {
 }
 
 const mapStateToProps = (state) => ({
-    stores: state.storeReducer.stores
+    stores: state.entitiesReducer.stores,
+    users: state.entitiesReducer.users
 });
 
 const mapDispatchToProps = (dispatch) => {

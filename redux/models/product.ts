@@ -1,37 +1,35 @@
-import Entity from "../../src/models/entity"
-import { call, put, take, all } from 'redux-saga/effects'
-import { productSaga } from "../../server/constants";
-import { productByIdFetchFailed, productByIdFetchSucceeded, productsFetchFailed, productsFetchSucceeded } from "../actions/product";
+import Entity from "./entity"
+import { call, take, all } from 'redux-saga/effects'
+import { schema } from "normalizr";
 
-export default class ProductSaga extends Entity {
+class ProductSaga extends Entity {
+    constructor() {
+        super('products', {
+            store: new schema.Entity('stores')
+        });
+        this.myProductSaga = this.myProductSaga.bind(this); 
+    }
+    
     protected * fetchProducts() {
         while (true) {
             yield take('PRODUCTS_REQUEST');
-            try {
-                const products = yield call(this.readData, 'products')
-                yield put(productsFetchSucceeded(products))
-            } catch (error) {
-                yield put(productsFetchFailed(error.message))
-            }
+            yield call(this.readData, 'products');
         }
     }
 
     protected * fetchProductById() {
         while (true) {
             const data = yield take('PRODUCT_BY_ID_REQUEST');
-            try {
-                const product = yield call(this.readData, `product/${data.payload}`)
-                yield put(productByIdFetchSucceeded([product]))
-            } catch (error) {
-                yield put(productByIdFetchFailed(error.message))
-            }
+            yield call(this.readData, `product/${data.payload}`);
         }
     }
 
     public * myProductSaga() {
         yield all([
-            productSaga.fetchProducts(),
-            productSaga.fetchProductById(),
+            this.fetchProducts(),
+            this.fetchProductById()
         ])
     }
 }
+
+export default new ProductSaga;

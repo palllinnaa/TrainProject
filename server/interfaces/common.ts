@@ -9,7 +9,7 @@ export interface INextApiRequestExtended extends NextApiRequest {
 export interface IAllUsersProps {
     usersRequest: () => void;
     data: IUser[];
-    users: IUser[];
+    users: IUser;
 }
 
 export interface IUserPageProps {
@@ -29,7 +29,8 @@ export interface IUser {
 export interface IAllStoresProps {
     storesRequest: () => void;
     data: IStore[];
-    stores: IStore[];
+    stores: IStore;
+    users?: IUser;
 }
 
 export interface IStorePageProps {
@@ -49,7 +50,7 @@ export interface IStore {
 export interface IAllReviewsProps {
     reviewsRequest: () => void;
     data: IReview[];
-    reviews: IReview[];
+    reviews: IReview;
 }
 
 export interface IReviewPageProps {
@@ -59,7 +60,9 @@ export interface IReviewPageProps {
 export interface IAllReviewsUsersProps {
     reviewsUsersRequest: () => void;
     data: IReview[];
-    reviewsUsers: IReview[];
+    reviewsUsers: IReview;
+    users?: IUser;
+    stores?: IStore;
 }
 
 export interface IReviewsUserPageProps {
@@ -81,7 +84,7 @@ export interface IReview {
 export interface IAllProductProps {
     productsRequest: () => void;
     data: IProduct[];
-    products: IProduct[];
+    products: IProduct;
 }
 
 export interface IProductPageProps {
@@ -102,12 +105,14 @@ export interface IProduct {
 
 export interface ILoginFormPageProps {
     loginUserRequest: (data: any) => void;
+    clearReducerError: () => void;
     identity: IUser;
     error: string;
 }
 
 export interface IRegisterFormPageProps {
     registerUserRequest: (data: any) => void;
+    clearReducerError: () => void;
     identity: IUser;
     error: string;
 }
@@ -117,31 +122,20 @@ export interface IAction {
     payload?: any;
 }
 
-export interface IStateData {
-    userReducer: IUserReducer,
-    storeReducer: IStoreReducer,
-    reviewReducer: IReviewReducer,
-    productReducer: IProductReducer
+export interface IState {
+    entitiesReducer: IStateEntityData;
+    authReducer: IStateAuthData
 }
 
-export interface IUserReducer {
-    users?: IUser[];
-    identity?: IUser;
+export interface IStateEntityData {
+    users?: IUser;
+    stores?: IStore;
+    reviews?: IReview;
+    products?: IProduct;
     error?: string;
 }
 
-export interface IStoreReducer {
-    stores?: IStore[];
-    error?: string;
-}
-
-export interface IReviewReducer {
-    reviews?: IReview[];
-    reviewsUsers?: IReview[];
-    error?: string;
-}
-
-export interface IProductReducer {
-    products?: IProduct[];
+export interface IStateAuthData {
+    identity?: IUser,
     error?: string;
 }

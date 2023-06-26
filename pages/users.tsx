@@ -5,9 +5,9 @@ import { connect } from "react-redux"
 import { usersRequest } from '../redux/actions/user';
 import { IAllUsersProps } from '../server/interfaces/common';
 
-export function getServerSideProps(context) {
-    return container.resolve("UserController").run(context);
-}
+// export function getServerSideProps(context) {
+//     return container.resolve("UserController").run(context);
+// }
 
 function AllUsers(props: IAllUsersProps) {
     const { usersRequest, data, users } = props;
@@ -22,7 +22,7 @@ function AllUsers(props: IAllUsersProps) {
         <div>
             <Link href='/'>Home</Link>
             {
-                allUsers?.map((user, id) => (
+                Object.values(allUsers)?.map((user, id) => (
                     <div key={id}>
                         <Link href={`/user/${user.id}`}>User: {user.id}</Link>
                         <p>Name: {user.firstName}</p>
@@ -38,7 +38,7 @@ function AllUsers(props: IAllUsersProps) {
 };
 
 const mapStateToProps = (state) => ({
-    users: state.userReducer.users
+    users: state.entitiesReducer.users
 });
 
 const mapDispatchToProps = (dispatch) => {

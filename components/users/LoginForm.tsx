@@ -4,10 +4,10 @@ import * as Yup from "yup";
 import Input from './Input';
 import Link from 'next/link';
 import Toast from './Toast';
-import { useRouter } from 'next/router';
 import { connect } from 'react-redux';
-import { loginUserRequest } from '../../redux/actions/user';
+import { loginUserRequest } from '../../redux/actions/auth';
 import { ILoginFormPageProps } from '../../server/interfaces/common';
+import { clearIdentityError } from '../../redux/actions/auth';
 
 const validationSchema = Yup.object({
   email: Yup
@@ -21,9 +21,8 @@ const validationSchema = Yup.object({
 });
 
 function LoginForm(props: ILoginFormPageProps) {
-  const { loginUserRequest, identity, error } = props;
+  const { loginUserRequest, clearReducerError, identity, error } = props;
   const [toast, setToast] = useState({ showToast: false, text: '' });
-  const router = useRouter();
   const initialValues = useMemo(() => ({
     email: "",
     password: "",
@@ -41,7 +40,7 @@ function LoginForm(props: ILoginFormPageProps) {
 
     onSubmit: async () => {
       try {
-        loginUserRequest({ ...values })
+        loginUserRequest({ ...values });
       } catch (error) {
         console.log('Error in LoginForm', error);
       }
@@ -50,14 +49,13 @@ function LoginForm(props: ILoginFormPageProps) {
   });
 
   useEffect(() => {
-    if (identity) {
-      router.push(`/user/${identity?.id}`)
-    }
     if (error) {
       //TODO for text:error need to send custom message in passport
       setToast({ showToast: true, text: /*error ||*/ 'Email or password is incorrect!' })
-    }
-  }, [identity, error])
+    } else (
+      setToast({ showToast: false, text: '' })
+    )
+  }, [error])
 
   return (
     <div className='flex items-center justify-center min-h-screen px-4 font-serif lg:h-full lg:relative'>
@@ -66,7 +64,9 @@ function LoginForm(props: ILoginFormPageProps) {
           <h1 className='items-center mt-6 font-bold lg:text-2xl sm:text-lg'>Welcome to FoodStore</h1>
           <div className='flex'>
             <h4 className='pr-2 mt-1 font-semibold text-gray-400 lg:text-lg'>New Here?</h4>
-            <Link href='/register' className='mt-1 font-semibold text-blue-500 lg:text-lg hover:no-underline hover:text-blue-600'>Create an Account</Link>
+            <button onClick={clearReducerError}>
+              <Link href='/register' className='mt-1 font-semibold text-blue-500 lg:text-lg hover:no-underline hover:text-blue-600'>Create an Account</Link>
+            </button>
           </div>
         </div>
         <Toast show={toast.showToast} text={toast.text} />
@@ -109,13 +109,14 @@ function LoginForm(props: ILoginFormPageProps) {
 }
 
 const mapStateToProps = (state) => ({
-  identity: state.userReducer.identity,
-  error: state.userReducer.error
+  identity: state.authReducer.identity,
+  error: state.authReducer.error
 });
 
 const mapDispatchToProps = (dispatch) => {
   return {
     loginUserRequest: (data) => dispatch(loginUserRequest(data)),
+    clearReducerError: () => dispatch(clearIdentityError())
   }
 }
 

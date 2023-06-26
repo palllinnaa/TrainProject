@@ -4,16 +4,16 @@ import container from '../../server/container';
 import Link from 'next/link';
 import { connect, useSelector } from 'react-redux';
 import { reviewByIdRequest } from '../../redux/actions/review';
-import { IReviewPageProps, IStateData } from '../../server/interfaces/common';
+import { IReview, IReviewPageProps, IState } from '../../server/interfaces/common';
 
-export function getServerSideProps(context) {
-    return container.resolve("ReviewController").run({ ...context, routeName: "/review/:id" });
-}
+// export function getServerSideProps(context) {
+//     return container.resolve("ReviewController").run({ ...context, routeName: "/review/:id" });
+// }
 
 function ReviewPage(props: IReviewPageProps) {
     const { query } = useRouter();
     const { reviewByIdRequest, data } = props;
-    const review = useSelector((state: IStateData) => state.reviewReducer?.reviews?.find((item) => String(item.id) === query.id));
+    const review: IReview = useSelector((state: IState) => state.entitiesReducer.reviews && state.entitiesReducer.reviews[Number(query.id)]);
 
     useEffect(() => {
         if (query?.id && !review) {

@@ -5,14 +5,13 @@ import { connect } from 'react-redux';
 import { reviewsRequest } from '../redux/actions/review';
 import { IAllReviewsProps } from '../server/interfaces/common';
 
-export function getServerSideProps(context) {
-    return container.resolve("ReviewController").run(context);
-}
+// export function getServerSideProps(context) {
+//     return container.resolve("ReviewController").run(context);
+// }
 
 function AllReviews(props: IAllReviewsProps) {
     const { reviewsRequest, data, reviews } = props;
-    const url = 'reviews';
-    
+
     useEffect(() => {
         reviewsRequest()
     }, []);
@@ -23,7 +22,7 @@ function AllReviews(props: IAllReviewsProps) {
         <div>
             <Link href='/'>Home</Link>
             {
-                allReviews?.map((review, id) => (
+                Object.values(allReviews)?.map((review, id) => (
                     <div key={id}>
                         <Link href={`/review/${review.id}`}>Review {review.id}</Link>
                         <p>Review text: {review.reviewText}</p>
@@ -40,7 +39,7 @@ function AllReviews(props: IAllReviewsProps) {
 }
 
 const mapStateToProps = (state) => ({
-    reviews: state.reviewReducer.reviews
+    reviews: state.entitiesReducer.reviews
 });
 
 const mapDispatchToProps = (dispatch) => {

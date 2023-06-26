@@ -77,10 +77,10 @@ export default class UserService extends BaseContext {
             slug: dbSlug
         }
         user = await Users.create(userData);
-        return (user)
+        return ({ identity: user })
     }
 
-    public async  findUserWithEmailAndPassword(email, password) {
+    public async findUserWithEmailAndPassword(email, password) {
         const user = await this.loginUser(email, password);
         return user;
     }

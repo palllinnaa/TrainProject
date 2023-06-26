@@ -19,7 +19,7 @@ export default class StoreService extends BaseContext {
                 [Sequelize.fn("COUNT", Sequelize.col("reviews.storeId")), "reviewCount"],
                 [Sequelize.fn("avg", Sequelize.col("reviews.rating")), "rating"]],
             include: [
-                { model: Users, attributes: ['firstName', 'lastName'] },
+                { model: Users, attributes: ['id', 'firstName', 'lastName'] },
                 { model: Reviews, attributes: [] },
             ],
             group: ['id']
@@ -35,7 +35,7 @@ export default class StoreService extends BaseContext {
                 [Sequelize.fn("COUNT", Sequelize.col("reviews.storeId")), "reviewCount"],
                 [Sequelize.fn("avg", Sequelize.col("reviews.rating")), "rating"]],
             include: [
-                { model: Users, attributes: ['firstName', 'lastName'] },
+                { model: Users, attributes: ['id', 'firstName', 'lastName'] },
                 { model: Reviews, attributes: [] },
             ],
             group: ['id']

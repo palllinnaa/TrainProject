@@ -1,5 +1,4 @@
 import React, { useEffect, useMemo, useState } from 'react'
-import { useRouter } from 'next/router';
 import { useFormik } from 'formik';
 import * as Yup from "yup";
 import Input from './Input';
@@ -7,8 +6,9 @@ import Select from './Select';
 import Link from 'next/link';
 import Toast from './Toast';
 import { connect } from 'react-redux';
-import { registerUserRequest } from '../../redux/actions/user';
+import { registerUserRequest } from '../../redux/actions/auth';
 import { IRegisterFormPageProps } from '../../server/interfaces/common';
+import { clearIdentityError } from '../../redux/actions/auth';
 
 const validationSchema = Yup.object({
     firstName: Yup
@@ -35,9 +35,8 @@ const validationSchema = Yup.object({
 });
 
 function RegisterForm(props: IRegisterFormPageProps) {
-    const { registerUserRequest, identity, error } = props;
+    const { registerUserRequest, clearReducerError, identity, error } = props;
     const [toast, setToast] = useState({ showToast: false, text: '' });
-    const router = useRouter();
     const initialValues = useMemo(() => ({
         firstName: "",
         lastName: "",
@@ -58,7 +57,7 @@ function RegisterForm(props: IRegisterFormPageProps) {
 
         onSubmit: async () => {
             try {
-                registerUserRequest({ ...values })
+                registerUserRequest({ ...values });
             } catch (error) {
                 console.log('Error in RegisterForm: ', error);
             }
@@ -67,13 +66,12 @@ function RegisterForm(props: IRegisterFormPageProps) {
     });
 
     useEffect(() => {
-        if (identity) {
-            router.push(`/user/${identity?.id}`)
-        }
         if (error) {
-            setToast({ showToast: true, text: /*error ||*/ 'Something went wrong!' })
-        }
-    }, [identity, error])
+            setToast({ showToast: true, text: /*error ||*/ 'This email is already taken!' })
+        } else (
+            setToast({ showToast: false, text: '' })
+        )
+    }, [error])
 
     const options = [
         {
@@ -147,11 +145,13 @@ function RegisterForm(props: IRegisterFormPageProps) {
                             className='px-5 py-2 font-serif font-medium text-white bg-blue-500 rounded-md hover:bg-blue-600'>
                             Submit
                         </button>
-                        <Link
-                            href='/login'
-                            className='px-5 py-3 mx-3 font-serif font-medium text-blue-500 bg-blue-100 rounded-md hover:bg-blue-500 hover:text-white hover:no-underline'>
-                            Cancel
-                        </Link>
+                        <button onClick={clearReducerError}>
+                            <Link
+                                href='/login'
+                                className='px-5 py-3 mx-3 font-serif font-medium text-blue-500 bg-blue-100 rounded-md hover:bg-blue-500 hover:text-white hover:no-underline'>
+                                Cancel
+                            </Link>
+                        </button>
                     </div>
                 </form>
                 <div className='inset-x-0 bottom-0 flex justify-center my-4 text-sm font-semibold lg:absolute'>
@@ -168,13 +168,14 @@ function RegisterForm(props: IRegisterFormPageProps) {
 }
 
 const mapStateToProps = (state) => ({
-    identity: state.userReducer.identity,
-    error: state.userReducer.error
+    identity: state.authReducer.identity,
+    error: state.authReducer.error
 });
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        registerUserRequest: (data) => dispatch(registerUserRequest(data))
+        registerUserRequest: (data) => dispatch(registerUserRequest(data)),
+        clearReducerError: () => dispatch(clearIdentityError())
     }
 }
 

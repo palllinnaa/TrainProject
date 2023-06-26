@@ -6,16 +6,16 @@ import ProductDetails from '../../components/products/ProductDetails';
 import SiteHeader from '../../components/SiteHeader';
 import { connect, useSelector } from 'react-redux';
 import { productByIdRequest } from '../../redux/actions/product';
-import { IProductPageProps, IStateData } from '../../server/interfaces/common';
+import { IProduct, IProductPageProps, IState } from '../../server/interfaces/common';
 
-export function getServerSideProps(context) {
-  return container.resolve("ProductController").run({ ...context, routeName: "/product/:id" });
-}
+// export function getServerSideProps(context) {
+//   return container.resolve("ProductController").run({ ...context, routeName: "/product/:id" });
+// }
 
 function ProductPage(props: IProductPageProps) {
   const { query } = useRouter();
   const { productByIdRequest, data } = props;
-  const product = useSelector((state: IStateData) => state.productReducer?.products?.find((item) => String(item.id) === query.id));
+  const product: IProduct = useSelector((state: IState) => state.entitiesReducer.products && state.entitiesReducer.products[Number(query.id)]);
 
   useEffect(() => {
     if (query?.id && !product) {

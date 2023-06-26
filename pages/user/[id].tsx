@@ -3,17 +3,17 @@ import { useEffect } from 'react';
 import container from '../../server/container';
 import Link from 'next/link';
 import { connect, useSelector } from 'react-redux';
-import { IUserPageProps, IStateData } from '../../server/interfaces/common';
+import { IUserPageProps, IState, IUser } from '../../server/interfaces/common';
 import { userByIdRequest } from '../../redux/actions/user';
 
-export function getServerSideProps(context) {
-    return container.resolve("UserController").run({ ...context, routeName: "/user/:id" });
-}
+// export function getServerSideProps(context) {
+//     return container.resolve("UserController").run({ ...context, routeName: "/user/:id" });
+// }
 
 function UserPage(props: IUserPageProps) {
     const { query } = useRouter();
     const { userByIdRequest, data } = props;
-    const user = useSelector((state: IStateData) => state.userReducer?.users?.find((item) => String(item.id) === query.id));
+    const user: IUser = useSelector((state: IState) => state.entitiesReducer.users && state.entitiesReducer.users[Number(query.id)]);
 
     useEffect(() => {
         if (query?.id && !user) {
