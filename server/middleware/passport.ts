@@ -1,6 +1,6 @@
 import passport from 'passport';
 import { Strategy as LocalStrategy } from 'passport-local';
-import container from '../container';
+import serverContainer from '../container';
 
 passport.serializeUser((user, done) => {
     console.log('passport serialize, userId=', user.id);
@@ -9,7 +9,7 @@ passport.serializeUser((user, done) => {
 
 passport.deserializeUser((req, id, done) => {
     console.log('passport deserialize, userId', id);
-    container.resolve("UserService").findUserById(id)
+    serverContainer.resolve("UserService").findUserById(id)
         .then(
             (user) => done(null, user),
             (err) => done(err)
@@ -23,7 +23,7 @@ passport.use(
             passReqToCallback: true,
         },
         (req, email, password, done) => {
-            container.resolve("UserService")
+            serverContainer.resolve("UserService")
                 .findUserWithEmailAndPassword(email, password)
                 .then((user) => {
                     if (user) {
