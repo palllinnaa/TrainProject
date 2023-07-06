@@ -1,5 +1,5 @@
 import { BuildOptions, DataTypes, Model } from 'sequelize';
-import { IContextContainer } from '../container';
+import { IServerContextContainer } from '../container';
 import { IUserModel } from '../interfaces/users';
 const bcrypt = require('bcrypt');
 
@@ -8,7 +8,7 @@ export type UserType = typeof Model & {
   init(): void;
 }
 
-export default (ctx: IContextContainer) => {
+export default (ctx: IServerContextContainer) => {
   const Users = <UserType>ctx.db.define<IUserModel>('users', {
     id: {
       allowNull: false,

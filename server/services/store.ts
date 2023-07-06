@@ -1,7 +1,7 @@
 import { Sequelize } from "sequelize";
-import BaseContext from "../baseContext";
+import BaseServerContext from "../baseServerContext";
 
-export default class StoreService extends BaseContext {
+export default class StoreService extends BaseServerContext {
     public async findStoreById(id: number) {
         const { Stores } = this.di;
         return await Stores.findByPk(id);
