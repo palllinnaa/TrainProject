@@ -7,13 +7,13 @@ export interface INextApiRequestExtended extends NextApiRequest {
 }
 
 export interface IAllUsersProps {
-    usersRequest: () => void;
+    fetchUsers:  () => void;
     data: IUser[];
     users: IUser;
 }
 
 export interface IUserPageProps {
-    userByIdRequest: (data: any) => void;
+    fetchUserById: (data: any) => void;
     data: IUser;
 }
 export interface IUser {
@@ -27,14 +27,14 @@ export interface IUser {
 }
 
 export interface IAllStoresProps {
-    storesRequest: () => void;
+    fetchStores: () => void;
     data: IStore[];
     stores: IStore;
     users?: IUser;
 }
 
 export interface IStorePageProps {
-    storeByIdRequest: (data: any) => void;
+    fetchStoreById: (data: any) => void;
     data: IStore;
 }
 
@@ -48,17 +48,17 @@ export interface IStore {
 }
 
 export interface IAllReviewsProps {
-    reviewsRequest: () => void;
+    fetchReviews: () => void;
     data: IReview[];
     reviews: IReview;
 }
 
 export interface IReviewPageProps {
-    reviewByIdRequest: (data: any) => void;
+    fetchReviewById: (data: any) => void;
     data: IReview;
 }
 export interface IAllReviewsUsersProps {
-    reviewsUsersRequest: () => void;
+    fetchReviewsUsers: () => void;
     data: IReview[];
     reviewsUsers: IReview;
     users?: IUser;
@@ -66,7 +66,7 @@ export interface IAllReviewsUsersProps {
 }
 
 export interface IReviewsUserPageProps {
-    reviewsUserByIdRequest: (data: any) => void;
+    fetchReviewsUserById: (data: any) => void;
     data: IReview;
 }
 
@@ -82,13 +82,13 @@ export interface IReview {
 }
 
 export interface IAllProductProps {
-    productsRequest: () => void;
+    fetchProducts: () => void;
     data: IProduct[];
     products: IProduct;
 }
 
 export interface IProductPageProps {
-    productByIdRequest: (data: any) => void;
+    fetchProductById: (data: any) => void;
     data: IProduct;
 }
 
@@ -104,14 +104,14 @@ export interface IProduct {
 }
 
 export interface ILoginFormPageProps {
-    loginUserRequest: (data: any) => void;
+    fetchLoginUser: (data: any) => void;
     clearReducerError: () => void;
     identity: IUser;
     error: string;
 }
 
 export interface IRegisterFormPageProps {
-    registerUserRequest: (data: any) => void;
+    fetchRegisterUser: (data: any) => void;
     clearReducerError: () => void;
     identity: IUser;
     error: string;
@@ -138,4 +138,9 @@ export interface IStateEntityData {
 export interface IStateAuthData {
     identity?: IUser,
     error?: string;
+}
+
+export interface ISagaMethods {
+    className: string;
+    methodName: string;
 }
