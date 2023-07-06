@@ -1,3 +1,3 @@
-import container from "../../../server/container";
+import serverContainer from "../../../server/container";
 
-export default container.resolve("StoreController").handler("/api/store/:id");
+export default serverContainer.resolve("StoreController").handler("/api/store/:id");

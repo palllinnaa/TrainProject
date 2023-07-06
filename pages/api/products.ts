@@ -1,3 +1,3 @@
-import container from '../../server/container';
+import serverContainer from '../../server/container';
 
-export default container.resolve("ProductController").handler("/api/products");
+export default serverContainer.resolve("ProductController").handler("/api/products");
