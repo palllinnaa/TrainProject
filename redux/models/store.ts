@@ -1,37 +1,25 @@
 import Entity from "./entity"
-import { call, take, all } from 'redux-saga/effects'
+import { call } from 'redux-saga/effects'
 import { schema } from "normalizr";
+import action from "../decorators/action";
 
-class StoreSaga extends Entity {
-    constructor() {
-        super('stores', {
+export default class StoreSaga extends Entity {
+    constructor(opts: any) {
+        super(opts);
+        this.initSchema('stores', {
             user: new schema.Entity('users'),
             review: [new schema.Entity('reviews')],
             product: [new schema.Entity('products')]
         });
-        this.myStoreSaga = this.myStoreSaga.bind(this);
     }
-    
+
+    @action()
     protected * fetchStores() {
-        while (true) {
-            yield take('STORES_REQUEST');
-            yield call(this.readData, 'stores');
-        }
+        yield call(this.readData, 'stores');
     }
 
-    protected * fetchStoreById() {
-        while (true) {
-            const data = yield take('STORE_BY_ID_REQUEST');
-            yield call(this.readData, `store/${data.payload}`);
-        }
-    }
-
-    public * myStoreSaga() {
-        yield all([
-            this.fetchStores(),
-            this.fetchStoreById()
-        ])
+    @action()
+    protected * fetchStoreById(data) {
+        yield call(this.readData, `store/${data.payload}`);
     }
 }
-
-export default new StoreSaga;

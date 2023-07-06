@@ -1,36 +1,24 @@
 import Entity from "./entity"
-import { call, take, all } from 'redux-saga/effects'
+import { call } from 'redux-saga/effects'
 import { schema } from "normalizr";
+import action from "../decorators/action";
 
-class UserSaga extends Entity {
-    constructor() {
-        super('users', {
+export default class UserSaga extends Entity {
+    constructor(opts: any) {
+        super(opts);
+        this.initSchema('users', {
             store: [new schema.Entity('stores')],
             review: [new schema.Entity('reviews')]
         });
-        this.myUserSaga = this.myUserSaga.bind(this); 
     }
 
+    @action()
     protected * fetchUsers() {
-        while (true) {
-            yield take('USERS_REQUEST');
-            yield call(this.readData, 'users');
-        }
+        yield call(this.readData, 'users');
     }
 
-    protected * fetchUserById() {
-        while (true) {
-            const data = yield take('USER_BY_ID_REQUEST');
-            yield call(this.readData, `user/${data.payload}`);
-        }
-    }
-
-    public * myUserSaga() {
-        yield all([
-            this.fetchUsers(),
-            this.fetchUserById()
-        ])
+    @action()
+    protected * fetchUserById(data) {
+        yield call(this.readData, `user/${data.payload}`);
     }
 }
-
-export default new UserSaga();
