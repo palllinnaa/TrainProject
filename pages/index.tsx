@@ -1,19 +1,19 @@
 import React, { useEffect } from 'react';
-import container from '../server/container';
+import serverContainer from '../server/container';
 import App from '../components/App';
-import { productsRequest } from '../redux/actions/product';
 import { connect } from 'react-redux';
 import { IAllProductProps } from '../server/interfaces/common';
+import clientContainer from '../redux/container'
 
 // export async function getServerSideProps(context) {
-//   return container.resolve("ProductController").run(context);
+//   return serverContainer.resolve("ProductController").run(context);
 // }
 
 function Home(props: IAllProductProps) {
-  const { productsRequest, data, products } = props;
+  const { fetchProducts, data, products } = props;
 
   useEffect(() => {
-    productsRequest()
+    fetchProducts()
   }, []);
 
   const allProducts = data || products || [];
@@ -28,13 +28,11 @@ const mapStateToProps = (state) => ({
   products: state.entitiesReducer.products
 });
 
-const mapDispatchToProps = (dispatch) => {
+const mapDispatchToProps = () => {
+  const actionToDispatch = () => clientContainer.resolve('ProductSaga').action('fetchProducts');
   return {
-    productsRequest: () => dispatch(productsRequest())
+      fetchProducts: () => clientContainer.resolve('redux').dispatch(actionToDispatch())
   }
 }
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(Home)
+export default connect(mapStateToProps, mapDispatchToProps)(Home)

@@ -1,19 +1,19 @@
 import React, { useEffect } from 'react';
-import container from "../server/container";
+import serverContainer from "../server/container";
 import Link from "next/link";
 import { connect } from "react-redux"
-import { usersRequest } from '../redux/actions/user';
 import { IAllUsersProps } from '../server/interfaces/common';
+import clientContainer from '../redux/container'
 
 // export function getServerSideProps(context) {
-//     return container.resolve("UserController").run(context);
+//     return serverContainer.resolve("UserController").run(context);
 // }
 
 function AllUsers(props: IAllUsersProps) {
-    const { usersRequest, data, users } = props;
+    const { fetchUsers, data, users } = props;
 
     useEffect(() => {
-        usersRequest()
+        fetchUsers();
     }, []);
 
     const allUsers = data || users || [];
@@ -41,13 +41,11 @@ const mapStateToProps = (state) => ({
     users: state.entitiesReducer.users
 });
 
-const mapDispatchToProps = (dispatch) => {
+const mapDispatchToProps = () => {
+    const actionToDispatch = () => clientContainer.resolve('UserSaga').action('fetchUsers');
     return {
-        usersRequest: () => dispatch(usersRequest())
+        fetchUsers: () => clientContainer.resolve('redux').dispatch(actionToDispatch())
     }
 }
 
-export default connect(
-    mapStateToProps,
-    mapDispatchToProps,
-)(AllUsers)
+export default connect(mapStateToProps, mapDispatchToProps)(AllUsers)

@@ -1,23 +1,23 @@
 import { useRouter } from 'next/router'
 import { useEffect } from 'react';
-import container from '../../server/container';
+import serverContainer from '../../server/container';
 import Link from 'next/link';
 import { connect, useSelector } from 'react-redux';
-import { reviewByIdRequest } from '../../redux/actions/review';
 import { IReview, IReviewPageProps, IState } from '../../server/interfaces/common';
+import clientContainer from '../../redux/container'
 
 // export function getServerSideProps(context) {
-//     return container.resolve("ReviewController").run({ ...context, routeName: "/review/:id" });
+//     return serverContainer.resolve("ReviewController").run({ ...context, routeName: "/review/:id" });
 // }
 
 function ReviewPage(props: IReviewPageProps) {
     const { query } = useRouter();
-    const { reviewByIdRequest, data } = props;
+    const { fetchReviewById, data } = props;
     const review: IReview = useSelector((state: IState) => state.entitiesReducer.reviews && state.entitiesReducer.reviews[Number(query.id)]);
 
     useEffect(() => {
         if (query?.id && !review) {
-            reviewByIdRequest(query.id)
+            fetchReviewById(query.id)
         }
     }, [query, review]);
 
@@ -37,10 +37,12 @@ function ReviewPage(props: IReviewPageProps) {
 }
 
 const mapStateToProps = () => ({});
-const mapDispatchToProps = (dispatch) => {
+
+const mapDispatchToProps = () => {
+    const actionToDispatch = (id) => clientContainer.resolve('ReviewSaga').action('fetchReviewById', id);
     return {
-        reviewByIdRequest: (id) => dispatch(reviewByIdRequest(id))
+        fetchReviewById: (id) => clientContainer.resolve('redux').dispatch(actionToDispatch(id))
     }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps,)(ReviewPage)
+export default connect(mapStateToProps, mapDispatchToProps)(ReviewPage)
