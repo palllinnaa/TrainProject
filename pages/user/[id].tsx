@@ -1,23 +1,23 @@
 import { useRouter } from 'next/router'
 import { useEffect } from 'react';
-import container from '../../server/container';
+import serverContainer from '../../server/container';
 import Link from 'next/link';
 import { connect, useSelector } from 'react-redux';
 import { IUserPageProps, IState, IUser } from '../../server/interfaces/common';
-import { userByIdRequest } from '../../redux/actions/user';
+import clientContainer from '../../redux/container';
 
 // export function getServerSideProps(context) {
-//     return container.resolve("UserController").run({ ...context, routeName: "/user/:id" });
+//     return serverContainer.resolve("UserController").run({ ...context, routeName: "/user/:id" });
 // }
 
 function UserPage(props: IUserPageProps) {
     const { query } = useRouter();
-    const { userByIdRequest, data } = props;
+    const { fetchUserById, data } = props;
     const user: IUser = useSelector((state: IState) => state.entitiesReducer.users && state.entitiesReducer.users[Number(query.id)]);
 
     useEffect(() => {
         if (query?.id && !user) {
-            userByIdRequest(query.id);
+            fetchUserById(query.id);
         }
     }, [query, user]);
 
@@ -36,10 +36,12 @@ function UserPage(props: IUserPageProps) {
 }
 
 const mapStateToProps = () => ({});
-const mapDispatchToProps = (dispatch) => {
+
+const mapDispatchToProps = () => {
+    const actionToDispatch = (id) => clientContainer.resolve('UserSaga').action('fetchUserById', id);
     return {
-        userByIdRequest: (id) => dispatch(userByIdRequest(id))
+        fetchUserById: (id) => clientContainer.resolve('redux').dispatch(actionToDispatch(id))
     }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps,)(UserPage)
+export default connect(mapStateToProps, mapDispatchToProps)(UserPage)

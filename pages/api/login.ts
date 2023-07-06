@@ -1,3 +1,3 @@
-import container from '../../server/container';
+import serverContainer from '../../server/container';
 
-export default container.resolve("AuthController").handler("/api/login");
+export default serverContainer.resolve("AuthController").handler("/api/login");

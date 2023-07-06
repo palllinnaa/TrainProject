@@ -6,9 +6,9 @@ import Select from './Select';
 import Link from 'next/link';
 import Toast from './Toast';
 import { connect } from 'react-redux';
-import { registerUserRequest } from '../../redux/actions/auth';
 import { IRegisterFormPageProps } from '../../server/interfaces/common';
 import { clearIdentityError } from '../../redux/actions/auth';
+import clientContainer from '../../redux/container';
 
 const validationSchema = Yup.object({
     firstName: Yup
@@ -35,7 +35,7 @@ const validationSchema = Yup.object({
 });
 
 function RegisterForm(props: IRegisterFormPageProps) {
-    const { registerUserRequest, clearReducerError, identity, error } = props;
+    const { fetchRegisterUser, clearReducerError, error } = props;
     const [toast, setToast] = useState({ showToast: false, text: '' });
     const initialValues = useMemo(() => ({
         firstName: "",
@@ -57,7 +57,7 @@ function RegisterForm(props: IRegisterFormPageProps) {
 
         onSubmit: async () => {
             try {
-                registerUserRequest({ ...values });
+                fetchRegisterUser({ ...values });
             } catch (error) {
                 console.log('Error in RegisterForm: ', error);
             }
@@ -172,14 +172,12 @@ const mapStateToProps = (state) => ({
     error: state.authReducer.error
 });
 
-const mapDispatchToProps = (dispatch) => {
+const mapDispatchToProps = () => {
+    const actionToDispatch = (data) => clientContainer.resolve('AuthSaga').action('fetchRegisterUser', data);
     return {
-        registerUserRequest: (data) => dispatch(registerUserRequest(data)),
-        clearReducerError: () => dispatch(clearIdentityError())
+      fetchRegisterUser: (data) => clientContainer.resolve('redux').dispatch(actionToDispatch(data)),
+      clearReducerError: () => clientContainer.resolve('redux').dispatch(clearIdentityError())
     }
-}
+  }
 
-export default connect(
-    mapStateToProps,
-    mapDispatchToProps,
-)(RegisterForm)
+export default connect(mapStateToProps, mapDispatchToProps)(RegisterForm)

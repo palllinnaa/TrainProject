@@ -1,21 +1,21 @@
 import React, { useEffect } from 'react';
-import container from '../server/container';
+import serverContainer from '../server/container';
 import Link from "next/link";
 import { connect } from 'react-redux';
-import { reviewsRequest } from '../redux/actions/review';
 import { IAllReviewsProps } from '../server/interfaces/common';
+import clientContainer from '../redux/container'
 
 // export function getServerSideProps(context) {
-//     return container.resolve("ReviewController").run(context);
+//     return serverContainer.resolve("ReviewController").run(context);
 // }
 
 function AllReviews(props: IAllReviewsProps) {
-    const { reviewsRequest, data, reviews } = props;
+    const { fetchReviews, data, reviews } = props;
 
     useEffect(() => {
-        reviewsRequest()
+        fetchReviews()
     }, []);
-    
+
     const allReviews = data || reviews || [];
 
     return (
@@ -42,13 +42,11 @@ const mapStateToProps = (state) => ({
     reviews: state.entitiesReducer.reviews
 });
 
-const mapDispatchToProps = (dispatch) => {
+const mapDispatchToProps = () => {
+    const actionToDispatch = () => clientContainer.resolve('ReviewSaga').action('fetchReviews');
     return {
-        reviewsRequest: () => dispatch(reviewsRequest())
+        fetchReviews: () => clientContainer.resolve('redux').dispatch(actionToDispatch())
     }
 }
 
-export default connect(
-    mapStateToProps,
-    mapDispatchToProps,
-)(AllReviews)
+export default connect(mapStateToProps, mapDispatchToProps)(AllReviews)

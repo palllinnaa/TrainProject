@@ -1,52 +1,34 @@
 import Entity from "./entity"
-import { call, take, all } from 'redux-saga/effects'
+import { call } from 'redux-saga/effects'
 import { schema } from "normalizr";
+import action from "../decorators/action";
 
-class ReviewSaga extends Entity {
-    constructor() {
-        super('reviews', {
+export default class ReviewSaga extends Entity {
+    constructor(opts: any) {
+        super(opts);
+        this.initSchema('reviews', {
             user: new schema.Entity('users'),
             store: new schema.Entity('stores')
         });
-        this.myReviewSaga = this.myReviewSaga.bind(this);
     }
 
+    @action()
     protected * fetchReviews() {
-        while (true) {
-            yield take('REVIEWS_REQUEST');
-            yield call(this.readData, 'reviews');
-        }
+        yield call(this.readData, 'reviews');
     }
 
-    protected * fetchReviewById() {
-        while (true) {
-            const data = yield take('REVIEW_BY_ID_REQUEST');
-            yield call(this.readData, `review/${data.payload}`);
-        }
+    @action()
+    protected * fetchReviewById(data) {
+        yield call(this.readData, `review/${data.payload}`);
     }
 
+    @action()
     protected * fetchReviewsUsers() {
-        while (true) {
-            yield take('REVIEWS_USERS_REQUEST');
-            yield call(this.readData, 'reviewsUsers');
-        }
+        yield call(this.readData, 'reviewsUsers');
     }
 
-    protected * fetchReviewsUserById() {
-        while (true) {
-            const data = yield take('REVIEWS_USER_BY_ID_REQUEST');
-            yield call(this.readData, `reviewsUser/${data.payload}`);
-        }
-    }
-
-    public * myReviewSaga() {
-        yield all([
-            this.fetchReviews(),
-            this.fetchReviewById(),
-            this.fetchReviewsUsers(),
-            this.fetchReviewsUserById()
-        ])
+    @action()
+    protected * fetchReviewsUserById(data) {
+        yield call(this.readData, `reviewsUser/${data.payload}`);
     }
 }
-
-export default new ReviewSaga;

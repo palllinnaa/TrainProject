@@ -1,5 +1,5 @@
 import { BuildOptions, DataTypes, Model, } from 'sequelize';
-import { IContextContainer } from '../container';
+import { IServerContextContainer } from '../container';
 import { IReviewModel } from '../interfaces/reviews';
 
 export type ReviewType = typeof Model & {
@@ -7,7 +7,7 @@ export type ReviewType = typeof Model & {
   init(): void;
 }
 
-export default (ctx: IContextContainer) => {
+export default (ctx: IServerContextContainer) => {
   const Reviews = <ReviewType>ctx.db.define<IReviewModel>('reviews', {
     id: {
       allowNull: false,

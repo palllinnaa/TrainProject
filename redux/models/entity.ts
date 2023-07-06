@@ -1,7 +1,11 @@
 import { schema, normalize } from 'normalizr';
 import { METHODS } from "../../server/constants";
-import { put } from 'redux-saga/effects'
-import { fetchFailed, fetchSucceeded } from "../actions/action";
+import { call, fork, put, take } from 'redux-saga/effects'
+import { action, fetchFailed, fetchSucceeded } from "../actions/action";
+import 'reflect-metadata';
+import { ISagaMethods } from '../../server/interfaces/common';
+import clientContainer from '../container';
+import BaseClientContext from '../baseClientContext';
 
 interface IOptions {
     method: string;
@@ -9,18 +13,21 @@ interface IOptions {
     body?: string;
 }
 
-export default class Entity {
+export default class Entity extends BaseClientContext {
     // private entityName: string = '';
     // private attributes: Record<string, any>;
     private schema: any;
+    private static _actions = [];
 
-    constructor(entityName = null, attributes = {}) {
-        // this.entityName = entityName;
-        // this.attributes = attributes;
-        this.schema = entityName ? new schema.Entity(entityName, attributes) : null;
+    constructor(opts: any) {
+        super(opts);
         this.fetchWrapper = this.fetchWrapper.bind(this);
         this.readData = this.readData.bind(this);
         this.saveData = this.saveData.bind(this);
+    }
+
+    protected initSchema(entityName = '', attributes: any = {}) {
+        this.schema = entityName ? new schema.Entity(entityName, attributes) : null;
     }
 
     protected async fetchWrapper(url: string, method: string, data?: Record<string, any>) {
@@ -64,4 +71,29 @@ export default class Entity {
     protected saveData(url: string, data: Record<string, any>) {
         return this.actionRequest(url, METHODS.POST, data);
     }
+
+    public static sagas() {
+        const objects: ISagaMethods[] = Reflect.getMetadata("sagas", Entity);
+        return objects.map(o => {
+            const actionName = o.className + '_' + o.methodName;
+            const classInstance = clientContainer.resolve(o.className)
+            const method = classInstance[o.methodName].bind(classInstance);
+            const saga = function* () {
+                while (true) {
+                    const data = yield take(actionName);
+                    yield call(method, data);
+                }
+            }
+            Entity._actions = {
+                ...Entity._actions,
+                [actionName]: (data) => action(actionName, data)
+            }
+            return fork(saga);
+        })
+    }
+
+    public action(methodName, data?) {
+        return Entity._actions[this.constructor.name + '_' + methodName](data);
+    }
+
 }

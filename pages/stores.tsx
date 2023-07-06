@@ -1,19 +1,19 @@
 import React, { useEffect } from 'react';
-import container from '../server/container';
+import serverContainer from '../server/container';
 import Link from "next/link";
 import { connect } from 'react-redux';
-import { storesRequest } from '../redux/actions/store';
 import { IAllStoresProps } from '../server/interfaces/common';
+import clientContainer from '../redux/container'
 
 // export function getServerSideProps(context) {
-//     return container.resolve("StoreController").run(context);
+//     return serverContainer.resolve("StoreController").run(context);
 // }
 
 function AllStores(props: IAllStoresProps) {
-    const { storesRequest, data, stores, users } = props;
+    const { fetchStores, data, stores, users } = props;
 
     useEffect(() => {
-        storesRequest();
+        fetchStores();
     }, []);
 
     const allStores = data || stores || [];
@@ -43,13 +43,11 @@ const mapStateToProps = (state) => ({
     users: state.entitiesReducer.users
 });
 
-const mapDispatchToProps = (dispatch) => {
+const mapDispatchToProps = () => {
+    const actionToDispatch = () => clientContainer.resolve('StoreSaga').action('fetchStores');
     return {
-        storesRequest: () => dispatch(storesRequest())
+        fetchStores: () => clientContainer.resolve('redux').dispatch(actionToDispatch())
     }
 }
 
-export default connect(
-    mapStateToProps,
-    mapDispatchToProps,
-)(AllStores)
+export default connect(mapStateToProps, mapDispatchToProps)(AllStores)

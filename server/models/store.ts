@@ -1,5 +1,5 @@
 import { BuildOptions, DataTypes, Model } from 'sequelize';
-import { IContextContainer } from '../container';
+import { IServerContextContainer } from '../container';
 import { IStoreModel } from '../interfaces/stores';
 
 export type StoreType = typeof Model & {
@@ -7,7 +7,7 @@ export type StoreType = typeof Model & {
   init(): void;
 }
 
-export default (ctx: IContextContainer) => {
+export default (ctx: IServerContextContainer) => {
   const Stores = <StoreType>ctx.db.define<IStoreModel>('stores', {
     id: {
       allowNull: false,

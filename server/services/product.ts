@@ -1,6 +1,6 @@
-import BaseContext from "../baseContext";
+import BaseServerContext from "../baseServerContext";
 
-export default class ProductService extends BaseContext {
+export default class ProductService extends BaseServerContext {
     public async findProductById(id: number) {
         const { Products } = this.di;
         const product = await Products.findByPk(id, {

@@ -5,9 +5,9 @@ import Input from './Input';
 import Link from 'next/link';
 import Toast from './Toast';
 import { connect } from 'react-redux';
-import { loginUserRequest } from '../../redux/actions/auth';
 import { ILoginFormPageProps } from '../../server/interfaces/common';
 import { clearIdentityError } from '../../redux/actions/auth';
+import clientContainer from '../../redux/container';
 
 const validationSchema = Yup.object({
   email: Yup
@@ -21,7 +21,7 @@ const validationSchema = Yup.object({
 });
 
 function LoginForm(props: ILoginFormPageProps) {
-  const { loginUserRequest, clearReducerError, identity, error } = props;
+  const { fetchLoginUser, clearReducerError, error } = props;
   const [toast, setToast] = useState({ showToast: false, text: '' });
   const initialValues = useMemo(() => ({
     email: "",
@@ -40,7 +40,7 @@ function LoginForm(props: ILoginFormPageProps) {
 
     onSubmit: async () => {
       try {
-        loginUserRequest({ ...values });
+        fetchLoginUser({ ...values });
       } catch (error) {
         console.log('Error in LoginForm', error);
       }
@@ -113,14 +113,12 @@ const mapStateToProps = (state) => ({
   error: state.authReducer.error
 });
 
-const mapDispatchToProps = (dispatch) => {
+const mapDispatchToProps = () => {
+  const actionToDispatch = (data) => clientContainer.resolve('AuthSaga').action('fetchLoginUser', data);
   return {
-    loginUserRequest: (data) => dispatch(loginUserRequest(data)),
-    clearReducerError: () => dispatch(clearIdentityError())
+    fetchLoginUser: (data) => clientContainer.resolve('redux').dispatch(actionToDispatch(data)),
+    clearReducerError: () => clientContainer.resolve('redux').dispatch(clearIdentityError())
   }
 }
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(LoginForm)
+export default connect(mapStateToProps, mapDispatchToProps)(LoginForm)

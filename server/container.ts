@@ -5,11 +5,11 @@ import services, { IServicesContainer } from './services';
 import controllers, { IControllerContainer } from './controllers';
 import mysql2 from 'mysql2';
 
-export interface IContextContainer extends IModelContainer, IServicesContainer, IControllerContainer {
+export interface IServerContextContainer extends IModelContainer, IServicesContainer, IControllerContainer {
     db: Sequelize;
 }
 
-const container = awilix.createContainer<IContextContainer>({
+const serverContainer = awilix.createContainer<IServerContextContainer>({
     injectionMode: awilix.InjectionMode.PROXY,
 });
 const createDB = () => {
@@ -24,11 +24,11 @@ const createDB = () => {
     );
 }
 
-container.register({
+serverContainer.register({
     ...modelContainer,
     ...services,
     ...controllers,
     db: awilix.asFunction(createDB).singleton(),
 })
 
-export default container;
+export default serverContainer;

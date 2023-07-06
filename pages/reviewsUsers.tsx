@@ -1,21 +1,21 @@
 import React, { useEffect } from 'react';
-import container from '../server/container';
+import serverContainer from '../server/container';
 import Link from 'next/link';
 import { connect } from 'react-redux';
-import { reviewsUsersRequest } from '../redux/actions/review';
 import { IAllReviewsUsersProps } from '../server/interfaces/common';
+import clientContainer from '../redux/container'
 
 // export function getServerSideProps(context) {
-//     return container.resolve("ReviewController").run(context);
+//     return serverContainer.resolve("ReviewController").run(context);
 // }
 
 function AllReviewsUsers(props: IAllReviewsUsersProps) {
-    const { reviewsUsersRequest, data, reviewsUsers, users, stores } = props;
+    const { fetchReviewsUsers, data, reviewsUsers, users, stores } = props;
 
     useEffect(() => {
-        reviewsUsersRequest()
+        fetchReviewsUsers()
     }, []);
-    
+
     const allReviewsUsers = data || reviewsUsers || [];
 
     return (
@@ -48,13 +48,11 @@ const mapStateToProps = (state) => ({
     stores: state.entitiesReducer.stores
 });
 
-const mapDispatchToProps = (dispatch) => {
+const mapDispatchToProps = () => {
+    const actionToDispatch = () => clientContainer.resolve('ReviewSaga').action('fetchReviewsUsers');
     return {
-        reviewsUsersRequest: () => dispatch(reviewsUsersRequest())
+        fetchReviewsUsers: () => clientContainer.resolve('redux').dispatch(actionToDispatch())
     }
 }
 
-export default connect(
-    mapStateToProps,
-    mapDispatchToProps,
-)(AllReviewsUsers)
+export default connect(mapStateToProps, mapDispatchToProps)(AllReviewsUsers)

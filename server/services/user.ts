@@ -1,11 +1,11 @@
-import BaseContext from "../baseContext";
+import BaseServerContext from "../baseServerContext";
 import validator from 'validator';
 import { IUserModel } from "../interfaces/users";
 import { Op } from "sequelize";
 const bcrypt = require('bcrypt');
 const slug = require('slug')
 
-export default class UserService extends BaseContext {
+export default class UserService extends BaseServerContext {
     public async findUserById(id: number) {
         const { Users } = this.di;
         return await Users.findByPk(id);

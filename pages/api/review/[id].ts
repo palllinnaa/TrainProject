@@ -1,3 +1,3 @@
-import container from '../../../server/container';
+import serverContainer from '../../../server/container';
 
-export default container.resolve("ReviewController").handler("/api/review/:id");
+export default serverContainer.resolve("ReviewController").handler("/api/review/:id");

@@ -1,6 +1,6 @@
-import BaseContext from "../baseContext";
+import BaseServerContext from "../baseServerContext";
 
-export default class ReviewService extends BaseContext {
+export default class ReviewService extends BaseServerContext {
     public async findReviewById(id: number) {
         const { Reviews } = this.di;
         return await Reviews.findByPk(id);

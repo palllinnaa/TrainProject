@@ -1,10 +1,10 @@
-import BaseContext from "../baseContext";
+import BaseServerContext from "../baseServerContext";
 import { createRouter } from 'next-connect';
 import { NextApiResponse, NextApiRequest } from 'next';
 import { INextApiRequestExtended } from '../interfaces/common';
 import 'reflect-metadata';
 
-export default class BaseController extends BaseContext {
+export default class BaseController extends BaseServerContext {
 
     // private useClassMiddleware(router) {
     //     const classMiddleware = Reflect.getMetadata(
