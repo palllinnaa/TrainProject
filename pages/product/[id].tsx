@@ -1,48 +1,35 @@
 import { useRouter } from 'next/router'
-import { useEffect } from 'react';
-import serverContainer from '../../server/container';
 import Link from 'next/link';
 import ProductDetails from '../../components/products/ProductDetails';
 import SiteHeader from '../../components/SiteHeader';
-import { connect, useSelector } from 'react-redux';
-import { IProduct, IProductPageProps, IState } from '../../server/interfaces/common';
+import { useSelector } from 'react-redux';
+import { IProduct, IState } from '../../server/interfaces/common';
 import clientContainer from '../../redux/container'
+import { END } from 'redux-saga';
 
-// export function getServerSideProps(context) {
-//   return serverContainer.resolve("ProductController").run({ ...context, routeName: "/product/:id" });
-// }
-
-function ProductPage(props: IProductPageProps) {
-  const { query } = useRouter();
-  const { fetchProductById, data } = props;
-  const product: IProduct = useSelector((state: IState) => state.entitiesReducer.products && state.entitiesReducer.products[Number(query.id)]);
-
-  useEffect(() => {
-    if (query?.id && !product) {
-      fetchProductById(query.id)
+export const getServerSideProps = clientContainer.resolve('redux')._wrapper.getServerSideProps((store) =>
+    async (context) => {
+        const actionToDispatch = (id) => clientContainer.resolve('ProductSaga').action('fetchProductById', id);
+        await store.dispatch(actionToDispatch(context.params.id));
+        store.dispatch(END);
+        await store.sagaTask.toPromise();
+        return { props: {} }
     }
-  }, [query, product]);
+);
 
-  const currentProduct = data || product;
+function ProductPage() {
+  const { query } = useRouter();
+  const product: IProduct = useSelector((state: IState) => state.entitiesReducer.products && state.entitiesReducer.products[Number(query.id)]);
 
   return (
     <div >
       <div className='px-3 font-serif lg:px-4 lg:relative'>
         <SiteHeader />
         <Link href='/'>Home</Link>
-        <ProductDetails product={currentProduct} />
+        <ProductDetails product={product} />
       </div>
     </div >
   )
 }
 
-const mapStateToProps = () => ({});
-
-const mapDispatchToProps = () => {
-  const actionToDispatch = (id) => clientContainer.resolve('ProductSaga').action('fetchProductById', id);
-  return {
-    fetchProductById: (id) => clientContainer.resolve('redux').dispatch(actionToDispatch(id))
-  }
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(ProductPage)
+export default ProductPage;

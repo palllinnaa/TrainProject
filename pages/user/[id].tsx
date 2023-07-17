@@ -1,47 +1,34 @@
 import { useRouter } from 'next/router'
-import { useEffect } from 'react';
-import serverContainer from '../../server/container';
 import Link from 'next/link';
-import { connect, useSelector } from 'react-redux';
-import { IUserPageProps, IState, IUser } from '../../server/interfaces/common';
+import { useSelector } from 'react-redux';
+import { IState, IUser } from '../../server/interfaces/common';
 import clientContainer from '../../redux/container';
+import { END } from 'redux-saga';
 
-// export function getServerSideProps(context) {
-//     return serverContainer.resolve("UserController").run({ ...context, routeName: "/user/:id" });
-// }
+export const getServerSideProps = clientContainer.resolve('redux')._wrapper.getServerSideProps((store) =>
+    async (context) => {
+        const actionToDispatch = (id) => clientContainer.resolve('UserSaga').action('fetchUserById', id);
+        await store.dispatch(actionToDispatch(context.params.id));
+        store.dispatch(END);
+        await store.sagaTask.toPromise();
+        return { props: {} }
+    }
+);
 
-function UserPage(props: IUserPageProps) {
+function UserPage() {
     const { query } = useRouter();
-    const { fetchUserById, data } = props;
     const user: IUser = useSelector((state: IState) => state.entitiesReducer.users && state.entitiesReducer.users[Number(query.id)]);
-
-    useEffect(() => {
-        if (query?.id && !user) {
-            fetchUserById(query.id);
-        }
-    }, [query, user]);
-
-    const currentUser = data || user;
 
     return (
         <div >
             <Link href='/users'>Back to users</Link>
-            <h1>User {currentUser?.id}</h1>
-            <p>Name: {currentUser?.firstName}</p>
-            <p>Surname: {currentUser?.lastName}</p>
-            <p>Email: {currentUser?.email}</p>
-            <p>Role: {currentUser?.role}</p>
+            <h1>User {user?.id}</h1>
+            <p>Name: {user?.firstName}</p>
+            <p>Surname: {user?.lastName}</p>
+            <p>Email: {user?.email}</p>
+            <p>Role: {user?.role}</p>
         </div >
     )
 }
 
-const mapStateToProps = () => ({});
-
-const mapDispatchToProps = () => {
-    const actionToDispatch = (id) => clientContainer.resolve('UserSaga').action('fetchUserById', id);
-    return {
-        fetchUserById: (id) => clientContainer.resolve('redux').dispatch(actionToDispatch(id))
-    }
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(UserPage)
+export default UserPage;
