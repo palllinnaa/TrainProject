@@ -1,28 +1,28 @@
-import React, { useEffect } from 'react';
-import serverContainer from '../server/container';
+import React from 'react';
 import Link from "next/link";
 import { connect } from 'react-redux';
-import { IAllReviewsProps } from '../server/interfaces/common';
+import { IAllReviewsProps, IState } from '../server/interfaces/common';
 import clientContainer from '../redux/container'
+import { END } from 'redux-saga';
 
-// export function getServerSideProps(context) {
-//     return serverContainer.resolve("ReviewController").run(context);
-// }
+export const getServerSideProps = clientContainer.resolve('redux')._wrapper.getServerSideProps((store) =>
+    async () => {
+        const actionToDispatch = () => clientContainer.resolve('ReviewSaga').action('fetchReviews');
+        await store.dispatch(actionToDispatch());
+        store.dispatch(END);
+        await store.sagaTask.toPromise()
+        return { props: {} }
+    }
+);
 
 function AllReviews(props: IAllReviewsProps) {
-    const { fetchReviews, data, reviews } = props;
-
-    useEffect(() => {
-        fetchReviews()
-    }, []);
-
-    const allReviews = data || reviews || [];
+    const { reviews } = props;
 
     return (
         <div>
             <Link href='/'>Home</Link>
             {
-                Object.values(allReviews)?.map((review, id) => (
+                Object.values(reviews)?.map((review, id) => (
                     <div key={id}>
                         <Link href={`/review/${review.id}`}>Review {review.id}</Link>
                         <p>Review text: {review.reviewText}</p>
@@ -38,15 +38,8 @@ function AllReviews(props: IAllReviewsProps) {
     );
 }
 
-const mapStateToProps = (state) => ({
-    reviews: state.entitiesReducer.reviews
+const mapStateToProps = (state: IState) => ({
+    reviews: state.entitiesReducer.reviews || []
 });
 
-const mapDispatchToProps = () => {
-    const actionToDispatch = () => clientContainer.resolve('ReviewSaga').action('fetchReviews');
-    return {
-        fetchReviews: () => clientContainer.resolve('redux').dispatch(actionToDispatch())
-    }
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(AllReviews)
+export default connect(mapStateToProps)(AllReviews)

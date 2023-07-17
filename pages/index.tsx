@@ -1,38 +1,30 @@
-import React, { useEffect } from 'react';
-import serverContainer from '../server/container';
+import React from 'react';
 import App from '../components/App';
 import { connect } from 'react-redux';
-import { IAllProductProps } from '../server/interfaces/common';
+import { IAllProductProps, IState } from '../server/interfaces/common';
 import clientContainer from '../redux/container'
+import { END } from 'redux-saga';
 
-// export async function getServerSideProps(context) {
-//   return serverContainer.resolve("ProductController").run(context);
-// }
+export const getServerSideProps = clientContainer.resolve('redux')._wrapper.getServerSideProps((store) =>
+  async () => {
+    const actionToDispatch = () => clientContainer.resolve('ProductSaga').action('fetchProducts');
+    await store.dispatch(actionToDispatch());
+    store.dispatch(END);
+    await store.sagaTask.toPromise()
+    return { props: {} }
+  }
+);
 
 function Home(props: IAllProductProps) {
-  const { fetchProducts, data, products } = props;
-
-  useEffect(() => {
-    fetchProducts()
-  }, []);
-
-  const allProducts = data || products || [];
+  const { products } = props;
 
   return (
-    <App data={allProducts} />
-
+    <App data={products} />
   );
 }
 
-const mapStateToProps = (state) => ({
-  products: state.entitiesReducer.products
+const mapStateToProps = (state: IState) => ({
+  products: state.entitiesReducer.products || []
 });
 
-const mapDispatchToProps = () => {
-  const actionToDispatch = () => clientContainer.resolve('ProductSaga').action('fetchProducts');
-  return {
-      fetchProducts: () => clientContainer.resolve('redux').dispatch(actionToDispatch())
-  }
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(Home)
+export default connect(mapStateToProps)(Home)

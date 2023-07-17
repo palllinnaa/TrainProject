@@ -1,19 +1,17 @@
 import '../styles/global.css';
-import { AppProps } from 'next/app';
 import { ReactNode } from 'react';
-import { Provider } from 'react-redux';
 import clientContainer from '../redux/container';
+import { AppProps } from 'next/app';
+
 
 const redux = clientContainer.resolve('redux');
 
 const App = (props: AppProps): ReactNode => {
     const { Component, pageProps } = props;
-    return <Provider store={redux.store} >
-        <Component {...pageProps} />
-        {/* //TODO add ContainerContext.Provider
+    return <Component {...pageProps} />
+    {/* //TODO add ContainerContext.Provider
         <ContainerContext.Provider value={container}>
         </ContainerContext.Provider> */}
-    </Provider>
 }
 
-export default App;
+export default clientContainer.resolve('redux')._wrapper.withRedux(App)

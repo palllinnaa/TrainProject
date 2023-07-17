@@ -113,11 +113,11 @@ const mapStateToProps = (state) => ({
   error: state.authReducer.error
 });
 
-const mapDispatchToProps = () => {
+const mapDispatchToProps = (dispatch) => {
   const actionToDispatch = (data) => clientContainer.resolve('AuthSaga').action('fetchLoginUser', data);
   return {
-    fetchLoginUser: (data) => clientContainer.resolve('redux').dispatch(actionToDispatch(data)),
-    clearReducerError: () => clientContainer.resolve('redux').dispatch(clearIdentityError())
+    fetchLoginUser: (data) => dispatch(actionToDispatch(data)),
+    clearReducerError: () => dispatch(clearIdentityError())
   }
 }
 

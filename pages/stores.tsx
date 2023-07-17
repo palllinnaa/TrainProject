@@ -1,28 +1,28 @@
-import React, { useEffect } from 'react';
-import serverContainer from '../server/container';
+import React from 'react';
 import Link from "next/link";
 import { connect } from 'react-redux';
-import { IAllStoresProps } from '../server/interfaces/common';
+import { IAllStoresProps, IState } from '../server/interfaces/common';
 import clientContainer from '../redux/container'
+import { END } from 'redux-saga';
 
-// export function getServerSideProps(context) {
-//     return serverContainer.resolve("StoreController").run(context);
-// }
+export const getServerSideProps = clientContainer.resolve('redux')._wrapper.getServerSideProps((store) =>
+    async () => {
+        const actionToDispatch = () => clientContainer.resolve('StoreSaga').action('fetchStores');
+        await store.dispatch(actionToDispatch());
+        store.dispatch(END);
+        await store.sagaTask.toPromise()
+        return { props: {} }
+    }
+);
 
 function AllStores(props: IAllStoresProps) {
-    const { fetchStores, data, stores, users } = props;
-
-    useEffect(() => {
-        fetchStores();
-    }, []);
-
-    const allStores = data || stores || [];
+    const { stores, users } = props;
 
     return (
         <div>
             <Link href='/'>Home</Link>
             {
-                Object.values(allStores)?.map((store, id) => (
+                Object.values(stores)?.map((store, id) => (
                     <div key={id}>
                         <Link href={`/store/${store.id}`}>store: {store.id}</Link>
                         <p>Store Name: {store.storeName}</p>
@@ -38,16 +38,9 @@ function AllStores(props: IAllStoresProps) {
     );
 }
 
-const mapStateToProps = (state) => ({
-    stores: state.entitiesReducer.stores,
-    users: state.entitiesReducer.users
+const mapStateToProps = (state: IState) => ({
+    stores: state.entitiesReducer.stores || [],
+    users: state.entitiesReducer.users || []
 });
 
-const mapDispatchToProps = () => {
-    const actionToDispatch = () => clientContainer.resolve('StoreSaga').action('fetchStores');
-    return {
-        fetchStores: () => clientContainer.resolve('redux').dispatch(actionToDispatch())
-    }
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(AllStores)
+export default connect(mapStateToProps)(AllStores)
