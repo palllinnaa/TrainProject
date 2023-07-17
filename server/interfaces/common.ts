@@ -7,15 +7,9 @@ export interface INextApiRequestExtended extends NextApiRequest {
 }
 
 export interface IAllUsersProps {
-    fetchUsers:  () => void;
-    data: IUser[];
     users: IUser;
 }
 
-export interface IUserPageProps {
-    fetchUserById: (data: any) => void;
-    data: IUser;
-}
 export interface IUser {
     id: number;
     firstName: string;
@@ -27,15 +21,8 @@ export interface IUser {
 }
 
 export interface IAllStoresProps {
-    fetchStores: () => void;
-    data: IStore[];
     stores: IStore;
     users?: IUser;
-}
-
-export interface IStorePageProps {
-    fetchStoreById: (data: any) => void;
-    data: IStore;
 }
 
 export interface IStore {
@@ -48,26 +35,13 @@ export interface IStore {
 }
 
 export interface IAllReviewsProps {
-    fetchReviews: () => void;
-    data: IReview[];
     reviews: IReview;
 }
 
-export interface IReviewPageProps {
-    fetchReviewById: (data: any) => void;
-    data: IReview;
-}
 export interface IAllReviewsUsersProps {
-    fetchReviewsUsers: () => void;
-    data: IReview[];
     reviewsUsers: IReview;
     users?: IUser;
     stores?: IStore;
-}
-
-export interface IReviewsUserPageProps {
-    fetchReviewsUserById: (data: any) => void;
-    data: IReview;
 }
 
 export interface IReview {
@@ -82,14 +56,7 @@ export interface IReview {
 }
 
 export interface IAllProductProps {
-    fetchProducts: () => void;
-    data: IProduct[];
     products: IProduct;
-}
-
-export interface IProductPageProps {
-    fetchProductById: (data: any) => void;
-    data: IProduct;
 }
 
 export interface IProduct {
@@ -124,7 +91,7 @@ export interface IAction {
 
 export interface IState {
     entitiesReducer: IStateEntityData;
-    authReducer: IStateAuthData
+    authReducer: IStateAuthData;
 }
 
 export interface IStateEntityData {
@@ -136,7 +103,7 @@ export interface IStateEntityData {
 }
 
 export interface IStateAuthData {
-    identity?: IUser,
+    identity?: IUser;
     error?: string;
 }
 
