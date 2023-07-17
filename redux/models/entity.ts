@@ -31,7 +31,7 @@ export default class Entity extends BaseClientContext {
     }
 
     protected async fetchWrapper(url: string, method: string, data?: Record<string, any>) {
-        url = `/api/${url}`;
+        url = `${process.env.NEXT_PUBLIC_DOMAIN}/api/${url}`;
         const options: IOptions = {
             method: method,
         }
