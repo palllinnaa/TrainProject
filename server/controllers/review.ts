@@ -5,9 +5,18 @@ import SSR from "../decorators/ssr";
 import USE from "../decorators/use";
 import session from "../middleware/session";
 import { passportInitialize, passportSession } from "../middleware/passport";
+import { schema } from "normalizr";
 
 @USE([session, passportInitialize, passportSession])
 export default class ReviewController extends BaseController {
+    constructor(opts: any) {
+        super(opts);
+        this.initSchema('reviews', {
+            user: new schema.Entity('users'),
+            store: new schema.Entity('stores')
+        });
+    }
+
     @SSR("/review/:id")
     @GET("/api/review/:id")
     public async findReviewById(req: INextApiRequestExtended) {
