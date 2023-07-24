@@ -3,8 +3,19 @@ import { createRouter } from 'next-connect';
 import { NextApiResponse, NextApiRequest } from 'next';
 import { INextApiRequestExtended } from '../interfaces/common';
 import 'reflect-metadata';
+import { schema, normalize } from "normalizr";
+import { fetchFailed, fetchSucceeded } from "../../redux/actions/action";
 
 export default class BaseController extends BaseServerContext {
+    private schema: any;
+
+    constructor(opts: any) {
+        super(opts);
+    }
+
+    protected initSchema(entityName = '', attributes: any = {}) {
+        this.schema = entityName ? new schema.Entity(entityName, attributes) : null;
+    }
 
     // private useClassMiddleware(router) {
     //     const classMiddleware = Reflect.getMetadata(
@@ -24,11 +35,16 @@ export default class BaseController extends BaseServerContext {
         const methodArgs = Array.isArray(methodMiddleware) ? methodMiddleware : [];
         return methodArgs;
     }
-    public run = (context) =>
+
+    protected normalizationData(data) {
+        return normalize(data, Array.isArray(data) ? [this.schema] : this.schema);
+    }
+
+    public run = (context, store) =>
         createRouter()
             .get(async (req: INextApiRequestExtended, res: NextApiResponse) => {
                 try {
-                    const routeName = context.routeName || context.req.url;
+                    const routeName = context.routeName /*|| context.req.url*/ || context.resolvedUrl;
                     const method = "SSR";
                     const members: any = Reflect.getMetadata(routeName, this);
                     const [firstMethod] = members[method];
@@ -38,14 +54,17 @@ export default class BaseController extends BaseServerContext {
                         params: context?.params,
                     } as any);
                     data = JSON.parse(JSON.stringify(data));
+                    const normalizedData = this.normalizationData(data);
+                    await store.dispatch(fetchSucceeded(normalizedData));
                     return {
-                        props: { data },
+                        props: {}
                     };
                     // }
                 } catch (error: any) {
                     console.error('ERROR in getServerSideProps:', error);
+                    store.dispatch(fetchFailed(error))
                     return {
-                        props: { message: error },
+                        props: {},
                     };
                 }
             })
