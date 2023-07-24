@@ -1,3 +1,4 @@
+import { isEmpty } from './../../server/constants';
 import { IState, IAction } from './../../server/interfaces/common';
 import entitiesReducer from './entityReducer'
 import authReducer from './authReducer'
@@ -15,11 +16,26 @@ const rootReducer = (state: IState, action: IAction) => {
       if (action.payload) {
         Object.keys(action.payload).map(reducerName => {
           Object.keys(action.payload[reducerName]).map(entityName => {
-            state = {
-              ...state,
-              [reducerName]: {
-                ...state[reducerName],
-                [entityName]: action.payload[reducerName][entityName]
+            if (!isEmpty(state[reducerName][entityName])) {
+              Object.keys(action.payload[reducerName][entityName]).map(id => {
+                state = {
+                  ...state,
+                  [reducerName]: {
+                    ...state[reducerName],
+                    [entityName]: {
+                      ...state[reducerName][entityName],
+                      [id]: action.payload[reducerName][entityName][id]
+                    }
+                  }
+                }
+              });
+            } else {
+              state = {
+                ...state,
+                [reducerName]: {
+                  ...state[reducerName],
+                  [entityName]: action.payload[reducerName][entityName]
+                }
               }
             }
           });
