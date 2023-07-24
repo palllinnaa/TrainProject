@@ -1,18 +1,31 @@
 import Link from 'next/link';
-import React from 'react';
+import React, { useState } from 'react';
 import Filter from './Filter';
 import ProductBox from './products';
 import Search from './Search';
 import SiteHeader from './SiteHeader';
 
 export default function App(props) {
+    const { data } = props;
+    const [query, setQuery] = useState('');
+ 
+    const filterProductByName = (array) => {
+        return array.filter(
+            (el) => el.productName.toLowerCase().includes(query)
+        )
+    }
+    const filteredData = filterProductByName(Object.values(data))
+    const handleChange = (e) => {
+        setQuery(e.target.value)
+    }
+
     return (
         <div >
             <div className='px-3 font-serif '>
                 <SiteHeader />
                 <div className='flex mt-3'>
                     <div className='flex-1'>
-                        <Search />
+                        <Search handleChange={handleChange} />
                     </div>
                     <div className='flex ml-3'>
                         <Filter />
@@ -34,7 +47,7 @@ export default function App(props) {
                 <Link className='px-4 py-1.5 focus:bg-red-500 focus:border-red-500 hover:bg-red-500 hover:border-red-500 mx-1 mb-4 text-gray-900 border border-gray-200 rounded-full sm:mx-2 hover:no-underline' href='/reviewsUsers'>Reviews Users</Link>
             </div>
             <div className='justify-center font-serif sm:px-4 lg:px-6'>
-                <ProductBox data={props?.data} />
+                <ProductBox data={filteredData ? filteredData : data} />
             </div>
         </div>
     );
