@@ -3,15 +3,11 @@ import Link from "next/link";
 import { connect } from 'react-redux';
 import { IAllReviewsProps, IState } from '../server/interfaces/common';
 import clientContainer from '../redux/container'
-import { END } from 'redux-saga';
+import serverContainer from '../server/container';
 
 export const getServerSideProps = clientContainer.resolve('redux')._wrapper.getServerSideProps((store) =>
-    async () => {
-        const actionToDispatch = () => clientContainer.resolve('ReviewSaga').action('fetchReviews');
-        await store.dispatch(actionToDispatch());
-        store.dispatch(END);
-        await store.sagaTask.toPromise()
-        return { props: {} }
+    async (context) => {
+        return serverContainer.resolve("ReviewController").run(context, store);
     }
 );
 

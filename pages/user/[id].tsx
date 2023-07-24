@@ -3,15 +3,11 @@ import Link from 'next/link';
 import { useSelector } from 'react-redux';
 import { IState, IUser } from '../../server/interfaces/common';
 import clientContainer from '../../redux/container';
-import { END } from 'redux-saga';
+import serverContainer from '../../server/container';
 
 export const getServerSideProps = clientContainer.resolve('redux')._wrapper.getServerSideProps((store) =>
     async (context) => {
-        const actionToDispatch = (id) => clientContainer.resolve('UserSaga').action('fetchUserById', id);
-        await store.dispatch(actionToDispatch(context.params.id));
-        store.dispatch(END);
-        await store.sagaTask.toPromise();
-        return { props: {} }
+        return serverContainer.resolve("UserController").run({ ...context, routeName: "/user/:id" }, store);
     }
 );
 

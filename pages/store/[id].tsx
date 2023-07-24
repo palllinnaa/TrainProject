@@ -3,18 +3,13 @@ import Link from 'next/link';
 import { useSelector } from 'react-redux';
 import { IState, IStore, IUser } from '../../server/interfaces/common';
 import clientContainer from '../../redux/container'
-import { END } from 'redux-saga';
+import serverContainer from '../../server/container';
 
 export const getServerSideProps = clientContainer.resolve('redux')._wrapper.getServerSideProps((store) =>
     async (context) => {
-        const actionToDispatch = (id) => clientContainer.resolve('StoreSaga').action('fetchStoreById', id);
-        await store.dispatch(actionToDispatch(context.params.id));
-        store.dispatch(END);
-        await store.sagaTask.toPromise();
-        return { props: {} }
+        return serverContainer.resolve("StoreController").run({ ...context, routeName: "/store/:id" }, store);
     }
 );
-
 function StorePage() {
     const { query } = useRouter();
     const store: IStore = useSelector((state: IState) => state.entitiesReducer.stores && state.entitiesReducer.stores[Number(query.id)]);
