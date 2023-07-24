@@ -5,9 +5,17 @@ import SSR from "../decorators/ssr";
 import USE from "../decorators/use";
 import session from "../middleware/session";
 import { passportInitialize, passportSession } from "../middleware/passport";
+import { schema } from "normalizr";
 
 @USE([session, passportInitialize, passportSession])
 export default class ProductController extends BaseController {
+    constructor(opts: any) {
+        super(opts);
+        this.initSchema('products', {
+            store: new schema.Entity('stores')
+        });
+    }
+
     @SSR('/product/:id')
     @GET('/api/product/:id')
     public async findProductById(req: INextApiRequestExtended) {

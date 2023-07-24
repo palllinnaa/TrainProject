@@ -3,16 +3,12 @@ import App from '../components/App';
 import { connect } from 'react-redux';
 import { IAllProductProps, IState } from '../server/interfaces/common';
 import clientContainer from '../redux/container'
-import { END } from 'redux-saga';
+import serverContainer from '../server/container';
 
 export const getServerSideProps = clientContainer.resolve('redux')._wrapper.getServerSideProps((store) =>
-  async () => {
-    const actionToDispatch = () => clientContainer.resolve('ProductSaga').action('fetchProducts');
-    await store.dispatch(actionToDispatch());
-    store.dispatch(END);
-    await store.sagaTask.toPromise()
-    return { props: {} }
-  }
+    async (context) => {
+        return serverContainer.resolve("ProductController").run(context, store);
+    }
 );
 
 function Home(props: IAllProductProps) {

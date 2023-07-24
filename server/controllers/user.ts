@@ -5,9 +5,18 @@ import SSR from '../decorators/ssr';
 import USE from '../decorators/use';
 import session from '../middleware/session';
 import { passportInitialize, passportSession } from '../middleware/passport';
+import { schema } from 'normalizr';
 
 @USE([session, passportInitialize, passportSession])
 export default class UserController extends BaseController {
+    constructor(opts: any) {
+        super(opts);
+        this.initSchema('users', {
+            store: [new schema.Entity('stores')],
+            review: [new schema.Entity('reviews')]
+        });
+    }
+
     @SSR("/user/:id")
     @GET("/api/user/:id")
     public async findUserById(req: INextApiRequestExtended) {
