@@ -14,8 +14,8 @@ export default class StoreSaga extends Entity {
     }
 
     @action()
-    protected * fetchStores() {
-        yield call(this.readData, 'stores');
+    protected * fetchStores(params) {
+        yield call(this.readData, `stores`, params.payload, { page: params.payload.page, limit: params.payload.perPage});
     }
 
     @action()

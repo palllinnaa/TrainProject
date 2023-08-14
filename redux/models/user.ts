@@ -1,3 +1,4 @@
+import { IPaginationParams } from './../../server/interfaces/common';
 import Entity from "./entity"
 import { call } from 'redux-saga/effects'
 import { schema } from "normalizr";
@@ -13,8 +14,9 @@ export default class UserSaga extends Entity {
     }
 
     @action()
-    protected * fetchUsers() {
-        yield call(this.readData, 'users');
+    protected * fetchUsers(params) {
+        yield call(this.readData, `users`, params.payload, { page: params.payload.page, limit: params.payload.perPage});
+
     }
 
     @action()

@@ -1,7 +1,8 @@
+import { IPaginationParams } from './../../server/interfaces/common';
 import { schema, normalize } from 'normalizr';
 import { METHODS } from "../../server/constants";
-import { call, fork, put, take } from 'redux-saga/effects'
-import { action, fetchFailed, fetchSucceeded } from "../actions/action";
+import { call, fork, put, select, take } from 'redux-saga/effects'
+import { action, fetchFailed, fetchMessage, fetchSucceeded, pageFetching } from "../actions/action";
 import 'reflect-metadata';
 import { ISagaMethods } from '../../server/interfaces/common';
 import clientContainer from '../container';
@@ -24,6 +25,7 @@ export default class Entity extends BaseClientContext {
         this.fetchWrapper = this.fetchWrapper.bind(this);
         this.readData = this.readData.bind(this);
         this.saveData = this.saveData.bind(this);
+        this.pageEntity = this.pageEntity.bind(this);
     }
 
     protected initSchema(entityName = '', attributes: any = {}) {
@@ -54,18 +56,35 @@ export default class Entity extends BaseClientContext {
         return normalize(data, Array.isArray(data) ? [this.schema] : this.schema);
     }
 
-    protected * actionRequest(url: string, method: string, data?: Record<string, any>) {
+    protected * actionRequest(url: string, method: string, data?: Record<string, any>, params?: IPaginationParams) {
         try {
             const result = yield this.fetchWrapper(url, method, data);
-            const normalizedResult = this.normalizationData(result);
+            const normalizedResult = this.normalizationData(result?.data || result);
+            if (params) {
+                params = {
+                    ...params,
+                    totalCount: result.totalCount
+                }
+                yield call(this.pageEntity, params, normalizedResult);
+            }
+            const { message, messageType } = result;
             yield put(fetchSucceeded(normalizedResult));
+            yield put(fetchMessage({ message: { message, messageType } }));
         } catch (error) {
             yield put(fetchFailed(error.message));
         }
     }
 
-    protected readData(url: string) {
-        return this.actionRequest(url, METHODS.GET);
+    protected readData(url: string, params?: IPaginationParams, fetchUrlParams?: Record<string, any>) {
+        const fetchUrl = !fetchUrlParams ?
+            url :
+            params.filter ?
+                url + "?" + new URLSearchParams(fetchUrlParams) + '&' + params.filter.columnName + (params.filter.action || '=') + params.filter.value :
+                url + "?" + new URLSearchParams(fetchUrlParams);
+        if (!params.filter) {
+            return this.actionRequest(fetchUrl, METHODS.GET, undefined, params);
+        }
+        return this.actionRequest(fetchUrl, METHODS.POST, params, params);
     }
 
     protected saveData(url: string, data: Record<string, any>) {
@@ -94,6 +113,12 @@ export default class Entity extends BaseClientContext {
 
     public action(methodName, data?) {
         return Entity._actions[this.constructor.name + '_' + methodName](data);
+    }
+
+    protected * pageEntity(params: IPaginationParams, data: Record<string, any>) {
+        const { pageName } = params;
+        yield put(pageFetching(true, data, params.entityName, pageName, params?.page, params.perPage, params.totalCount, params?.filter))
+        yield put(pageFetching(false, data, params.entityName, pageName, params?.page, params.perPage, params.totalCount, params?.filter))
     }
 
 }
