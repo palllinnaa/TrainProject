@@ -3,16 +3,16 @@ import Link from 'next/link';
 import { connect } from 'react-redux';
 import { IAllReviewsUsersProps, IState } from '../server/interfaces/common';
 import clientContainer from '../redux/container'
-import serverContainer from '../server/container';
+import { runControllers } from '../src/utils';
+import { showMessage } from '../components/Toast';
 
-export const getServerSideProps = clientContainer.resolve('redux')._wrapper.getServerSideProps((store) =>
-    async (context) => {
-        return serverContainer.resolve("ReviewController").run(context, store);
-    }
-);
+export const getServerSideProps =
+    clientContainer.resolve('redux').getServerSideProps(runControllers("ReviewController")
+    );
 
 function AllReviewsUsers(props: IAllReviewsUsersProps) {
-    const { reviewsUsers, users, stores } = props;
+    const { reviewsUsers, users, stores, message, messageType } = props;
+    showMessage(message, messageType);
 
     return (
         <div>
@@ -41,7 +41,9 @@ function AllReviewsUsers(props: IAllReviewsUsersProps) {
 const mapStateToProps = (state: IState) => ({
     reviewsUsers: state.entitiesReducer.reviews || [],
     users: state.entitiesReducer.users || [],
-    stores: state.entitiesReducer.stores || []
+    stores: state.entitiesReducer.stores || [],
+    message: state.entitiesReducer.responseMessage.message,
+    messageType: state.entitiesReducer.responseMessage.messageType
 });
 
 export default connect(mapStateToProps)(AllReviewsUsers)

@@ -3,16 +3,16 @@ import App from '../components/App';
 import { connect } from 'react-redux';
 import { IAllProductProps, IState } from '../server/interfaces/common';
 import clientContainer from '../redux/container'
-import serverContainer from '../server/container';
+import { runControllers } from '../src/utils';
+import { showMessage } from '../components/Toast';
 
-export const getServerSideProps = clientContainer.resolve('redux')._wrapper.getServerSideProps((store) =>
-    async (context) => {
-        return serverContainer.resolve("ProductController").run(context, store);
-    }
-);
+export const getServerSideProps =
+    clientContainer.resolve('redux').getServerSideProps(runControllers("ProductController")
+    );
 
 function Home(props: IAllProductProps) {
-  const { products } = props;
+  const { products, message, messageType } = props;
+  showMessage(message, messageType);
 
   return (
     <App data={products} />
@@ -20,7 +20,9 @@ function Home(props: IAllProductProps) {
 }
 
 const mapStateToProps = (state: IState) => ({
-  products: state.entitiesReducer.products || []
+  products: state.entitiesReducer.products || [],
+  message: state.entitiesReducer.responseMessage.message,
+  messageType: state.entitiesReducer.responseMessage.messageType
 });
 
 export default connect(mapStateToProps)(Home)
