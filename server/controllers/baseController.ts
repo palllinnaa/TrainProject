@@ -1,10 +1,11 @@
+import { fetchMessage } from './../../redux/actions/action';
 import BaseServerContext from "../baseServerContext";
 import { createRouter } from 'next-connect';
 import { NextApiResponse, NextApiRequest } from 'next';
 import { INextApiRequestExtended } from '../interfaces/common';
 import 'reflect-metadata';
 import { schema, normalize } from "normalizr";
-import { fetchFailed, fetchSucceeded } from "../../redux/actions/action";
+import { fetchFailed, fetchSucceeded, pageFetching } from "../../redux/actions/action";
 
 export default class BaseController extends BaseServerContext {
     private schema: any;
@@ -40,6 +41,14 @@ export default class BaseController extends BaseServerContext {
         return normalize(data, Array.isArray(data) ? [this.schema] : this.schema);
     }
 
+    async pageEntity(params, data, store) {
+        if (params.pageName) {
+            const { pageName } = params;
+            await store.dispatch(pageFetching(true, data, params.entityName, pageName, params?.page, params.perPage, params.totalCount))
+            await store.dispatch(pageFetching(false, data, params.entityName, pageName, params?.page, params.perPage, params.totalCount))
+        }
+    }
+
     public run = (context, store) =>
         createRouter()
             .get(async (req: INextApiRequestExtended, res: NextApiResponse) => {
@@ -50,12 +59,19 @@ export default class BaseController extends BaseServerContext {
                     const [firstMethod] = members[method];
                     // for (let i = 0; i < members[method].length; i++) {
                     const callback = this[firstMethod].bind(this);
-                    let data = await callback({
-                        params: context?.params,
+                    let result = await callback({
+                        params: context?.params
                     } as any);
-                    data = JSON.parse(JSON.stringify(data));
-                    const normalizedData = this.normalizationData(data);
-                    await store.dispatch(fetchSucceeded(normalizedData));
+                    result.totalCount && (context.params.totalCount = result.totalCount)
+                    const { message, messageType } = result;
+                    if (result.data) {
+                        const normalizedData = this.normalizationData(JSON.parse(JSON.stringify(result.data)));
+                        context.params && await this.pageEntity(context.params, normalizedData, store);
+                        await store.dispatch(fetchSucceeded(normalizedData));
+                        await store.dispatch(fetchMessage({ message: { message, messageType } }));
+                    } else {
+                        await store.dispatch(fetchMessage({ message: { message, messageType } }));
+                    }
                     return {
                         props: {}
                     };
@@ -82,14 +98,21 @@ export default class BaseController extends BaseServerContext {
                     const callback = this[members[method][i]].bind(this);
                     const action = async (req, res, next) => {
                         try {
-                            let data = await callback({
+                            let result = await callback({
                                 body: req?.body,
                                 params: req?.params,
                                 session: req?.session,
                                 identity: req?.user,
+                                query: req?.query,
                             } as any);
-                            data = JSON.parse(JSON.stringify(data));
-                            return res.status(200).json(data);
+                            return res.status(200).json(
+                                {
+                                    data: JSON.parse(JSON.stringify(result.data)),
+                                    totalCount: result.totalCount,
+                                    message: result.message,
+                                    messageType: result.messageType
+                                }
+                            );
                         } catch (err: any) {
                             const message = err?.message ? err.message : err;
                             return res.status(400).json({ message });

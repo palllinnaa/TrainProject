@@ -23,14 +23,14 @@ export default class ReviewController extends BaseController {
         const { ReviewService } = this.di;
         const { params } = req;
         const id = parseInt(params.id as string, 10);
-        return await ReviewService.findReviewById(id);
+        return ReviewService.findReviewById(id);
     }
 
     @SSR("/reviews")
     @GET("/api/reviews")
     public async findAllReviews() {
         const { ReviewService } = this.di;
-        return await ReviewService.findAllReviews();
+        return ReviewService.findAllReviews();
     }
 
     @SSR("/reviewsUser/:id")
@@ -39,13 +39,14 @@ export default class ReviewController extends BaseController {
         const { ReviewService } = this.di;
         const { params } = req;
         const id = parseInt(params.id as string, 10);
-        return await ReviewService.findReviewUserOnStore(id);
+        return ReviewService.findReviewUserOnStore(id);
     }
 
     @SSR("/reviewsUsers")
     @GET("/api/reviewsUsers")
     public async findAllReviewsUsersOnStores() {
         const { ReviewService } = this.di;
-        return await ReviewService.findReviewsUsersOnStores();
+        return ReviewService.findReviewsUsersOnStores();
     }
 }
+
