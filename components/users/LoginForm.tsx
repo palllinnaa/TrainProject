@@ -1,13 +1,14 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useEffect, useMemo } from 'react'
 import { useFormik } from 'formik';
 import * as Yup from "yup";
 import Input from './Input';
 import Link from 'next/link';
-import Toast from './Toast';
 import { connect } from 'react-redux';
 import { ILoginFormPageProps } from '../../server/interfaces/common';
-import { clearIdentityError } from '../../redux/actions/auth';
+import { clearIdentityError, clearIdentityMessage } from '../../redux/actions/auth';
 import clientContainer from '../../redux/container';
+import { showMessage } from '../Toast';
+import { MESSAGE_TYPE } from '../../server/constants';
 
 const validationSchema = Yup.object({
   email: Yup
@@ -21,8 +22,12 @@ const validationSchema = Yup.object({
 });
 
 function LoginForm(props: ILoginFormPageProps) {
-  const { fetchLoginUser, clearReducerError, error } = props;
-  const [toast, setToast] = useState({ showToast: false, text: '' });
+  const { fetchLoginUser, clearReducerError, clearReducerMessage, error, message, messageType } = props;
+  if(message){
+    showMessage(message, messageType);
+    clearReducerMessage();
+  }
+  
   const initialValues = useMemo(() => ({
     email: "",
     password: "",
@@ -40,6 +45,7 @@ function LoginForm(props: ILoginFormPageProps) {
 
     onSubmit: async () => {
       try {
+        clearReducerError()
         fetchLoginUser({ ...values });
       } catch (error) {
         console.log('Error in LoginForm', error);
@@ -50,11 +56,9 @@ function LoginForm(props: ILoginFormPageProps) {
 
   useEffect(() => {
     if (error) {
-      //TODO for text:error need to send custom message in passport
-      setToast({ showToast: true, text: /*error ||*/ 'Email or password is incorrect!' })
-    } else (
-      setToast({ showToast: false, text: '' })
-    )
+      //TODO for message need to send custom message in passport
+      showMessage('Email or password is incorrect!', MESSAGE_TYPE.ERROR_TOAST);
+    }
   }, [error])
 
   return (
@@ -69,7 +73,6 @@ function LoginForm(props: ILoginFormPageProps) {
             </button>
           </div>
         </div>
-        <Toast show={toast.showToast} text={toast.text} />
         <form onSubmit={handleSubmit} method="post" className='mt-6'>
           <Input
             name="email"
@@ -110,14 +113,17 @@ function LoginForm(props: ILoginFormPageProps) {
 
 const mapStateToProps = (state) => ({
   identity: state.authReducer.identity,
-  error: state.authReducer.error
+  error: state.authReducer.error,
+  message: state.authReducer.responseMessage?.message,
+  messageType: state.authReducer.responseMessage?.messageType
 });
 
 const mapDispatchToProps = (dispatch) => {
   const actionToDispatch = (data) => clientContainer.resolve('AuthSaga').action('fetchLoginUser', data);
   return {
     fetchLoginUser: (data) => dispatch(actionToDispatch(data)),
-    clearReducerError: () => dispatch(clearIdentityError())
+    clearReducerError: () => dispatch(clearIdentityError()),
+    clearReducerMessage: () => dispatch(clearIdentityMessage())
   }
 }
 

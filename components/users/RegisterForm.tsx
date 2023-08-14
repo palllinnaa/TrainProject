@@ -1,14 +1,15 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useEffect, useMemo } from 'react'
 import { useFormik } from 'formik';
 import * as Yup from "yup";
 import Input from './Input';
 import Select from './Select';
 import Link from 'next/link';
-import Toast from './Toast';
 import { connect } from 'react-redux';
 import { IRegisterFormPageProps } from '../../server/interfaces/common';
-import { clearIdentityError } from '../../redux/actions/auth';
+import { clearIdentityError, clearIdentityMessage } from '../../redux/actions/auth';
 import clientContainer from '../../redux/container';
+import { showMessage } from '../Toast';
+import { MESSAGE_TYPE } from '../../server/constants';
 
 const validationSchema = Yup.object({
     firstName: Yup
@@ -35,8 +36,12 @@ const validationSchema = Yup.object({
 });
 
 function RegisterForm(props: IRegisterFormPageProps) {
-    const { fetchRegisterUser, clearReducerError, error } = props;
-    const [toast, setToast] = useState({ showToast: false, text: '' });
+    const { fetchRegisterUser, clearReducerError, clearReducerMessage, error, message, messageType } = props;
+    if (message) {
+        showMessage(message, messageType);
+        clearReducerMessage();
+    }
+
     const initialValues = useMemo(() => ({
         firstName: "",
         lastName: "",
@@ -57,6 +62,7 @@ function RegisterForm(props: IRegisterFormPageProps) {
 
         onSubmit: async () => {
             try {
+                clearReducerError()
                 fetchRegisterUser({ ...values });
             } catch (error) {
                 console.log('Error in RegisterForm: ', error);
@@ -67,10 +73,8 @@ function RegisterForm(props: IRegisterFormPageProps) {
 
     useEffect(() => {
         if (error) {
-            setToast({ showToast: true, text: /*error ||*/ 'This email is already taken!' })
-        } else (
-            setToast({ showToast: false, text: '' })
-        )
+            showMessage('This email is already taken!', MESSAGE_TYPE.ERROR_TOAST)
+        }
     }, [error])
 
     const options = [
@@ -91,7 +95,6 @@ function RegisterForm(props: IRegisterFormPageProps) {
                     <h1 className='items-center mt-6 font-bold lg:text-2xl sm:text-lg'>Sign Up</h1>
                     <h4 className='mt-1 font-semibold text-gray-500 lg:text-lg'>Enter your details to create your account</h4>
                 </div>
-                <Toast show={toast.showToast} text={toast.text} />
                 <form onSubmit={handleSubmit} method="post" className='mt-8 lg:flex-grow'>
                     <Input
                         name="firstName"
@@ -169,14 +172,17 @@ function RegisterForm(props: IRegisterFormPageProps) {
 
 const mapStateToProps = (state) => ({
     identity: state.authReducer.identity,
-    error: state.authReducer.error
+    error: state.authReducer.error,
+    message: state.authReducer.responseMessage?.message,
+    messageType: state.authReducer.responseMessage?.messageType
 });
 
 const mapDispatchToProps = (dispatch) => {
     const actionToDispatch = (data) => clientContainer.resolve('AuthSaga').action('fetchRegisterUser', data);
     return {
         fetchRegisterUser: (data) => dispatch(actionToDispatch(data)),
-        clearReducerError: () => dispatch(clearIdentityError())
+        clearReducerError: () => dispatch(clearIdentityError()),
+        clearReducerMessage: () => dispatch(clearIdentityMessage())
     }
 }
 
