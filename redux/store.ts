@@ -101,4 +101,8 @@ export default class ReduxStore extends BaseClientContext {
     this._wrapper = createWrapper<EnhancedStore<any, AnyAction>>(makeStore, { debug: true });
     return this._wrapper;
   }
+
+  public getServerSideProps(controller: any) {
+    return this._wrapper.getServerSideProps(controller);
+  }
 }

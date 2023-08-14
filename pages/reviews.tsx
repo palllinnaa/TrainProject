@@ -3,16 +3,16 @@ import Link from "next/link";
 import { connect } from 'react-redux';
 import { IAllReviewsProps, IState } from '../server/interfaces/common';
 import clientContainer from '../redux/container'
-import serverContainer from '../server/container';
+import { runControllers } from '../src/utils';
+import { showMessage } from '../components/Toast';
 
-export const getServerSideProps = clientContainer.resolve('redux')._wrapper.getServerSideProps((store) =>
-    async (context) => {
-        return serverContainer.resolve("ReviewController").run(context, store);
-    }
+export const getServerSideProps = 
+    clientContainer.resolve('redux').getServerSideProps(runControllers("ReviewController")
 );
 
 function AllReviews(props: IAllReviewsProps) {
-    const { reviews } = props;
+    const { reviews, message, messageType } = props;
+    showMessage(message, messageType);
 
     return (
         <div>
@@ -35,7 +35,9 @@ function AllReviews(props: IAllReviewsProps) {
 }
 
 const mapStateToProps = (state: IState) => ({
-    reviews: state.entitiesReducer.reviews || []
+    reviews: state.entitiesReducer.reviews || [],
+    message: state.entitiesReducer.responseMessage.message,
+    messageType: state.entitiesReducer.responseMessage.messageType
 });
 
 export default connect(mapStateToProps)(AllReviews)

@@ -9,4 +9,27 @@ export enum METHODS {
   POST = "POST"
 }
 
-export const isEmpty = (val: any) => val == null || !(Object.keys(val) || val).length;
+export enum MESSAGE_TYPE {
+  SUCCEEDED_TOAST = "SUCCEEDED_TOAST",
+  ERROR_TOAST = "ERROR_TOAST",
+  INFORMATION_TOAST = "INFORMATION_TOAST",
+  SUCCEEDED_CONSOLE = "SUCCEEDED_CONSOLE",
+  ERROR_CONSOLE = "ERROR_CONSOLE",
+  INFORMATION_CONSOLE = "INFORMATION_CONSOLE"
+}
+
+export const isEmpty = (value: any) => value == null || !(Object.keys(value) || value).length;
+
+export const makePaginationFilter = (columnName?, columnLabel?, value?, action?) => {
+  return {
+    columnName: columnName,
+    columnLabel: columnLabel,
+    action: action,
+    value: value
+  };
+}
+
+export const changePaginationUrlLocation = (page, limit) => {
+  const newURL = "?page=" + page + "&limit=" + limit;
+  window.history.replaceState(null, '', newURL);
+}

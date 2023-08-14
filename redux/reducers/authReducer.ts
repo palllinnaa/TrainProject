@@ -13,6 +13,9 @@ export default function authReducer(state: IStateAuthData, action: any) {
             break;
         case 'GET_IDENTITY_ERROR':
             delete newState.identity
+            if ('error' in state && !isEmpty(state.error)) {
+                delete newState.error
+            }
             state = {
                 ...newState,
                 error: action.payload
@@ -25,6 +28,21 @@ export default function authReducer(state: IStateAuthData, action: any) {
                     ...newState
                 }
             } break;
+        case 'MESSAGE_IDENTITY_RESPONSE':
+            if (action.payload.message) {
+                delete newState.responseMessage
+                state = {
+                    ...newState,
+                    responseMessage: action.payload.message
+                }
+            } break;
+            case 'CLEAR_MESSAGE_IDENTITY_RESPONSE':
+                if ('responseMessage' in state && !isEmpty(state.responseMessage)) {
+                    delete newState.responseMessage
+                    state = {
+                        ...newState
+                    }
+                } break;
         default:
             return { ...state }
     }

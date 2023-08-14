@@ -6,6 +6,7 @@ import USE from '../decorators/use';
 import session from '../middleware/session';
 import { passportInitialize, passportSession } from '../middleware/passport';
 import { schema } from 'normalizr';
+import POST from '../decorators/post';
 
 @USE([session, passportInitialize, passportSession])
 export default class UserController extends BaseController {
@@ -26,10 +27,16 @@ export default class UserController extends BaseController {
         return await UserService.findUserById(id);
     }
 
+    @POST("/api/users")
     @SSR("/users")
     @GET("/api/users")
-    public async findAllUsers() {
+    public async findAllUsers(req: INextApiRequestExtended) {
         const { UserService } = this.di;
-        return await UserService.findAllUsers();
+        const { params, query, body } = req;
+        return await UserService.findAllUsersPagination(
+            Number(params.page || query.page),
+            Number(params.perPage || query.limit),
+            body?.filter || undefined
+        );
     }
 }

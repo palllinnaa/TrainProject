@@ -1,23 +1,25 @@
 import { useRouter } from 'next/router'
 import Link from 'next/link';
-import { useSelector } from 'react-redux';
-import { IState, IStore, IUser } from '../../server/interfaces/common';
+import { connect, useSelector } from 'react-redux';
+import { IState, IStore, IStorePageProps, IUser } from '../../server/interfaces/common';
 import clientContainer from '../../redux/container'
-import serverContainer from '../../server/container';
+import { runControllers } from '../../src/utils';
+import { showMessage } from '../../components/Toast';
 
-export const getServerSideProps = clientContainer.resolve('redux')._wrapper.getServerSideProps((store) =>
-    async (context) => {
-        return serverContainer.resolve("StoreController").run({ ...context, routeName: "/store/:id" }, store);
-    }
-);
-function StorePage() {
+export const getServerSideProps =
+    clientContainer.resolve('redux').getServerSideProps(runControllers("StoreController", '/store/:id')
+    );
+
+function StorePage(props: IStorePageProps) {
+    const { pagination, message, messageType } = props;
     const { query } = useRouter();
     const store: IStore = useSelector((state: IState) => state.entitiesReducer.stores && state.entitiesReducer.stores[Number(query.id)]);
     const user: IUser = useSelector((state: IState) => state.entitiesReducer.users && state.entitiesReducer.users[Number(store.user)]);
+    showMessage(message, messageType);
 
     return (
         <div>
-            <Link href='/stores'>Back to stores</Link>
+            <Link href={pagination ? `/stores?page=${pagination.currentPage}&limit=${pagination.perPage}` : `/stores?page=1&limit=10`}>Back to stores</Link>
             <h1>Store {store?.id}</h1>
             <p>Store Name: {store?.storeName}</p>
             <p>Seller id: {store?.userId}</p>
@@ -28,4 +30,10 @@ function StorePage() {
     );
 }
 
-export default StorePage;
+const mapStateToProps = (state: IState) => ({
+    pagination: state.pagination.users,
+    message: state.entitiesReducer.responseMessage.message,
+    messageType: state.entitiesReducer.responseMessage.messageType
+});
+
+export default connect(mapStateToProps)(StorePage);

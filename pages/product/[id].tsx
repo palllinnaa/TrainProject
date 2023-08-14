@@ -3,19 +3,20 @@ import Link from 'next/link';
 import ProductDetails from '../../components/products/ProductDetails';
 import SiteHeader from '../../components/SiteHeader';
 import { useSelector } from 'react-redux';
-import { IProduct, IState } from '../../server/interfaces/common';
+import { IProduct, IProductPageProps, IState } from '../../server/interfaces/common';
 import clientContainer from '../../redux/container'
-import serverContainer from '../../server/container';
+import { runControllers } from '../../src/utils';
+import { showMessage } from '../../components/Toast';
 
-export const getServerSideProps = clientContainer.resolve('redux')._wrapper.getServerSideProps((store) =>
-    async (context) => {
-        return serverContainer.resolve("ProductController").run({ ...context, routeName: "/product/:id" }, store);
-    }
-);
+export const getServerSideProps =
+  clientContainer.resolve('redux').getServerSideProps(runControllers("ProductController", '/product/:id')
+  );
 
-function ProductPage() {
+function ProductPage(props: IProductPageProps) {
+  const { message, messageType } = props;
   const { query } = useRouter();
   const product: IProduct = useSelector((state: IState) => state.entitiesReducer.products && state.entitiesReducer.products[Number(query.id)]);
+  showMessage(message, messageType);
 
   return (
     <div >

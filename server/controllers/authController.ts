@@ -1,3 +1,4 @@
+import { IResult } from './../interfaces/common';
 import BaseController from "./baseController";
 import { NextApiRequest } from "next";
 import { INextApiRequestExtended } from "../interfaces/common";
@@ -7,6 +8,7 @@ import session from "../middleware/session";
 import { passportAuth, passportInitialize, passportSession } from "../middleware/passport";
 import validate from "../validations/validate";
 import validationRules from "../validations/validationRules";
+import { MESSAGE_TYPE } from '../constants';
 
 @USE([session, passportInitialize, passportSession])
 export default class AuthController extends BaseController {
@@ -34,7 +36,11 @@ export default class AuthController extends BaseController {
     }))
     public async registerUser(req: NextApiRequest) {
         const { UserService } = this.di;
-        return await UserService.registerUser(req.body);
+        let result: IResult = {};
+        result.data = await UserService.registerUser(req.body);
+        result.message = result.data ? 'Register succeeded' : 'Register failed';
+        result.messageType = result.data ? MESSAGE_TYPE.SUCCEEDED_TOAST : MESSAGE_TYPE.ERROR_TOAST;
+        return result;
     }
 
     @POST("/api/login")
@@ -55,10 +61,14 @@ export default class AuthController extends BaseController {
     }))
     @USE(passportAuth)
     public async loginUser(req: INextApiRequestExtended) {
+        let result: IResult = {};
         const { identity } = req;
+        result.data = identity;
+        result.message = identity ? 'Login succeeded' : 'Login failed';
+        result.messageType = identity ? MESSAGE_TYPE.SUCCEEDED_TOAST : MESSAGE_TYPE.ERROR_TOAST;
         if (!identity) {
             throw new Error("User not Found");
         }
-        return { identity };
+        return result;
     }
 }

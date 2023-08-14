@@ -6,6 +6,7 @@ import USE from '../decorators/use';
 import session from '../middleware/session';
 import { passportInitialize, passportSession } from '../middleware/passport';
 import { schema } from 'normalizr';
+import POST from '../decorators/post';
 
 @USE([session, passportInitialize, passportSession])
 export default class StoreController extends BaseController {
@@ -29,8 +30,14 @@ export default class StoreController extends BaseController {
 
     @SSR("/stores")
     @GET("/api/stores")
-    public async findAllStores() {
+    @POST("/api/stores")
+    public async findAllStores(req: INextApiRequestExtended) {
         const { StoreService } = this.di;
-        return await StoreService.findStoresOwnerReviews();
+        const { params, query, body } = req;
+        return await StoreService.findStoresOwnerReviewsPagination(
+            Number(params.page || query.page),
+            Number(params.perPage || query.limit),
+            body?.filter || undefined
+        );
     }
 }

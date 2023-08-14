@@ -1,21 +1,22 @@
 import { useRouter } from 'next/router'
 import Link from 'next/link';
-import { useSelector } from 'react-redux';
-import { IReview, IState, IStore, IUser } from '../../server/interfaces/common';
+import { connect, useSelector } from 'react-redux';
+import { IReview, IReviewsUserPageProps, IState, IStore, IUser } from '../../server/interfaces/common';
 import clientContainer from '../../redux/container'
-import serverContainer from '../../server/container';
+import { runControllers } from '../../src/utils';
+import { showMessage } from '../../components/Toast';
 
-export const getServerSideProps = clientContainer.resolve('redux')._wrapper.getServerSideProps((store) =>
-    async (context) => {
-        return serverContainer.resolve("ReviewController").run({ ...context, routeName: "/reviewsUser/:id" }, store);
-    }
-);
+export const getServerSideProps =
+    clientContainer.resolve('redux').getServerSideProps(runControllers("ReviewController", '/reviewsUser/:id')
+    );
 
-function ReviewsUserPage() {
+function ReviewsUserPage(props: IReviewsUserPageProps) {
+    const { message, messageType } = props;
     const { query } = useRouter();
     const review: IReview = useSelector((state: IState) => state.entitiesReducer.reviews && state.entitiesReducer.reviews[Number(query.id)]);
     const user: IUser = useSelector((state: IState) => state.entitiesReducer.users && state.entitiesReducer.users[Number(review.user)]);
     const store: IStore = useSelector((state: IState) => state.entitiesReducer.stores && state.entitiesReducer.stores[Number(review.store)]);
+    showMessage(message, messageType);
 
     return (
         <div>
@@ -35,4 +36,9 @@ function ReviewsUserPage() {
     )
 }
 
-export default ReviewsUserPage;
+const mapStateToProps = (state: IState) => ({
+    message: state.entitiesReducer.responseMessage.message,
+    messageType: state.entitiesReducer.responseMessage.messageType
+});
+
+export default connect(mapStateToProps)(ReviewsUserPage);
