@@ -33,7 +33,7 @@ export default function entitiesReducer(state: IStateEntityData, action: any) {
                             }
                         }
                     });
-                } 
+                }
             } break;
         case 'FAILED':
             if (action.payload) {
@@ -49,6 +49,21 @@ export default function entitiesReducer(state: IStateEntityData, action: any) {
                         ...state,
                         error: errorMessage
                     }
+                }
+            } break;
+        case 'MESSAGE':
+            if (action.payload) {
+                const { message } = action.payload;
+                if (message) {
+                    Object.keys(message).map(item => {
+                        state = {
+                            ...state,
+                            responseMessage: {
+                                ...state.responseMessage,
+                                [item]: action.payload.message[item]
+                            }
+                        }
+                    })
                 }
             } break;
         default:

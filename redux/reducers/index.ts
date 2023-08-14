@@ -4,10 +4,12 @@ import entitiesReducer from './entityReducer'
 import authReducer from './authReducer'
 import { combineReducers } from 'redux';
 import { HYDRATE } from 'next-redux-wrapper';
+import pagination from './pagination';
 
 const reducers = combineReducers({
   entitiesReducer: entitiesReducer,
   authReducer: authReducer,
+  pagination: pagination
 });
 
 const rootReducer = (state: IState, action: IAction) => {
